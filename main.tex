@@ -33,6 +33,7 @@ The solution aims to increase computational speed by utilizing pipeline techniqu
 We have also explored the impact of high-bandwidth memory (HBM2) on computational performance, comparing it with existing memory structures.
 The work includes the use of DDR4 high-speed interfaces and the implementation of polling algorithms to improve access efficiency.
 The optimized design of the underlying register-transfer level (RTL) circuitry for a single node has fundamentally enhanced the efficiency of data read and write operations to and from registers, with external storage read and write efficiency improved by more than 2.0 times.
+The implementation of our work was demonstrated by comparing the simulation results of noble gas argon and dihydrofolate reductase (DHFR) with those obtained from OpenMM.
 Additionally, potential strategies for continuing to improve the efficiency of MD simulations are also discussed.
 
 \end{abstract}
@@ -40,21 +41,47 @@ Additionally, potential strategies for continuing to improve the efficiency of M
 \section{Introduction}
 
 \noindent
-MD simulation is a kind of calculation method based on statistical physics and Newtonian mechanics\cite{ref1}. The smallest unit of particles is atom, which usually does not involve the electron orbitals within the atom; while the largest unit of particles can be a cluster composed of multiple atoms, or even a molecule assembled by multiple molecules. MD simulation calculates the energy and force according to the classical mechanics, and gives the three-dimensional spatial arrangement of the particles in the system in line with the law of energy distribution of statistical mechanics\cite{ref1,ref2}. These individual atoms through the interaction to achieve the system balance state in the macroscopic view of the structure of the macromolecule is the steady state, or called the conformational distribution. The process by which these particles move in the spatial and temporal scales of Newtonian mechanics and tend to minimize the energy balance is a kinetic simulation\cite{ref2}.\\
+MD simulation is a kind of calculation method based on statistical physics and Newtonian mechanics\cite{ref1}. 
+The smallest unit of particles is atom, which usually does not involve the electron orbitals within the atom; while the largest unit of particles can be a cluster composed of multiple atoms, or even a molecule assembled by multiple molecules. 
+MD simulation calculates the energy and force according to the classical mechanics, and gives the three-dimensional spatial arrangement of the particles in the system in line with the law of energy distribution of statistical mechanics\cite{ref1,ref2}. 
+These individual atoms through the interaction to achieve the system balance state in the macroscopic view of the structure of the macromolecule is the steady state, or called the conformational distribution. 
+The process by which these particles move in the spatial and temporal scales of Newtonian mechanics and tend to minimize the energy balance is a kinetic simulation\cite{ref2}.\\
 
 \noindent
-Currently available hardware design platforms include FPGAs (Field Programmable Gate Array) and ASICs (Application Specific Integrated Circuit), which are process-cured logic circuits, and FPGAs are integrated chips designed for commercial applications.Additional, existing FPGA manufacturing processes are capable of achieving nanometer sizes of 3 nm or less\cite{ref3,ref18}. Although FPGAs are less dense and more slower than ASICs, they are more flexible in design, more cost-effective, and more economical in terms of power consumption compared to other devices\cite{ref3}.FPGAs incorporate a variety of unique production techniques, such as the FLASH process and the reverse fusion process, which allow them to support multiple recasts and debugs in the commercial sector to accommodate different experimental design needs\cite{ref22}. The design stage of the chip, the FPGA In the chip design phase, FPGA design is regarded as the core of prototyping, which also means that FPGA circuit design has great potential for practical application in the later stage of curing into an ASIC process\cite{ref3,ref18}. An important step in the MD simulation process is the updating of the system state at each moment. This means that the forces on all particles in the system are calculated at one time step, and then the position and velocity of each particle at the next time step are calculated by an integrator\cite{ref22}. This cycle completes the simulation. The calculation of the forces on the particles is crucial to the accuracy of the MD results, and the calculation of the inter-particle interactions is the decisive speed step in the program\cite{ref6}.\\
+Currently available hardware design platforms include FPGAs (Field Programmable Gate Array) and ASICs (Application Specific Integrated Circuit), which are process-cured logic circuits, and FPGAs are integrated chips designed for commercial applications.Additional, existing FPGA manufacturing processes are capable of achieving nanometer sizes of 3 nm or less\cite{ref3,ref18}. 
+Although FPGAs are less dense and more slower than ASICs, they are more flexible in design, more cost-effective, and more economical in terms of power consumption compared to other devices\cite{ref3}.
+FPGAs incorporate a variety of unique production techniques, such as the FLASH process and the reverse fusion process, which allow them to support multiple recasts and debugs in the commercial sector to accommodate different experimental design needs\cite{ref22}. 
+In the chip design phase, FPGA design is regarded as the core of prototyping, which also means that FPGA circuit design has great potential for practical application in the later stage of curing into an ASIC process\cite{ref3,ref18}. An important step in the MD simulation process is the updating of the system state at each moment.
+This means that the forces on all particles in the system are calculated at one time step, and then the position and velocity of each particle at the next time step are calculated by an integrator\cite{ref22}.
+This cycle completes the simulation. The calculation of the forces on the particles is crucial to the accuracy of the MD results, and the calculation of the inter-particle interactions is the decisive speed step in the program\cite{ref6}.\\
 
 \noindent
-Different impact of memories on the overall design.In this study, the basic definition of FPGA, its main characteristics and its development history are summarized and compared with general-purpose processors. A full hardware module is designed to accelerate all parts of the MD computation, which is aimed at increasing the speed of computation, and utilizes the pipeline technique to optimize the allocation of tasks in the whole parallel system\cite{ref12,ref23}. A single instruction multiple data stream (SIMD) approach is utilized to significantly improve the computational efficiency. At the same time, we also built a software framework dedicated to this scheme, which can be used to accelerate the data processing of the circuit. To better exploit the parallelism potential, we comprehensively compared existing high-speed interfaces and memory devices, and analyzed existing high-speed architectural designs\cite{ref18,ref21}. The new generation of high-bandwidth memories, such as HBM2 memories, are used to fully compare the impact of existing memory structures on computational performance in MD design. A great deal of work has been done using DDR4 high-speed interfaces and polling algorithms to improve access efficiency\cite{ref19,ref20}. The new generation of high-speed, high-bandwidth, multi-parallel interface HBM memory is adopted to enable read/write access to external mass storage while parallelizing the computation of multiple data paths\cite{ref6}.\\
+Different impact of memories on the overall design.In this study, the basic definition of FPGA, its main characteristics and its development history are summarized and compared with general-purpose processors. 
+A full hardware module is designed to accelerate all parts of the MD computation, which is aimed at increasing the speed of computation, and utilizes the pipeline technique to optimize the allocation of tasks in the whole parallel system\cite{ref12,ref23}. 
+A single instruction multiple data stream (SIMD) approach is utilized to significantly improve the computational efficiency. At the same time, we also built a software framework dedicated to this scheme, which can be used to accelerate the data processing of the circuit. 
+To better exploit the parallelism potential, we comprehensively compared existing high-speed interfaces and memory devices, and analyzed existing high-speed architectural designs\cite{ref18,ref21}.
+The new generation of high-bandwidth memories, such as HBM2 memories, are used to fully compare the impact of existing memory structures on computational performance in MD design. 
+A great deal of work has been done using DDR4 high-speed interfaces and polling algorithms to improve access efficiency\cite{ref19,ref20}.
+The new generation of high-speed, high-bandwidth, multi-parallel interface HBM memory is adopted to enable read/write access to external mass storage while parallelizing the computation of multiple data paths\cite{ref6}.\\
 
 \noindent
-Designed in RTL language or in HLS language? The optimized design of the underlying RTL circuit fundamentally improves the efficiency of reading and writing registers. The optimized design of the underlying RTL circuit fundamentally improves the efficiency of data reading and writing registers, and more than doubles the efficiency of reading and writing external storage\cite{ref3,ref19}. Therefore, the rational use of external mass storage devices is fully considered in the design process. We select the same Xilinx UV9P chip of the cloud platform, and use two kinds of more efficient memories, DDR4 and HBM2, because there are a large number of intermediate computational data in MD computation, which are directly related to the particle information, so the storage data need independent storage intervals, and the DDR is a single read/write channel, and the HBM supports 32 independent read/write channels, which greatly increases the read/write storage space of particle computation, and the HBM supports 32 independent read/write channels\cite{ref19,ref20}. DDR is a single read/write channel, while HBM supports 32 independent read/write channels, which greatly improves the data throughput efficiency for particle computation\cite{ref18,ref22}. The use of multi-channel computing improves the efficiency of reading and writing to external memory, but the consumption of on-chip resources by the read/write driver needs to be fully considered\cite{ref20,ref21,ref22}. We use the progress checking module to supervise the multi-channel data to ensure the orderly reading and writing of data\cite{ref20,ref21,ref22,ref23}.\\
+Designed in RTL language or in HLS language? The optimized design of the underlying RTL circuit fundamentally improves the efficiency of reading and writing registers. The optimized design of the underlying RTL circuit fundamentally improves the efficiency of data reading and writing registers, and more than doubles the efficiency of reading and writing external storage\cite{ref3,ref19}. Therefore, the rational use of external mass storage devices is fully considered in the design process. We select the same Xilinx UV9P chip of the cloud platform, and use two kinds of more efficient memories, DDR4 and HBM2, because there are a large number of intermediate computational data in MD computation, which are directly related to the particle information, so the storage data need independent storage intervals, and the DDR is a single read/write channel, and the HBM supports 32 independent read/write channels, which greatly increases the read/write storage space of particle computation, and the HBM supports 32 independent read/write channels\cite{ref19,ref20}. 
+DDR is a single read/write channel, while HBM supports 32 independent read/write channels, which greatly improves the data throughput efficiency for particle computation\cite{ref18,ref22}.
+The use of multi-channel computing improves the efficiency of reading and writing to external memory, but the consumption of on-chip resources by the read/write driver needs to be fully considered\cite{ref20,ref21,ref22}. We use the progress checking module to supervise the multi-channel data to ensure the orderly reading and writing of data\cite{ref20,ref21,ref22,ref23}.\\
 
 \noindent
-The Influence of Numerical Analysis Method on Calculation Speed.For the same MD simulation system, the data is "sliced" according to the computational node and then sent to the specified computational unit. The computational unit needs to use a reasonable floating-point computational model. In this design, we compare various numerical models and model the first, second, and third-order computational models using multistage linear interpolation to create a numerical interpolation table by slicing each fitted curve rationally. The interpolation table is transferred to the on-chip memory via the high-speed AXI Lite protocol, thus ensuring high computational efficiency . Meanwhile, HLS advanced compilation and RTL design are used to finalize the RTL design circuit to ensure computational efficiency. The interpolation algorithm is compared with Newtonian interpolation, Hamiltonian interpolation and Legendre interpolation\cite{ref3}. After the same MD simulation system is divided into several blocks, a reasonable proximity force calculation supervision module needs to be designed, which needs to record the computational progress of the data in each block. Assuming that a simulation system is divided into 1000 or more sub units and that the upper and lower hemispheres are computed separately, the design of the supervision module would be difficult. We use a multilevel supervision approach to ensure that the data in each sub unit is accurate during the computation.\\
+The Influence of Numerical Analysis Method on Calculation Speed.For the same MD simulation system, the data is "sliced" according to the computational node and then sent to the specified computational unit. 
+The computational unit needs to use a reasonable floating-point computational model. 
+In this design, we compare various numerical models and model the first, second, and third-order computational models using multistage linear interpolation to create a numerical interpolation table by slicing each fitted curve rationally. 
+The interpolation table is transferred to the on-chip memory via the high-speed AXI Lite protocol, thus ensuring high computational efficiency. 
+Meanwhile, HLS advanced compilation and RTL design are used to finalize the RTL design circuit to ensure computational efficiency. 
+The interpolation algorithm is compared with Newtonian interpolation, Hamiltonian interpolation and Legendre interpolation\cite{ref3}. 
+After the same MD simulation system is divided into several blocks, a reasonable proximity force calculation supervision module needs to be designed, which needs to record the computational progress of the data in each block. 
+Assuming that a simulation system is divided into 1000 or more sub units and that the upper and lower hemispheres are computed separately, the design of the supervision module would be difficult. We use a multilevel supervision approach to ensure that the data in each sub unit is accurate during the computation.\\
 
 \section{Theoretical background}
+
+\subsection{Classic force field}
 
 \noindent
 MD program can divided into four parts.
@@ -167,7 +194,11 @@ The proximity force calculation unit contains several calculation pipelines to m
 
 
 
-Module a, the use of HBM multi-module multi interface, HBM for multi-channel read, can support up to 32 channels of data at the same time read and write storage area, data read and write using HBM driver IP, HBM for multi-channel read and write, each HBM supports 32 independent read and write channels, in the design of the internal RAM resources can be saved, the cached data will be stored in the external mass storage device. Module 2 is a multi-channel read/write control, HBM2 adopts AXI3 protocol, and AXI3 to AXI4 protocol is used to ensure the consistency of the protocol for FPGA to read/write the external storage device, assuming that 16 read/write channels are used in this figure, and the HBM2 supports up to 32 data read/write channels. Module 3 is a multi-channel polling control module, which needs to notify the control module to access the corresponding interface channel after the calculation of multiple RL modules of FPGA, and when a certain channel is occupied, the channel will be prohibited from accessing. Module 4 is a module for accumulating multiple HomeCells with the first 13 neighbor cells. Module 5 is the computation progress supervision module for multiple short-range force computing modules. Multiple computing modules in a single FPGA logic chip require a secondary computation progress supervision circuit to supervise the Mark table module for each subcell. Module 6 accumulates the results for multiple HomeCells with the remaining 13 neighbor cells.
+Module a, the use of HBM multi-module multi interface, HBM for multi-channel read, can support up to 32 channels of data at the same time read and write storage area, data read and write using HBM driver IP, HBM for multi-channel read and write, each HBM supports 32 independent read and write channels, in the design of the internal RAM resources can be saved, the cached data will be stored in the external mass storage device. 
+Module 2 is a multi-channel read/write control, HBM2 adopts AXI3 protocol, and AXI3 to AXI4 protocol is used to ensure the consistency of the protocol for FPGA to read/write the external storage device, assuming that 16 read/write channels are used in this figure, and the HBM2 supports up to 32 data read/write channels. 
+Module 3 is a multi-channel polling control module, which needs to notify the control module to access the corresponding interface channel after the calculation of multiple RL modules of FPGA, and when a certain channel is occupied, the channel will be prohibited from accessing. 
+Module 4 is a module for accumulating multiple HomeCells with the first 13 neighbor cells. 
+Module 5 is the computation progress supervision module for multiple short-range force computing modules. Multiple computing modules in a single FPGA logic chip require a secondary computation progress supervision circuit to supervise the Mark table module for each subcell. Module 6 accumulates the results for multiple HomeCells with the remaining 13 neighbor cells.
 
 \section{Memory}
 
@@ -189,10 +220,11 @@ Module a, the use of HBM multi-module multi interface, HBM for multi-channel rea
 \begin{sidewaysfigure}[p]
 	\centering
     \includegraphics[angle=0,width=0.9\textwidth]{./figures/数据结构上半区.png}
-	\caption{(a),Particle information storage table Home Cell and Neighbor Cell storage relationship.
-		(b), The storage relationship between Home Cell and Neighbor Cell in the particle information storage table, the data length is 512 bits, and the data is mainly composed of six parts.
-		(c), the data structure of the particle information storage table Home Cell, the data length of the Home Cell is 512 bits bit width, and the non-data part needs to be zeroed in to facilitate the addressing
-		(d), particle pair computational information cache, data bit width is 256 bits bit width, since each Home Cell data is pre-computed with the first 13 Neighbor Cells}
+	\caption{
+        (a) Particle information storage table Home Cell and Neighbor Cell storage relationship.
+		(b) The storage relationship between Home Cell and Neighbor Cell in the particle information storage table, the data length is 512 bits, and the data is mainly composed of six parts.
+		(c) The data structure of the particle information storage table Home Cell, the data length of the Home Cell is 512 bits bit width, and the non-data part needs to be zeroed in to facilitate the addressing
+		(d) Particle pair computational information cache, data bit width is 256 bits bit width, since each Home Cell data is pre-computed with the first 13 Neighbor Cells}
 \end{sidewaysfigure}
 
 
@@ -203,6 +235,7 @@ Each particle occupies one row of storage space. The length of the data cell is 
 
 Particle information storage table HomeCell and NeighborCell storage relationship, the data length is 512bits bit width, non-data part needs to make up the zero to it for facilitating addressing and searching, the data is mainly composed of 6 parts, each part of the bit width of the corresponding storage, the starting position for the data type lookup code, followed by the storage relationship between the Cells, the data type A part for the Proofreading part, the user-defined logic needs to get the type of data block according to the identification code, and do the corresponding calculation, the cell serial number is to encode each Cell in the simulation system, to ensure that each Cell has an independent identification code, the cell coordinate is the position of each Cell in the spatial coordinate system, and the cell particle serial number is the particle serial number of each particle in the simulation system.
 The particle information is stored in the HomeCell data structure, the data length of HomeCell is 512bits bit width, and the non-data part needs to be complementary zero for it so as to facilitate addressing and searching, the data mainly consists of 6 parts, and the corresponding bit width of each part is reserved for storing, and the starting position is the data type lookup code, and the next one is the particle information. The charge, velocity and coordinate information of each particle is stored in 32bits floating point numbers.
+
 Particle pair computation information is cached in the global memory with a bit width of 256bits. Since each HomeCell is precomputed with the first 13 Neighbor Cells, and there are still 13 Neighbor Cells left to be computed, the computation information of particle pairs needs to be cached in the global memory.
 
 \begin{figure}[H]
@@ -225,12 +258,8 @@ Each particle's force cache is of the same size, and the storage structure is sh
 \end{figure}
 
 
-
-
-
-
-
-Proximity force direct calculation unit module block diagram, assuming that particle i and particle j through the particle screening module, in a certain range of action need to calculate the short-range force of particle pairs, particle pairs through the DSP computing pipeline direct calculation, the calculation result is a single-precision floating-point number, using the Xilinx floating-point number calculation unit, this way of calculating the accuracy is relatively high, the consumption of DSP resources is more. The particles first go through the floating-point subtraction IP output multiplication IP to calculate 2. In the hardware floating-point calculation, opening the root sign needs to consume a lot of logic resources, so we calculate the inter-particle interaction force, transform the formula form, and use 2 to do multi-level multiplication to calculate 14 and 8 in place of  13 and 7, which replaces the floating-point computation IP open-root operation. Using the open-root number to handle another Coulomb force calculation pipeline, parallel computation does not interfere with each other in the computation time, the data is output to the last step after floating-point number multiplication and division calculation IP, and the corresponding particle parameters are read from the memory, such as A, B and other parameters in Fig. After the calculation, the results for the LJ force and the Coulomb short-range force.
+Proximity force direct calculation unit module block diagram, assuming that particle i and particle j through the particle screening module, in a certain range of action need to calculate the short-range force of particle pairs, particle pairs through the DSP computing pipeline direct calculation, the calculation result is a single-precision floating-point number, using the Xilinx floating-point number calculation unit, this way of calculating the accuracy is relatively high, the consumption of DSP resources is more. The particles first go through the floating-point subtraction IP output multiplication IP to calculate 2. 
+In the hardware floating-point calculation, opening the root sign needs to consume a lot of logic resources, so we calculate the inter-particle interaction force, transform the formula form, and use 2 to do multi-level multiplication to calculate 14 and 8 in place of  13 and 7, which replaces the floating-point computation IP open-root operation. Using the open-root number to handle another Coulomb force calculation pipeline, parallel computation does not interfere with each other in the computation time, the data is output to the last step after floating-point number multiplication and division calculation IP, and the corresponding particle parameters are read from the memory, such as A, B and other parameters in Fig. After the calculation, the results for the LJ force and the Coulomb short-range force.
 
 
 \begin{figure}[H]
@@ -260,7 +289,7 @@ Otherwise, they are ignored. Since the spatial center distance of adjacent cells
 \begin{equation}
     F^{RL}/r_{ij} = A_{ab} r_{ij}^{-14} 
                   + B_{ab} r_{ij}^{-8} 
-                  + QQ_{ab}r_{ij}^{-3}
+                  + Q_{ab}r_{ij}^{-3}
 \end{equation}
 
  
@@ -278,11 +307,13 @@ wthere,
 
  
 \begin{equation}
-    QQ_{ab} = \frac{q^a q^b}{4 \pi \varepsilon}
+    Q_{ab} = \frac{q^a q^b}{4 \pi \varepsilon}
 \end{equation}
   
   
-  In this design, $R^{-14}$, $R^{-8}$ and $R^{-3}$ are used in the formula of proximity force. In this design, $R^2$ is used as the output, and all the interpolating functions of the above three functions are created, which are reduced to low-order monic polynomials and then brought into $R^2$ to compute the original values, thus simplifying the computation process and reducing the consumption of DSP resources. The generation of the interpolating function should not only reduce the computational complexity, but also ensure that the accuracy of the computation meets the design requirements.
+In this design, $R^{-14}$, $R^{-8}$ and $R^{-3}$ are used in the formula of proximity force. 
+In this design, $R^2$ is used as the output, and all the interpolating functions of the above three functions are created, which are reduced to low-order monic polynomials and then brought into $R^2$ to compute the original values, thus simplifying the computation process and reducing the consumption of DSP resources. 
+The generation of the interpolating function should not only reduce the computational complexity, but also ensure that the accuracy of the computation meets the design requirements.
 
 The $R^{-14}$, $R^{-8}$ and $R^{-3}$ can be fitted using a multi-order interpolation function of the form:
 
@@ -290,7 +321,7 @@ The $R^{-14}$, $R^{-8}$ and $R^{-3}$ can be fitted using a multi-order interpola
 \begin{equation}
 \begin{array}{c}
  f(x) = C_{0}+C_{1}(x-a)+C_{2}(x-a)^2 +C_{3}(x-a)^3 + \cdots \\ 
- +C_{p}(x-a)^p +o(x^p)
+ + C_{p}(x-a)^p +o(x^p)
 \end{array}
 \end{equation}
 
@@ -316,9 +347,17 @@ f^{'} (x_{1}) = 2cx_{1}  +b \\
 \end{equation}
 
 
-Assuming a fit to $R^{-14}$ with $R^{2}$ as the variable, the form of the equation can be simplified to $y( x ) = x^{-7}$. The $y( x )$ function is monotonically decreasing in the range where x is greater than zero and very steep in the interval x( 0, 1]. The design requires values of $y( x )$ in the range $x [0.1, 144]$. The greater the number of interpolation points and the smaller the intervals, the higher the computational accuracy, but the greater the number of segmented functions formed between the interpolation points, the larger the capacity of the coefficient table. In addition, the higher the order of the interpolation function, the stronger the ability to track the function curve changes, the higher the accuracy, the more computing and storage resources consumed. Therefore, we need to make a compromise according to the actual situation. We use Python to compare and analyze the order of the interpolation function and the number and distribution of the interpolation points, and choose the second-order polynomial interface to meet the design requirements if the relative error is better than one-thousandth of a degree, and the polynomial library of Numpy provides the coefficients of polynomials fitting functions, which can be directly specified to the required order, and the results are comparable to those of the orthogonal polynomials such as Legendre's. The results are similar to those of the orthogonal polynomials. The results are similar to those of orthogonal polynomials such as Legendre. Our final choice is the result of the calculation:
+Assuming a fit to $R^{-14}$ with $R^{2}$ as the variable, the form of the equation can be simplified to $y( x ) = x^{-7}$.
+The $y( x )$ function is monotonically decreasing in the range where x is greater than zero and very steep in the interval x( 0, 1]. The design requires values of $y( x )$ in the range $x [0.1, 144]$.
+The greater the number of interpolation points and the smaller the intervals, the higher the computational accuracy, but the greater the number of segmented functions formed between the interpolation points, the larger the capacity of the coefficient table.
+In addition, the higher the order of the interpolation function, the stronger the ability to track the function curve changes, the higher the accuracy, the more computing and storage resources consumed.
+Therefore, we need to make a compromise according to the actual situation.
+We use Python to compare and analyze the order of the interpolation function and the number and distribution of the interpolation points, and choose the second-order polynomial interface to meet the design requirements if the relative error is better than one-thousandth of a degree, and the polynomial library of Numpy provides the coefficients of polynomials fitting functions, which can be directly specified to the required order, and the results are comparable to those of the orthogonal polynomials such as Legendre's. The results are similar to those of the orthogonal polynomials. 
+The results are similar to those of orthogonal polynomials such as Legendre. Our final choice is the result of the calculation:
 
-The x interval is divided into 8 segments, as shown in the table, of which the first 7 segments, each segment is divided into 16 small segments, and the last segment, divided into 128 small segments, a total of 240 interpolation functions. Each interpolation function requires 3 coefficients, expressed as single-precision floating-point numbers. The interpolation table for each function can be fully stored using a 4KB BRAM.
+The x interval is divided into 8 segments, as shown in the table, of which the first 7 segments, each segment is divided into 16 small segments, and the last segment, divided into 128 small segments, a total of 240 interpolation functions.
+Each interpolation function requires 3 coefficients, expressed as single-precision floating-point numbers.
+The interpolation table for each function can be fully stored using a 4KB BRAM.
 
 The calculation of the proximity force also requires a table of coefficients for Aab and Bab, which need to be combined two by two for the particle types, so that if there are N independent particle types, the length of the table will be $N^2$ items. After analyzing the simulation dataset, there are no more than 32 independent particle types, and the depth of the coefficient table is no more than 1024 items. The coefficients are expressed as single-precision floating-point numbers, and the coefficient table can be stored in 8KB BRAM.
 
@@ -352,10 +391,16 @@ The inputs to the third-order interpolating proximity force calculation unit are
 	\caption{The particle computing progress monitoring module is composed of several modules}
 \end{figure}
 
-The particle computing progress supervision module consists of several modules, module 1 is a two-dimensional matrix, the serial number of the Neighbor Cell corresponding to each Home Cell needs to be cached in the two-dimensional matrix, and the size of the two-dimensional matrix is determined by the Cell number. The size of the 2D matrix is determined by the cell number. Module 2 Home Cell Calculation Matrix consists of a 1D matrix, which is convenient for data search and comparison.
+The particle computing progress supervision module consists of several modules. 
+Module 1 is a two-dimensional matrix, the serial number of the Neighbor Cell corresponding to each Home Cell needs to be cached in the two-dimensional matrix, and the size of the two-dimensional matrix is determined by the Cell number. 
+The size of the 2D matrix is determined by the cell number. 
+Module 2 Home Cell Calculation Matrix consists of a 1D matrix, which is convenient for data search and comparison.
 
-Module 3 is a comparison circuit, the data is polled by the Home Cell. Module 3 is the comparison circuit. After comparing the data in Modules 1 and 2, the Home Cell that meets the conditions will be selected by the comparison module. Module 4 is the Mark Table Control Module, which monitors the sequence of each Home Cell data, and consists of several counters in this module. Module 5 is the data read/write module.
-Module 5 is the data read/write module, the selected Cell needs to read the corresponding external storage address to access the particle information. Module 7 is the external storage device, the particle storage information is large, each Cell and the remaining 13 neighbor cells cumulative process needs to access 13 data blocks. Module 6 is the data accumulation module, which completes the process of accumulating the selected cell with the remaining 13 neighbor cells.
+Module 3 is the comparison circuit, the data is polled by the Home Cell.. After comparing the data in Modules 1 and 2, the Home Cell that meets the conditions will be selected by the comparison module. 
+Module 4 is the Mark Table Control Module, which monitors the sequence of each Home Cell data, and consists of several counters in this module. 
+Module 5 is the data read/write module, the selected Cell needs to read the corresponding external storage address to access the particle information. 
+Module 6 is the data accumulation module, which completes the process of accumulating the selected cell with the remaining 13 neighbor cells.
+Module 7 is the external storage device, the particle storage information is large, each Cell and the remaining 13 neighbor cells cumulative process needs to access 13 data blocks. 
 
 
 \section{Result}
@@ -439,17 +484,37 @@ Each RL module uses approximately one $R^2$ computational unit for particle pair
 
 
 
-\section{Conclusion}
+\section{Conclusions}
 
-In MD hardware design, the finite-range interaction force is one of the modules that can best reflect the parallelism of the hardware, this design adopts the classical acceleration algorithms such as the proximity list lookup method, and synthesizes the performance of each expansion module of the FPGA device to make a reasonable design of the module. In the process of particle-pair interaction force calculation, a large amount of intermediate computational data will be generated, which need to be reasonably spliced and cached, relying only on chip memory is far from enough.
+\noindent
+In MD hardware design, the finite-range interaction force is one of the modules that can best reflect the parallelism of the hardware, this design adopts the classical acceleration algorithms such as the proximity list lookup method, and synthesizes the performance of each expansion module of the FPGA device to make a reasonable design of the module. 
+In the process of particle-pair interaction force calculation, a large amount of intermediate computational data will be generated, which need to be reasonably spliced and cached, relying only on chip memory is far from enough.\\
 
-In this chapter, the basic definition, main characteristics and development history of FPGA are summarized, and compared and analyzed with general-purpose processors. An all-hardware module is designed to accelerate the calculation of molecular dynamics, which is aimed at increasing the calculation speed, and the pipeline technique is used to optimize the allocation of tasks in the whole parallel system. The Single Instruction Multiple Data Stream (SIMD) approach is utilized to significantly improve the computational efficiency. At the same time, we have built a software framework dedicated to this scheme, which can be used to accelerate the data processing of the circuit.
+\noindent
+In this chapter, the basic definition, main characteristics and development history of FPGA are summarized, and compared and analyzed with general-purpose processors. 
+An all-hardware module is designed to accelerate the calculation of molecular dynamics, which is aimed at increasing the calculation speed, and the pipeline technique is used to optimize the allocation of tasks in the whole parallel system. 
+The Single Instruction Multiple Data Stream (SIMD) approach is utilized to significantly improve the computational efficiency. At the same time, we have built a software framework dedicated to this scheme, which can be used to accelerate the data processing of the circuit.\\
 
-To better exploit its parallel potential, we comprehensively compare existing high-speed interfaces and memory devices, and comparatively analyze existing high-speed architectural designs. The new generation of high-bandwidth memories, such as HBM2 memories, are used to fully compare the impact of existing memory structures on computational performance in MD design. A lot of work has been done using DDR4 high-speed interface, and the computation uses polling algorithm to improve the access efficiency. The new generation of high-speed and high-bandwidth multi-parallel interface HBM memory is adopted, so that the read and write access to external mass storage can be completed while the parallel computation of multi-path data. The optimized design of the underlying RTL circuits fundamentally improves the efficiency of data read and write registers, and more than doubles the efficiency of reading and writing external storage. Therefore, the rational use of external mass memory devices is fully considered in the design process. We selected the same cloud platform Xilinx UV9P chip, in the design of the DDR4 and HBM2 two relatively efficient memory, because in the MD calculation there are a large number of intermediate computational data, which write data directly related to the particle information, so the storage of data need to be stored in an independent storage interval, the DDR is a single read-write channel, the HBM support for 32 independent read-write channels, which for the Particle computing read/write storage space greatly improves the data throughput efficiency. The use of multi-channel computation improves the efficiency of particle reading and writing to external memory, but the consumption of on-chip resources by the read/write driver needs to be fully considered. We adopt the progress proofreading module to supervise the multi-channel data to ensure the orderly reading and writing of data.
+\noindent
+To better exploit its parallel potential, we comprehensively compare existing high-speed interfaces and memory devices, and comparatively analyze existing high-speed architectural designs.
+The new generation of high-bandwidth memories, such as HBM2 memories, are used to fully compare the impact of existing memory structures on computational performance in MD design.
+A lot of work has been done using DDR4 high-speed interface, and the computation uses polling algorithm to improve the access efficiency.
+The new generation of high-speed and high-bandwidth multi-parallel interface HBM memory is adopted, so that the read and write access to external mass storage can be completed while the parallel computation of multi-path data. 
+The optimized design of the underlying RTL circuits fundamentally improves the efficiency of data read and write registers, and more than doubles the efficiency of reading and writing external storage. Therefore, the rational use of external mass memory devices is fully considered in the design process. 
+We selected the same cloud platform Xilinx UV9P chip, in the design of the DDR4 and HBM2 two relatively efficient memory, because in the MD calculation there are a large number of intermediate computational data, which write data directly related to the particle information, so the storage of data need to be stored in an independent storage interval, the DDR is a single read-write channel, the HBM support for 32 independent read-write channels, which for the Particle computing read/write storage space greatly improves the data throughput efficiency.
+The use of multi-channel computation improves the efficiency of particle reading and writing to external memory, but the consumption of on-chip resources by the read/write driver needs to be fully considered. We adopt the progress proofreading module to supervise the multi-channel data to ensure the orderly reading and writing of data.\\
 
-For the same MD simulation system, the data are "sliced" by matching the computational nodes and sent to the designated computational unit. The computation unit needs to adopt a reasonable floating-point computation mode. In this design, we compare a variety of numerical computation models, using multi-order linear interpolation, respectively, for the first-order, second-order, third-order computation models, each section of the fitted curve to do a reasonable cut modeling, such as the above $X ^ {-7} $, to build the numerical interpolation table. The interpolation table is transferred to the on-chip memory via high-speed AXI lite protocol, which ensures high computational efficiency. At the same time, HLS advanced compilation means and RTL design means are used, and finally RTL design circuits are used to ensure computational efficiency. The interpolation algorithms are compared with Newtonian interpolation, Hamiltonian interpolation and Legendre interpolation.
+\noindent
+For the same MD simulation system, the data are "sliced" by matching the computational nodes and sent to the designated computational unit.
+The computation unit needs to adopt a reasonable floating-point computation mode. In this design, we compare a variety of numerical computation models, using multi-order linear interpolation, respectively, for the first-order, second-order, third-order computation models, each section of the fitted curve to do a reasonable cut modeling, such as the above $X ^ {-7} $, to build the numerical interpolation table. 
+The interpolation table is transferred to the on-chip memory via high-speed AXI lite protocol, which ensures high computational efficiency. 
+At the same time, HLS advanced compilation means and RTL design means are used, and finally RTL design circuits are used to ensure computational efficiency. 
+The interpolation algorithms are compared with Newtonian interpolation, Hamiltonian interpolation and Legendre interpolation.\\
 
-After the same MD simulation system has been divided into chunks, it is necessary to design a reasonable proximity force computation supervision module, which needs to record the computational progress of each module data. Assuming that a simulation system is divided into 1000 or more sub-Cells, and at the same time, the means of separate computation in the upper and lower hemispheres are used, which undoubtedly increases the difficulty of designing the supervision module. We adopt a multi-level supervision means to ensure that the computation is carried out efficiently.
+\noindent
+After the same MD simulation system has been divided into chunks, it is necessary to design a reasonable proximity force computation supervision module, which needs to record the computational progress of each module data. 
+Assuming that a simulation system is divided into 1000 or more sub-Cells, and at the same time, the means of separate computation in the upper and lower hemispheres are used, which undoubtedly increases the difficulty of designing the supervision module. 
+We adopt a multi-level supervision means to ensure that the computation is carried out efficiently.\\
 
 
 
@@ -473,7 +538,7 @@ ded Systems Letters, 2024: 1-1.
 
  \bibitem{ref7}  HARKISHANKA A, PRAKASH A, GUPTA N, et al. Hardware software co design of k-means clustering algorithm[C]//2023 9th International Conference on Signal Processing and Communication (ICSC). 2023: 688-693.
  
- \bibitem{ref8} SHAW D E, DENEROFF M M, DROR R O, et al. Anton, a special-purpose machine for MD simulation[J]. Commun. ACM, 2008, 51(7):91–97.
+ \bibitem{ref8} SHAW D E, DENEROFF M M, DROR R O, et al. Anton, a special-purpose machine for MD simulation[J]. Commun. ACM, 2008, 51(7):91-97.
 
  \bibitem{ref9} HE Z,PARRAVICINID,PETRICAL,etal. Accl: Fpga-accelerated collectives
 over 100 gbps tcp-ip[C]//2021 IEEE/ACM International Workshop on Heteroge
