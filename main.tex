@@ -143,7 +143,7 @@ First, the simulation data set is preprocessed, which is realized by the CPU sof
 
 \begin{figure*}[ht]
 \centering
-\includegraphics[angle=0,width=1.0\textwidth]{./figures/Neighboursegment.png}
+\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig1_Neighboursegment.png}
 \caption{ The protein structure and cuboid simulated water box were cut into Cells of equal size by Verlet algorithm.
 Among them, Home Cell and the surrounding 26 Neighbor cells, of which the upper and lower two are divided into "upper hemisphere" and "lower hemisphere".}
 \end{figure*}
@@ -180,7 +180,7 @@ Combined with the implementation block diagram above, the processing flow of dat
 
 \begin{figure*}[ht]
 \centering
-\includegraphics[angle=0,width=1.0\textwidth]{./figures/有限范围作用力计算模块的实现框图.png}
+\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig2_top_module_a_b.png}
 \caption{Block diagram of the implementation of the finite range force calculation module. Module b, for a single FPGA acceleration card, the user logic resources MD hardware computation is mainly divided into short-range force force, long-range force force and covalent bonding force three kinds of processing units. Module a,The whole RL module is composed in each sub-module of the frame.}
 \end{figure*}
 
@@ -195,7 +195,7 @@ The proximity force calculation unit contains several calculation pipelines to m
 
 \begin{figure}[ht]
 \centering
-\includegraphics[angle=0,width=0.5\textwidth]{./figures/HBM.png}
+\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig3_HBM.png}
 \caption{Data is read and written using HBM memory}
 \end{figure}
 
@@ -211,13 +211,13 @@ Module 5 is the computation progress supervision module for multiple short-range
 
 \begin{figure}[ht]
 \centering
-\includegraphics[angle=0,width=0.4\textwidth]{./figures/onecache.png}
+\includegraphics[angle=0,width=0.4\textwidth]{./figures/Fig4_onecache.png}
 \caption{Data cached at the same address, multiple channels read simultaneously}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-\includegraphics[angle=0,width=0.4\textwidth]{./figures/twocache.png}
+\includegraphics[angle=0,width=0.4\textwidth]{./figures/Fig5_twocache.png}
 \caption{Data cached at the different address, multiple channels read simultaneously}
 \end{figure}
 
@@ -226,7 +226,7 @@ Module 5 is the computation progress supervision module for multiple short-range
 
 \begin{sidewaysfigure}[p]
 	\centering
-    \includegraphics[angle=0,width=0.9\textwidth]{./figures/数据结构上半区.png}
+    \includegraphics[angle=0,width=0.9\textwidth]{./figures/Fig6_Upper_half_of_data_structures.png}
 	\caption{
         (a) Particle information storage table Home Cell and Neighbor Cell storage relationship.
 		(b) The storage relationship between Home Cell and Neighbor Cell in the particle information storage table, the data length is 512 bits, and the data is mainly composed of six parts.
@@ -247,7 +247,7 @@ Particle pair computation information is cached in the global memory with a bit 
 
 \begin{figure}[H]
 \centering
-\includegraphics[angle=0,width=1.0\textwidth]{./figures/数据结构下半区.png}
+\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig7_lower_half_of_data_structures.png}
 \caption{(a) The Home Cell and the remaining 13 neighbor cells accumulate the results, and the data needs to be filtered a lot before the particles in the corresponding cell can calculate the final short-range force. 
 (b) The block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, and the storage length of each particle information is 512 bits.Block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, the storage length of each particle information is 256bits, and the calculation result of each step is stored in a specific storage space, which is carried by the CPU for the remaining calculation processing.}
 \end{figure}
@@ -267,7 +267,7 @@ There are three types of force vector data in the cache: the first one is the pa
 
 \begin{figure}[H]
 \centering
-\includegraphics[angle=0,width=0.5\textwidth]{./figures/近程力直接计算单元模块框图.png}
+\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig8_force_direct_calculation_unit_module.png}
 \caption{The block diagram of the direct calculation module, assuming that particle i and particle j have gone through the particle screening module, and the short-range force of the particle pairs needs to be calculated within a certain range of action. The particle pairs are calculated directly by the DSP calculation pipeline, and the calculation results are single-precision floating-point numbers, which are calculated by the Xilinx floating-point number calculation unit, which is a relatively high-precision calculation method that consumes a large amount of DSP resources.}
 \end{figure}
 
@@ -278,7 +278,7 @@ In the hardware floating-point calculation, opening the root sign needs to consu
 
 \begin{figure}[H]
 \centering
-\includegraphics[angle=0,width=0.5\textwidth]{./figures/三阶线性插值.png}
+\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig9_Third_order_linear_interpolation.png}
 \caption{The figure shows the framework diagram of the second-order interpolation table DSP processing flow, the information of each particle is read from the parameter cache, after the arbitration of the parameter selector, the particle pairs go through the distance judgment, and the particles within the computation range enter into the force computation channel, assuming that the particles to be computed are particle i and particle j. }
 \end{figure}
 
@@ -401,7 +401,7 @@ The inputs to the third-order interpolating proximity force calculation unit are
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.7\textwidth]{./figures/marktable.png}
+	\includegraphics[width=0.7\textwidth]{./figures/Fig10_marktable.png}
 	\caption{The particle computing progress monitoring module is composed of several modules}
 \end{figure}
 
@@ -486,13 +486,13 @@ Each RL module uses approximately one $R^2$ computational unit for particle pair
 
 \begin{figure}[H]
 \centering
-\includegraphics[angle=0,width=0.5\textwidth]{./figures/result_1_资源.png}
+\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig11_result.png}
 \caption{(a) shows one RL module layout wiring diagram, (b) shows two RL module layout wiring diagrams}
 \end{figure}
 
  \begin{figure}[H]
 	\centering
-	\includegraphics[angle=0,width=1.0\textwidth]{./figures/fpga_fft_64.png}
+	\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig12_fpga_fft_64.png}
 	\caption{18,000 Argon  gas particles, using Inspur FPGA accelerator card plus OpenMM software interface for calculation results, data energy calculation results. (a) is the overall Energy Waveform.}
 \end{figure}
 
