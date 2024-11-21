@@ -51,6 +51,11 @@ These individual atoms through the interaction to achieve the system balance sta
 The process by which these particles move in the spatial and temporal scales of Newtonian mechanics and tend to minimize the energy balance is a kinetic simulation\cite{ref2}.\\
 
 \noindent
+
+Several research organizations around the world use dedicated computing hardware nodes to build large molecular dynamics clusters. For example, the commercial ANTON supercomputer Generation I , ANTON Generation II, and ANTON Generation III in the U.S. all utilize the ASIC process and have up to 512 nodes of dedicated clusters. However, the ANTON series of supercomputers are expensive to design, have long commissioning and development cycles, and the cluster is not open in several regions of the world. Japan's MD-grape series started related research work in the late 1980s. It uses MCUs, CPLDs (Complex Programmable Logic Device), FPGAs, and other acceleration circuits to build a multi-node design, and combines it with a specialized fiber-optic transmission network to form a large-scale computational cluster.MD-grape has been developed for four generations, and its hardware devices are constantly updated and iterated, but the design cost is very high. Martin, an academic at Boston, collaborated with Intel Corporation on to create a large molecular dynamics cluster of the Novo-G series, and used commercial FPGA accelerator cards of the Intel series  to optimize the molecular dynamics computational efficiency in multiple dimensions from a combination of hardware and software perspectives.
+
+
+\noindent
 Currently available hardware design platforms include FPGAs (Field Programmable Gate Array) and ASICs (Application Specific Integrated Circuit), which are process-cured logic circuits, and FPGAs are integrated chips designed for commercial applications.
 Additional, existing FPGA manufacturing processes are capable of achieving nanometer sizes of 3 nm or less\cite{ref3,ref18}. 
 Although FPGAs are less dense and more slower than ASICs, they are more flexible in design, more cost-effective, and more economical in terms of power consumption compared to other devices\cite{ref3}.
