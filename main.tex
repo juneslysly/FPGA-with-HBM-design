@@ -24,6 +24,9 @@
 \begin{document}
 \maketitle
 
+%
+% abstract
+%
 \begin{abstract}
 
 \noindent
@@ -48,12 +51,15 @@ These individual atoms through the interaction to achieve the system balance sta
 The process by which these particles move in the spatial and temporal scales of Newtonian mechanics and tend to minimize the energy balance is a kinetic simulation\cite{ref2}.\\
 
 \noindent
-Currently available hardware design platforms include FPGAs (Field Programmable Gate Array) and ASICs (Application Specific Integrated Circuit), which are process-cured logic circuits, and FPGAs are integrated chips designed for commercial applications.Additional, existing FPGA manufacturing processes are capable of achieving nanometer sizes of 3 nm or less\cite{ref3,ref18}. 
+Currently available hardware design platforms include FPGAs (Field Programmable Gate Array) and ASICs (Application Specific Integrated Circuit), which are process-cured logic circuits, and FPGAs are integrated chips designed for commercial applications.
+Additional, existing FPGA manufacturing processes are capable of achieving nanometer sizes of 3 nm or less\cite{ref3,ref18}. 
 Although FPGAs are less dense and more slower than ASICs, they are more flexible in design, more cost-effective, and more economical in terms of power consumption compared to other devices\cite{ref3}.
 FPGAs incorporate a variety of unique production techniques, such as the FLASH process and the reverse fusion process, which allow them to support multiple recasts and debugs in the commercial sector to accommodate different experimental design needs\cite{ref22}. 
-In the chip design phase, FPGA design is regarded as the core of prototyping, which also means that FPGA circuit design has great potential for practical application in the later stage of curing into an ASIC process\cite{ref3,ref18}. An important step in the MD simulation process is the updating of the system state at each moment.
+In the chip design phase, FPGA design is regarded as the core of prototyping, which also means that FPGA circuit design has great potential for practical application in the later stage of curing into an ASIC process\cite{ref3,ref18}. 
+An important step in the MD simulation process is the updating of the system state at each moment.
 This means that the forces on all particles in the system are calculated at one time step, and then the position and velocity of each particle at the next time step are calculated by an integrator\cite{ref22}.
-This cycle completes the simulation. The calculation of the forces on the particles is crucial to the accuracy of the MD results, and the calculation of the inter-particle interactions is the decisive speed step in the program\cite{ref6}.\\
+This cycle completes the simulation. 
+The calculation of the forces on the particles is crucial to the accuracy of the MD results, and the calculation of the inter-particle interactions is the decisive speed step in the program\cite{ref6}.\\
 
 \noindent
 Different impact of memories on the overall design.In this study, the basic definition of FPGA, its main characteristics and its development history are summarized and compared with general-purpose processors. 
@@ -79,9 +85,10 @@ The interpolation algorithm is compared with Newtonian interpolation, Hamiltonia
 After the same MD simulation system is divided into several blocks, a reasonable proximity force calculation supervision module needs to be designed, which needs to record the computational progress of the data in each block. 
 Assuming that a simulation system is divided into 1000 or more sub units and that the upper and lower hemispheres are computed separately, the design of the supervision module would be difficult. We use a multilevel supervision approach to ensure that the data in each sub unit is accurate during the computation.\\
 
+
 \section{Theoretical background}
 
-\subsection{Classic force field}
+\subsection{Classic force field???}
 
 \noindent
 MD program can divided into four parts.
@@ -524,88 +531,12 @@ Assuming that a simulation system is divided into 1000 or more sub-Cells, and at
 We adopt a multi-level supervision means to ensure that the computation is carried out efficiently.\\
 
 
-
-\begin{thebibliography}{99}  
-	
-\bibitem{ref1} RAPAPORTDC. The art of MD simulation[M]. 2nd ed. Cambridge University Press, 2004 
-
-\bibitem{ref2}KUMAR G, MISHRA R R, VERMA A. Introduction to MD simulations[M]. Singapore: Springer Nature Singapore, 2022: 1-19. 
-
-\bibitem{ref3} CABRERA A M, YUCESAN Y A, LIU F Y, et al. Errant beam detection using the amd versal acap and vitis ai[C]//2023 IEEE High Performance Extreme Computing Conference (HPEC). 2023: 1-6.  
-
-\bibitem{ref4} LITZH,FRONINGH,THURMERM,etal. An fpga base dverification platform for hypertransport3.x[C]//2009 International Conferenceon Field Programmable Logic and Applications. 2009: 631-634.
-
- \bibitem{ref5}  SHENG J, YANG C, SANAULLAH A, et al. Hpc on fpga clouds: 3d ffts and
- implications for molecular dynamics[C]//2017 27th International Conference on
- Field Programmable Logic and Applications (FPL). 2017: 1-4.
-
-\bibitem{ref6}   NAGARMS,MATHURIYAA,PATELSH,etal. High-speedenergy-efficientf
- ixed-point signed multipliers for fpga-based dsp applications[J]. IEEE Embed
-ded Systems Letters, 2024: 1-1.
-
- \bibitem{ref7}  HARKISHANKA A, PRAKASH A, GUPTA N, et al. Hardware software co design of k-means clustering algorithm[C]//2023 9th International Conference on Signal Processing and Communication (ICSC). 2023: 688-693.
- 
- \bibitem{ref8} SHAW D E, DENEROFF M M, DROR R O, et al. Anton, a special-purpose machine for MD simulation[J]. Commun. ACM, 2008, 51(7):91-97.
-
- \bibitem{ref9} HE Z,PARRAVICINID,PETRICAL,etal. Accl: Fpga-accelerated collectives
-over 100 gbps tcp-ip[C]//2021 IEEE/ACM International Workshop on Heteroge
-neous High-performance Reconfigurable Computing (H2RC). 2021: 33-43.
+\clearpage
+%
+% Reference
+%
+\bibliographystyle{plain}
+\bibliography{main}
 
 
- \bibitem{ref10}  KAUTH K, STADTMANN T, SOBHANI V, et al. neuroaix: Fpga cluster for
-reproducible and accelerated neuroscience simulations of snns[C]//2023 IEEE
-Nordic Circuits and Systems Conference (NorCAS). 2023: 1-7.
-
-
- \bibitem{ref11} TOMORI A, OSANA Y. Kyokko: a virtual channel capable aurora 64b/66b
-compatible serial communication controller[C]//2023 International Conference
-on Field Programmable Technology (ICFPT). 2023: 268-269.
-
-
- \bibitem{ref12} LI W X, CHEUNG R C, ZHANG W, et al. Fpga architecture of generalized
-laguerre-volterra mimo model for neural population spiking activities[C]//2011
-IEEE 19th Annual International Symposium on Field-Programmable Custom
-Computing Machines. 2011: 254-254.
-
-
- \bibitem{ref13} KILTS S. Advanced fpga design: Architecture, implementation, and optimiza
-tion[M]. Wiley-IEEE Press, 2007.
-
-
- \bibitem{ref14} DEEVAA,KALSHCHIKOVAA. Synchronousexecutionofprograminstruc
-tions in a distributed data transmission network based on fpga[C]//2023 5th In
-ternational Youth Conference on Radio Electronics, Electrical and Power Engi
-neering (REEPE): Vol. 5. 2023: 1-5.
-
-
- \bibitem{ref15} CINTAS-CANTO A, KERMANI MM,AZARDERAKHSHR. Reliable archi
-tectures for finite field multipliers using cyclic codes on fpga utilized in classic
-and post-quantum cryptography[J]. IEEE Transactions on Very Large Scale In
-tegration (VLSI) Systems, 2023, 31(1): 157-161.
-
-
- \bibitem{ref16} SINGHS, SINGHVK. MD simulation: Methods and applica
-tion[M]. Singapore: Springer Singapore, 2020: 213-238.
-
-
- \bibitem{ref17} JONESD,ALLENJE,YANGY,etal.  Accelerators for classical molecular dy
-namics simulations of biomolecules[J]. Journal of Chemical Theory and Com
-putation, 2022, 18(7): 4047-4069.
- 
- 
-  \bibitem{ref18}  M. Choi, X. Xu and V. Moroz, "Modeling Performance and Thermal Induced Reliability Issues of a 3nm FinFET Logic Chip Operation in a Fan-Out and a Flip-Chip Packages," 2019 18th IEEE Intersociety Conference on Thermal and Thermomechanical Phenomena in Electronic Systems (ITherm), Las Vegas, NV, USA, 2019, pp. 107-112, doi: 10.1109/ITHERM.2019.8757442.
- 
- \bibitem{ref19}  Y. Gui, Q. Wu, W. Yuan, H. Liang, X. Wang and X. Jin, "A FPGA-HBM-Based Hardware Streaming Accelerator for GNN Sampling," 2024 IEEE 35th International Conference on Application-specific Systems, Architectures and Processors (ASAP), Hong Kong, Hong Kong, 2024, pp. 77-78, doi: 10.1109/ASAP61560.2024.00026.
- 
-  \bibitem{ref20}   S. Jayaraman, B. Zhang and V. Prasanna, "Hypersort: High-performance Parallel Sorting on HBM-enabled FPGA," 2022 International Conference on Field-Programmable Technology (ICFPT), Hong Kong, 2022, pp. 1-11, doi: 10.1109/ICFPT56656.2022.9974209.
- 
-  \bibitem{ref21}   V. C. Nguyen and Y. Nakashima, "Analysis of Fully-Pipelined CNN Implementation on FPGA and HBM2," 2021 Ninth International Symposium on Computing and Networking Workshops (CANDARW), Matsue, Japan, 2021, pp. 134-137, doi: 10.1109/CANDARW53999.2021.00029.
-
-
-  \bibitem{ref22}   Y. Yang, W. Long, R. Kannan and V. K. Prasanna, "FPGA Acceleration of Rotation in Homomorphic Encryption Using Dynamic Data Layout," 2023 33rd International Conference on Field-Programmable Logic and Applications (FPL), Gothenburg, Sweden, 2023, pp. 174-181, doi: 10.1109/FPL60245.2023.00032.
-  
-  
-  \bibitem{ref23}    L. Weber, J. Wirth, L. Sommer and A. Koch, "Exploiting High-Bandwidth Memory for FPGA-Acceleration of Inference on Sum-Product Networks," 2022 IEEE International Parallel and Distributed Processing Symposium Workshops (IPDPSW), Lyon, France, 2022, pp. 112-119, doi: 10.1109/IPDPSW55747.2022.00028.
-  
-\end{thebibliography}
 \end{document}

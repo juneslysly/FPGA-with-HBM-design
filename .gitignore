@@ -5,7 +5,11 @@ main.fls
 main.log
 main.out
 main.tex
+main.bbl
+main.blg
 
 main.pdf
 
 main.synctex.gz
+
+plot/
