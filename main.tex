@@ -149,8 +149,9 @@ First, the simulation data set is preprocessed, which is realized by the CPU sof
 \begin{figure*}[ht]
 \centering
 \includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig1_Neighboursegment.png}
-\caption{ The protein structure and cuboid simulated water box were cut into Cells of equal size by Verlet algorithm.
-Among them, Home Cell and the surrounding 26 Neighbor cells, of which the upper and lower two are divided into "upper hemisphere" and "lower hemisphere".}
+\caption{ The protein structure (a) and cuboid simulated water box (c) were cut into Cells of equal size by Verlet algorithm (d).
+	Among them, Home Cell and the surrounding 26 Neighbor cells (e), of which the upper and lower two are divided into "upper hemisphere"(f) and "lower hemisphere"(g).
+	(h)According to the Verlet algorithm, the center particle and the surrounding particles can be divided into equal-sized squares according to the values of $Rm$ parameter and $Rcut$ off}
 \end{figure*}
 
 \subsection{Verlet Algorithm}
