@@ -262,7 +262,7 @@ The particle information is stored in the HomeCell data structure, the data leng
 
 Particle pair computation information is cached in the global memory with a bit width of 256bits. Since each HomeCell is precomputed with the first 13 Neighbor Cells, and there are still 13 Neighbor Cells left to be computed, the computation information of particle pairs needs to be cached in the global memory.
 
-\begin{figure}[H]
+\begin{figure}[ht]
 \centering
 \includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig7_lower_half_of_data_structures.png}
 \caption{(a) The Home Cell and the remaining 13 neighbor cells accumulate the results, and the data needs to be filtered a lot before the particles in the corresponding cell can calculate the final short-range force. 
