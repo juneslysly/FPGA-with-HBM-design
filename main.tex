@@ -59,38 +59,52 @@ The MD-GRAPE series has been developed through four generations, and its hardwar
 Furthermore, the Novo-G series, which uses commercial FPGA accelerator cards from the Intel series, optimizes molecular dynamics computational efficiency from both hardware and software perspectives~\cite{Novo-G,Novo-G2}.\\
 % add comment for the Novo-G
 
-% MD difficults
-% current available hardwares
-% our attempts
 \noindent
-%To accelerate MD simulations using hardwares, 
-Currently available hardware design platforms include FPGAs and ASICs , which are process-cured logic circuits, and FPGAs are integrated chips designed for commercial applications.
-Additional, existing FPGA manufacturing processes are capable of achieving nanometer sizes of 3 nm or less\cite{ref3,ref18}. 
-Although FPGAs are less dense and more slower than ASICs, they are more flexible in design, more cost-effective, and more economical in terms of power consumption compared to other devices\cite{ref3}.
-FPGAs incorporate a variety of unique production techniques, such as the FLASH process and the reverse fusion process, which allow them to support multiple recasts and debugs in the commercial sector to accommodate different experimental design needs\cite{ref22}. 
-In the chip design phase, FPGA design is regarded as the core of prototyping, which also means that FPGA circuit design has great potential for practical application in the later stage of curing into an ASIC process\cite{ref3,ref18}. 
-An important step in the MD simulation process is the updating of the system state at each moment.
-This means that the forces on all particles in the system are calculated at one time step, and then the position and velocity of each particle at the next time step are calculated by an integrator\cite{ref22}.
-This cycle completes the simulation. 
-The calculation of the forces on the particles is crucial to the accuracy of the MD results, and the calculation of the inter-particle interactions is the decisive speed step in the program\cite{ref6}.\\
+Although FPGAs are less dense and slower than ASICs, they offer greater design flexibility, are more cost-effective, and consume less power compared to other devices \cite{ref3}. 
+FPGAs incorporate a variety of unique production techniques, such as the FLASH process and the reverse fusion process, which allow them to support multiple reconfigurations and debugs in the commercial sector, accommodating different experimental design needs \cite{ref22}. 
+In the chip design phase, FPGA design is considered the core of prototyping, indicating that FPGA circuit design has significant potential for practical application in the later stages of conversion into an ASIC process \cite{ref3,ref18}. 
+Therefore, using FPGAs to accelerate MD simulations remains a promising approach.\\
 
 \noindent
+Motivated by the desire to accelerate MD simulations, a full hardware module has been designed to speed up all aspects of the MD computation. 
+This module aims to increase computational speed and utilizes pipeline techniques to optimize the allocation of tasks in the entire parallel system \cite{ref12,ref23}. 
+Additionally, we have built a software framework dedicated to SIMD (Single Instruction, Multiple Data) to enhance the data processing capabilities of the circuit. 
+Our work is structured as follows: in Section 2, we revisit the critical algorithms in MD simulations and discuss our considerations for improving their performance. 
+In Section 3, we present the architecture implemented in this work, followed by comparison results that highlight the necessity of our approach. 
+Finally, we demonstrate the results of MD simulations of argon and DHFR using our implementation and compare them with results obtained from OpenMM to validate the correctness of our approach.
+\\
+
+
+%\noindent
+%To accelerate MD simulations using hardwares, memories and design language is also important.
+% these two sentense sould be move to other place
+% An important step in the MD simulation process is the updating of the system state at each moment.
+% This means that the forces on all particles in the system are calculated at one time step, and then the position and velocity of each particle at the next time step are calculated by an integrator\cite{ref22}.
+% This cycle completes the simulation. 
+% The calculation of the forces on the particles is crucial to the accuracy of the MD results, and the calculation of the inter-particle interactions is the decisive speed step in the program\cite{ref6}.\\
+
+%\noindent
 %Different impact of memories on the overall design.
-A full hardware module is designed to accelerate all parts of the MD computation, which is aimed at increasing the speed of computation, and utilizes the pipeline technique to optimize the allocation of tasks in the whole parallel system\cite{ref12,ref23}. 
-A single instruction multiple data stream (SIMD) approach is utilized to significantly improve the computational efficiency. At the same time, we also built a software framework dedicated to this scheme, which can be used to accelerate the data processing of the circuit. 
-To better exploit the parallelism potential, we comprehensively compared existing high-speed interfaces and memory devices, and analyzed existing high-speed architectural designs\cite{ref18,ref21}.
-The new generation of high-bandwidth memories, such as HBM2 memories, are used to fully compare the impact of existing memory structures on computational performance in MD design. 
-A great deal of work has been done using DDR4 high-speed interfaces and polling algorithms to improve access efficiency\cite{ref19,ref20}.
-The new generation of high-speed, high-bandwidth, multi-parallel interface HBM memory is adopted to enable read/write access to external mass storage while parallelizing the computation of multiple data paths\cite{ref6}.\\
+% A single instruction multiple data stream (SIMD) approach is utilized to significantly improve the computational efficiency. 
+% To better exploit the parallelism potential, we comprehensively compared existing high-speed interfaces and memory devices, and analyzed existing high-speed architectural designs\cite{ref18,ref21}.
+% The new generation of high-bandwidth memories, such as HBM2 memories, are used to fully compare the impact of existing memory structures on computational performance in MD design. 
+% A great deal of work has been done using DDR4 high-speed interfaces and polling algorithms to improve access efficiency\cite{ref19,ref20}.
+% The new generation of high-speed, high-bandwidth, multi-parallel interface HBM memory is adopted to enable read/write access to external mass storage while parallelizing the computation of multiple data paths\cite{ref6}.\\
 
-\noindent
+%\noindent
 %Designed in RTL language or in HLS language? 
-The optimized design of the underlying RTL circuit fundamentally improves the efficiency of reading and writing registers. The optimized design of the underlying RTL circuit fundamentally improves the efficiency of data reading and writing registers, and more than doubles the efficiency of reading and writing external storage\cite{ref3,ref19}. Therefore, the rational use of external mass storage devices is fully considered in the design process. We select the same Xilinx UV9P chip of the cloud platform, and use two kinds of more efficient memories, DDR4 and HBM2, because there are a large number of intermediate computational data in MD computation, which are directly related to the particle information, so the storage data need independent storage intervals, and the DDR is a single read/write channel, and the HBM supports 32 independent read/write channels, which greatly increases the read/write storage space of particle computation, and the HBM supports 32 independent read/write channels\cite{ref19,ref20}. 
-DDR is a single read/write channel, while HBM supports 32 independent read/write channels, which greatly improves the data throughput efficiency for particle computation\cite{ref18,ref22}.
-The use of multi-channel computing improves the efficiency of reading and writing to external memory, but the consumption of on-chip resources by the read/write driver needs to be fully considered\cite{ref20,ref21,ref22}. We use the progress checking module to supervise the multi-channel data to ensure the orderly reading and writing of data\cite{ref20,ref21,ref22,ref23}.\\
+% The optimized design of the underlying RTL circuit fundamentally improves the efficiency of reading and writing registers. The optimized design of the underlying RTL circuit fundamentally improves the efficiency of data reading and writing registers, and more than doubles the efficiency of reading and writing external storage\cite{ref3,ref19}. 
+% Therefore, the rational use of external mass storage devices is fully considered in the design process. 
+% We select the same Xilinx UV9P chip of the cloud platform, and use two kinds of more efficient memories, DDR4 and HBM2, because there are a large number of intermediate computational data in MD computation, which are directly related to the particle information, so the storage data need independent storage intervals, and the DDR is a single read/write channel, and the HBM supports 32 independent read/write channels, which greatly increases the read/write storage space of particle computation, and the HBM supports 32 independent read/write channels\cite{ref19,ref20}. 
+% DDR is a single read/write channel, while HBM supports 32 independent read/write channels, which greatly improves the data throughput efficiency for particle computation\cite{ref18,ref22}.
+% The use of multi-channel computing improves the efficiency of reading and writing to external memory, but the consumption of on-chip resources by the read/write driver needs to be fully considered\cite{ref20,ref21,ref22}. We use the progress checking module to supervise the multi-channel data to ensure the orderly reading and writing of data\cite{ref20,ref21,ref22,ref23}.\\
 
-\noindent
+
+
+%\noindent
+%
 % this should not in Introdution
+%
 %The Influence of Numerical Analysis Method on Calculation Speed.
 % For the same MD simulation system, the data is "sliced" according to the computational node and then sent to the specified computational unit. 
 % The computational unit needs to use a reasonable floating-point computational model. 
@@ -190,7 +204,7 @@ Using the acceleration and position at the moment $t_{0}$, the following formula
 
 The Verlet algorithm requires a motion update calculation for each particle within the simulated system, and the calculation requires a two-step difference formulation. It needs to utilize the position information of the particle at the previous moment $t_{0}-\Delta t$ and the acceleration and position information at the current moment $t_{0}$. In implementing the algorithm, the position and acceleration of the current moment and the position of the previous moment need to be stored.
 
-\section{Proposed  Architecture}
+\section{Proposed architecture}
 
 Combined with the implementation block diagram above, the processing flow of data in the RL module is as follows: the CPU pre-processes the dataset of the MD simulation, and the pre-processed data will contain the following information, in which the cell serial number is obtained by segmenting the original data, and each particle will be assigned to a unique cell, and the particle information will be bound to the cell serial number to form the basic information of the particle to be processed. All other information in the data entry is obtained from the original data file. The side length of each data cell is determined based on the size of the truncation distance, and the number of data cells after CPU pre-processing is determined if the simulation data set exists in a deterministic rectangular space. Each data cell contains information about the particles it belongs to and the positions of the neighboring data cells, forming a data table to be stored in memorizer.
 
