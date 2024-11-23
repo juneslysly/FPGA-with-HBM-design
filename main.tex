@@ -31,7 +31,8 @@
 
 \noindent
 Molecular dynamics (MD) simulation is a powerful tool that models the behavior of particles over a given time interval, complementing biological and chemical experimental methods, particularly in materials science and drug discovery.
-The speed of MD simulations is one of the key challenges that prevent their applications. To address this, a full hardware module has been designed to accelerate all parts of MD simulations. 
+The speed of MD simulations is one of the key challenges that prevent their applications. 
+To address this, a full hardware module based on field programmable gate arrays (FPGAs) has been designed to accelerate all parts of MD simulations. 
 The solution aims to increase computational speed by utilizing pipeline techniques (Pipeline) to optimize the allocation of individual tasks within the entire parallel system.
 We have also explored the impact of high-bandwidth memory (HBM2) on computational performance, comparing it with existing memory structures.
 The work includes the use of DDR4 high-speed interfaces and the implementation of polling algorithms to improve access efficiency.
@@ -44,19 +45,21 @@ Additionally, potential strategies for continuing to improve the efficiency of M
 \section{Introduction}
 
 \noindent
-MD simulation is a kind of calculation method based on statistical physics and Newtonian mechanics\cite{ref1}. 
-The smallest unit of particles is atom, which usually does not involve the electron orbitals within the atom; while the largest unit of particles can be a cluster composed of multiple atoms, or even a molecule assembled by multiple molecules. 
-MD simulation calculates the energy and force according to the classical mechanics, and gives the three-dimensional spatial arrangement of the particles in the system in line with the law of energy distribution of statistical mechanics\cite{ref1,ref2}. 
-These individual atoms through the interaction to achieve the system balance state in the macroscopic view of the structure of the macromolecule is the steady state, or called the conformational distribution. 
-The process by which these particles move in the spatial and temporal scales of Newtonian mechanics and tend to minimize the energy balance is a kinetic simulation\cite{ref2}.\\
+% MD simulation is a kind of calculation method based on statistical physics and Newtonian mechanics\cite{ref1}. 
+% The smallest unit of particles is atom, which usually does not involve the electron orbitals within the atom; while the largest unit of particles can be a cluster composed of multiple atoms, or even a molecule assembled by multiple molecules. 
+% MD simulation calculates the energy and force according to the classical mechanics, and gives the three-dimensional spatial arrangement of the particles in the system in line with the law of energy distribution of statistical mechanics\cite{ref1,ref2}. 
+% These individual atoms through the interaction to achieve the system balance state in the macroscopic view of the structure of the macromolecule is the steady state, or called the conformational distribution. 
+% The process by which these particles move in the spatial and temporal scales of Newtonian mechanics and tend to minimize the energy balance is a kinetic simulation\cite{ref2}.\\
+MD simulations have proven to provide critical insights into the properties and interactions of materials and biological systems, making them an important tool in materials science and drug discovery, and showing great promise in these fields~\cite{fep_runtong,fep_york,md_in_dd_jmc2016,md_in_material1}. However, as the reserrch interest grows in increasingly complex and larger-scale systems, the speed of MD simulations remains a significant challenge, directly impacting the efficiency of exploring their potential applications. To address this, almost all existing MD programs have developed multi-CPUs parallel strategies and GPU-based codes to accelerate simulations, significantly enhancing computational performance~\cite{charmm_at_c45,amber_gpu1,amber_gpu2,namd_gpu,omm7,gmx}. \\
 
 \noindent
-
-Several research organizations around the world use dedicated computing hardware nodes to build large molecular dynamics clusters. For example, the commercial ANTON supercomputer Generation I \cite{Anton1}, ANTON Generation II, and ANTON Generation III in the U.S. all utilize the ASIC process and have up to 512 nodes of dedicated clusters. However, the ANTON series of supercomputers are expensive to design, have long commissioning and development cycles, and the cluster is not open in several regions of the world. Japan's MD-grape series started related research work in the late 1980s. It uses MCUs, CPLDs (Complex Programmable Logic Device), FPGAs, and other acceleration circuits to build a multi-node design, and combines it with a specialized fiber-optic transmission network to form a large-scale computational cluster.MD-grape has been developed for four generations\cite{MD-GRAPE-3,MDGRAPE-4A}, and its hardware devices are constantly updated and iterated, but the design cost is very high. Martin, an academic at Boston, collaborated with Intel Corporation on to create a large molecular dynamics cluster of the Novo-G series\cite{Novo-G,Novo-G2}, and used commercial FPGA accelerator cards of the Intel series  to optimize the molecular dynamics computational efficiency in multiple dimensions from a combination of hardware and software perspectives.
+% Another approach
+In addition to GPU and multi-core CPU approaches, several research groups around the world use dedicated computing hardware to accelerate MD simulations. The commercial ANTON supercomputers (Generations I to III) all utilize the ASIC process and have up to 512 nodes of dedicated clusters~\cite{anton1,anton2,anton3}. However, the ANTON series of supercomputers are expensive to design, have long commissioning and development cycles, and can not easily access. Additionally, the MD-GRAPE series, which dates back to the late 1980s, uses MCUs, CPLDs (Complex Programmable Logic Devices), FPGAs, and other acceleration circuits to build a multi-node design~\cite{MD-GRAPE-3,MDGRAPE-4A}. This design is combined with a specialized fiber-optic transmission network to form a large-scale computational cluster. The MD-GRAPE series has been developed through four generations, and its hardware devices are constantly updated and iterated, but the design cost remains very high. Furthermore, the Novo-G series, which uses commercial FPGA accelerator cards from the Intel series, optimizes molecular dynamics computational efficiency from both hardware and software perspectives~\cite{Novo-G,Novo-G2}.\\
+% add comment for the Novo-G
 
 
 \noindent
-Currently available hardware design platforms include FPGAs (Field Programmable Gate Array) and ASICs (Application Specific Integrated Circuit), which are process-cured logic circuits, and FPGAs are integrated chips designed for commercial applications.
+Currently available hardware design platforms include FPGAs and ASICs (Application Specific Integrated Circuit), which are process-cured logic circuits, and FPGAs are integrated chips designed for commercial applications.
 Additional, existing FPGA manufacturing processes are capable of achieving nanometer sizes of 3 nm or less\cite{ref3,ref18}. 
 Although FPGAs are less dense and more slower than ASICs, they are more flexible in design, more cost-effective, and more economical in terms of power consumption compared to other devices\cite{ref3}.
 FPGAs incorporate a variety of unique production techniques, such as the FLASH process and the reverse fusion process, which allow them to support multiple recasts and debugs in the commercial sector to accommodate different experimental design needs\cite{ref22}. 
@@ -541,7 +544,8 @@ We adopt a multi-level supervision means to ensure that the computation is carri
 %
 % Reference
 %
-\bibliographystyle{plain}
+
+\bibliographystyle{unsrt}
 \bibliography{main}
 
 
