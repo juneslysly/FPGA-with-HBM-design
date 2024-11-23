@@ -45,21 +45,26 @@ Additionally, potential strategies for continuing to improve the efficiency of M
 \section{Introduction}
 
 \noindent
-% MD simulation is a kind of calculation method based on statistical physics and Newtonian mechanics\cite{ref1}. 
-% The smallest unit of particles is atom, which usually does not involve the electron orbitals within the atom; while the largest unit of particles can be a cluster composed of multiple atoms, or even a molecule assembled by multiple molecules. 
-% MD simulation calculates the energy and force according to the classical mechanics, and gives the three-dimensional spatial arrangement of the particles in the system in line with the law of energy distribution of statistical mechanics\cite{ref1,ref2}. 
-% These individual atoms through the interaction to achieve the system balance state in the macroscopic view of the structure of the macromolecule is the steady state, or called the conformational distribution. 
-% The process by which these particles move in the spatial and temporal scales of Newtonian mechanics and tend to minimize the energy balance is a kinetic simulation\cite{ref2}.\\
-MD simulations have proven to provide critical insights into the properties and interactions of materials and biological systems, making them an important tool in materials science and drug discovery, and showing great promise in these fields~\cite{fep_runtong,fep_york,md_in_dd_jmc2016,md_in_material1}. However, as the reserrch interest grows in increasingly complex and larger-scale systems, the speed of MD simulations remains a significant challenge, directly impacting the efficiency of exploring their potential applications. To address this, almost all existing MD programs have developed multi-CPUs parallel strategies and GPU-based codes to accelerate simulations, significantly enhancing computational performance~\cite{charmm_at_c45,amber_gpu1,amber_gpu2,namd_gpu,omm7,gmx}. \\
+MD simulations have proven to provide critical insights into the properties and interactions of materials and biological systems, making them an important tool in materials science and drug discovery, and showing great promise in these fields~\cite{fep_runtong,fep_york,md_in_dd_jmc2016,md_in_material1}. 
+However, as the reserrch interest grows in increasingly complex and larger-scale systems, the speed of MD simulations remains a significant challenge, directly impacting the efficiency of exploring their potential applications. 
+To address this, almost all existing MD programs have developed multi-CPUs parallel strategies and GPU-based codes to accelerate simulations, significantly enhancing computational performance~\cite{charmm_at_c45,amber_gpu1,amber_gpu2,namd_gpu,omm7,gmx}. \\
 
 \noindent
-% Another approach
-In addition to GPU and multi-core CPU approaches, several research groups around the world use dedicated computing hardware to accelerate MD simulations. The commercial ANTON supercomputers (Generations I to III) all utilize the ASIC process and have up to 512 nodes of dedicated clusters~\cite{anton1,anton2,anton3}. However, the ANTON series of supercomputers are expensive to design, have long commissioning and development cycles, and can not easily access. Additionally, the MD-GRAPE series, which dates back to the late 1980s, uses MCUs, CPLDs (Complex Programmable Logic Devices), FPGAs, and other acceleration circuits to build a multi-node design~\cite{MD-GRAPE-3,MDGRAPE-4A}. This design is combined with a specialized fiber-optic transmission network to form a large-scale computational cluster. The MD-GRAPE series has been developed through four generations, and its hardware devices are constantly updated and iterated, but the design cost remains very high. Furthermore, the Novo-G series, which uses commercial FPGA accelerator cards from the Intel series, optimizes molecular dynamics computational efficiency from both hardware and software perspectives~\cite{Novo-G,Novo-G2}.\\
+In addition to GPU and multi-core CPU approaches, several research groups around the world use dedicated computing hardware to accelerate MD simulations. 
+The commercial ANTON supercomputers (Generations I to III) all utilize the application specific integrated circuit (ASIC) process and have up to 512 nodes of dedicated clusters~\cite{anton1,anton2,anton3}.
+However, the ANTON series of supercomputers are expensive to design, have long commissioning and development cycles, and can not easily access. 
+Additionally, the MD-GRAPE series, which dates back to the late 1980s, uses MCUs, CPLDs (Complex Programmable Logic Devices), FPGAs, and other acceleration circuits to build a multi-node design~\cite{MD-GRAPE-3,MDGRAPE-4A}.
+This design is combined with a specialized fiber-optic transmission network to form a large-scale computational cluster. 
+The MD-GRAPE series has been developed through four generations, and its hardware devices are constantly updated and iterated, but the design cost remains very high. 
+Furthermore, the Novo-G series, which uses commercial FPGA accelerator cards from the Intel series, optimizes molecular dynamics computational efficiency from both hardware and software perspectives~\cite{Novo-G,Novo-G2}.\\
 % add comment for the Novo-G
 
-
+% MD difficults
+% current available hardwares
+% our attempts
 \noindent
-Currently available hardware design platforms include FPGAs and ASICs (Application Specific Integrated Circuit), which are process-cured logic circuits, and FPGAs are integrated chips designed for commercial applications.
+%To accelerate MD simulations using hardwares, 
+Currently available hardware design platforms include FPGAs and ASICs , which are process-cured logic circuits, and FPGAs are integrated chips designed for commercial applications.
 Additional, existing FPGA manufacturing processes are capable of achieving nanometer sizes of 3 nm or less\cite{ref3,ref18}. 
 Although FPGAs are less dense and more slower than ASICs, they are more flexible in design, more cost-effective, and more economical in terms of power consumption compared to other devices\cite{ref3}.
 FPGAs incorporate a variety of unique production techniques, such as the FLASH process and the reverse fusion process, which allow them to support multiple recasts and debugs in the commercial sector to accommodate different experimental design needs\cite{ref22}. 
@@ -70,7 +75,7 @@ This cycle completes the simulation.
 The calculation of the forces on the particles is crucial to the accuracy of the MD results, and the calculation of the inter-particle interactions is the decisive speed step in the program\cite{ref6}.\\
 
 \noindent
-Different impact of memories on the overall design.In this study, the basic definition of FPGA, its main characteristics and its development history are summarized and compared with general-purpose processors. 
+%Different impact of memories on the overall design.
 A full hardware module is designed to accelerate all parts of the MD computation, which is aimed at increasing the speed of computation, and utilizes the pipeline technique to optimize the allocation of tasks in the whole parallel system\cite{ref12,ref23}. 
 A single instruction multiple data stream (SIMD) approach is utilized to significantly improve the computational efficiency. At the same time, we also built a software framework dedicated to this scheme, which can be used to accelerate the data processing of the circuit. 
 To better exploit the parallelism potential, we comprehensively compared existing high-speed interfaces and memory devices, and analyzed existing high-speed architectural designs\cite{ref18,ref21}.
@@ -79,19 +84,22 @@ A great deal of work has been done using DDR4 high-speed interfaces and polling 
 The new generation of high-speed, high-bandwidth, multi-parallel interface HBM memory is adopted to enable read/write access to external mass storage while parallelizing the computation of multiple data paths\cite{ref6}.\\
 
 \noindent
-Designed in RTL language or in HLS language? The optimized design of the underlying RTL circuit fundamentally improves the efficiency of reading and writing registers. The optimized design of the underlying RTL circuit fundamentally improves the efficiency of data reading and writing registers, and more than doubles the efficiency of reading and writing external storage\cite{ref3,ref19}. Therefore, the rational use of external mass storage devices is fully considered in the design process. We select the same Xilinx UV9P chip of the cloud platform, and use two kinds of more efficient memories, DDR4 and HBM2, because there are a large number of intermediate computational data in MD computation, which are directly related to the particle information, so the storage data need independent storage intervals, and the DDR is a single read/write channel, and the HBM supports 32 independent read/write channels, which greatly increases the read/write storage space of particle computation, and the HBM supports 32 independent read/write channels\cite{ref19,ref20}. 
+%Designed in RTL language or in HLS language? 
+The optimized design of the underlying RTL circuit fundamentally improves the efficiency of reading and writing registers. The optimized design of the underlying RTL circuit fundamentally improves the efficiency of data reading and writing registers, and more than doubles the efficiency of reading and writing external storage\cite{ref3,ref19}. Therefore, the rational use of external mass storage devices is fully considered in the design process. We select the same Xilinx UV9P chip of the cloud platform, and use two kinds of more efficient memories, DDR4 and HBM2, because there are a large number of intermediate computational data in MD computation, which are directly related to the particle information, so the storage data need independent storage intervals, and the DDR is a single read/write channel, and the HBM supports 32 independent read/write channels, which greatly increases the read/write storage space of particle computation, and the HBM supports 32 independent read/write channels\cite{ref19,ref20}. 
 DDR is a single read/write channel, while HBM supports 32 independent read/write channels, which greatly improves the data throughput efficiency for particle computation\cite{ref18,ref22}.
 The use of multi-channel computing improves the efficiency of reading and writing to external memory, but the consumption of on-chip resources by the read/write driver needs to be fully considered\cite{ref20,ref21,ref22}. We use the progress checking module to supervise the multi-channel data to ensure the orderly reading and writing of data\cite{ref20,ref21,ref22,ref23}.\\
 
 \noindent
-The Influence of Numerical Analysis Method on Calculation Speed.For the same MD simulation system, the data is "sliced" according to the computational node and then sent to the specified computational unit. 
-The computational unit needs to use a reasonable floating-point computational model. 
-In this design, we compare various numerical models and model the first, second, and third-order computational models using multistage linear interpolation to create a numerical interpolation table by slicing each fitted curve rationally. 
-The interpolation table is transferred to the on-chip memory via the high-speed AXI Lite protocol, thus ensuring high computational efficiency. 
-Meanwhile, HLS advanced compilation and RTL design are used to finalize the RTL design circuit to ensure computational efficiency. 
-The interpolation algorithm is compared with Newtonian interpolation, Hamiltonian interpolation and Legendre interpolation\cite{ref3}. 
-After the same MD simulation system is divided into several blocks, a reasonable proximity force calculation supervision module needs to be designed, which needs to record the computational progress of the data in each block. 
-Assuming that a simulation system is divided into 1000 or more sub units and that the upper and lower hemispheres are computed separately, the design of the supervision module would be difficult. We use a multilevel supervision approach to ensure that the data in each sub unit is accurate during the computation.\\
+% this should not in Introdution
+%The Influence of Numerical Analysis Method on Calculation Speed.
+% For the same MD simulation system, the data is "sliced" according to the computational node and then sent to the specified computational unit. 
+% The computational unit needs to use a reasonable floating-point computational model. 
+% In this design, we compare various numerical models and model the first, second, and third-order computational models using multistage linear interpolation to create a numerical interpolation table by slicing each fitted curve rationally. 
+% The interpolation table is transferred to the on-chip memory via the high-speed AXI Lite protocol, thus ensuring high computational efficiency. 
+% Meanwhile, HLS advanced compilation and RTL design are used to finalize the RTL design circuit to ensure computational efficiency. 
+% The interpolation algorithm is compared with Newtonian interpolation, Hamiltonian interpolation and Legendre interpolation\cite{ref3}. 
+% After the same MD simulation system is divided into several blocks, a reasonable proximity force calculation supervision module needs to be designed, which needs to record the computational progress of the data in each block. 
+% Assuming that a simulation system is divided into 1000 or more sub units and that the upper and lower hemispheres are computed separately, the design of the supervision module would be difficult. We use a multilevel supervision approach to ensure that the data in each sub unit is accurate during the computation.\\
 
 
 \section{Theoretical background}
@@ -104,7 +112,7 @@ First, simulated system should read in the specified operation conditions, such 
 Second, initialization speed, determine the initial position and speed of particles.
 Third, Calculate the forces acting on the particles.
 Finally, Solving the Newton's equation of motion.
-Repeat steps 3 and 4 until the specified simulation step is met.
+Repeat steps 3 and 4 until the specified simulation step is met.\\
 
 
 \begin{equation}
@@ -182,7 +190,7 @@ Using the acceleration and position at the moment $t_{0}$, the following formula
 
 The Verlet algorithm requires a motion update calculation for each particle within the simulated system, and the calculation requires a two-step difference formulation. It needs to utilize the position information of the particle at the previous moment $t_{0}-\Delta t$ and the acceleration and position information at the current moment $t_{0}$. In implementing the algorithm, the position and acceleration of the current moment and the position of the previous moment need to be stored.
 
-\section{ Proposed  Architecture}
+\section{Proposed  Architecture}
 
 Combined with the implementation block diagram above, the processing flow of data in the RL module is as follows: the CPU pre-processes the dataset of the MD simulation, and the pre-processed data will contain the following information, in which the cell serial number is obtained by segmenting the original data, and each particle will be assigned to a unique cell, and the particle information will be bound to the cell serial number to form the basic information of the particle to be processed. All other information in the data entry is obtained from the original data file. The side length of each data cell is determined based on the size of the truncation distance, and the number of data cells after CPU pre-processing is determined if the simulation data set exists in a deterministic rectangular space. Each data cell contains information about the particles it belongs to and the positions of the neighboring data cells, forming a data table to be stored in memorizer.
 
