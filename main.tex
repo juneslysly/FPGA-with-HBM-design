@@ -46,7 +46,7 @@ Additionally, potential strategies for continuing to improve the efficiency of M
 
 \noindent
 MD simulations have proven to provide critical insights into the properties and interactions of materials and biological systems, making them an important tool in materials science and drug discovery, and showing great promise in these fields~\cite{fep_runtong,fep_york,md_in_dd_jmc2016,md_in_material1}. 
-However, as the reserrch interest grows in increasingly complex and larger-scale systems, the speed of MD simulations remains a significant challenge, directly impacting the efficiency of exploring their potential applications. 
+However, as the research interest grows in increasingly complex and larger-scale systems, the speed of MD simulations remains a significant challenge, directly impacting the efficiency of exploring their potential applications. 
 To address this, almost all existing MD programs have developed multi-CPUs parallel strategies and GPU-based codes to accelerate simulations, significantly enhancing computational performance~\cite{charmm_at_c45,amber_gpu1,amber_gpu2,namd_gpu,omm7,gmx}. \\
 
 \noindent
@@ -174,6 +174,45 @@ Thus the bottom neck in MD is the calculation of nonbonded terms.
 \noindent
 Because the decay of coulomb force is slow with distance. it is always calculated with the PME algorithm in a perodical system:
 % Add PME
+The PME algorithm is an algorithm for calculating long-range Coulomb forces in periodic systems. Assuming that the unit cell is square, the Coulomb potential on atom i can be expressed as Eq. It is clear that $E_i$ converges slowly with $r_{ij}$. The algorithm utilizes spherical Gaussian positive and negative charges with the same distribution to partition $E_i$ into real and inverse parts. The real part converges fast in real space and is safe to truncate at the cutoff, and the inverse part is also fast converging, but in in the inverse space.The electrostatic potential energy of the simulated system under PBC is expressed as:
+
+
+\begin{center}
+	\begin{equation}
+		U_{coul}=1/4\varepsilon \pi \cdot 1/2 \sum_{n}^{} \sum_{i=1}^{N} \sum_{j=1}^{N} \frac{q_{i}q_{j} }{r_{ij}+nL} 
+	\end{equation}
+\end{center}
+The simulation box is a square of length L, where the number of charged particles is N. $r_{ij}$ is the distance between particle i and particle j, and $\epsilon$ is the vacuum dielectric constant. The simulation lattice extends indefinitely in the control according to the periodic boundary conditions, and n is an integer.
+
+\begin{center}
+	\begin{equation}
+		E =E_{dir} +E_{rec}+E_{corr}
+	\end{equation}
+\end{center}
+
+
+The Gaussian distribution function is introduced into the Ewald summation algorithm and consists of three parts after being processed by the PME algorithm:
+
+\begin{center}
+	\begin{equation}
+		E_{dir}=\frac{1}{2}\sum_{n}\sum_{i,j=1}^{N}\frac{q_jq_jerfc{\left( \beta\left|\mathbf{r}_j-\mathbf{r}_i+\mathbf{n}\right|\right )}}{\left|\mathbf{r}_j-\mathbf{r}_i+\mathbf{n}\right|}
+	\end{equation}
+\end{center}
+
+\begin{center}
+	\begin{equation}
+		E_{rec}=\frac{1}{2\pi V}\sum_{m\neq0}{\frac{\exp{\left( -\pi^2\mathbf{m}^2/\beta^2\right )}}{\mathbf{m}^2}S\left( \mathbf{m}\right )S\left( -\mathbf{m}\right )}
+	\end{equation}
+\end{center}
+
+\begin{center}
+	\begin{equation}
+		E_{corr}=-\frac{1}{2}\sum_{\left( i,j\right )\in M}\frac{q_iq_jerf{\left( \beta\left|\mathbf{r}_i-\mathbf{r}_j\right|\right )}}{\left|\mathbf{r}_i-\mathbf{r}_j\right|}-\frac{\beta}{\sqrt\pi}\sum_{i=1}^{N}q_i^2
+	\end{equation}
+\end{center}
+
+The above corresponds to Direct space, Reciprocal space and Correction term respectively. The $\beta$ is called Ewald's coefficient, which regulates the speed of convergence of real space and Fourier space. The larger its value, the faster the real space converges and the slower the Fourier space converges. The smaller the value, the slower the real space converges and the faster the Fourier space converges. erf() is the Gaussian error function.
+
 
 \noindent
 To improve computational efficiency, the finite-range force uses a proximity list lookup method. 
