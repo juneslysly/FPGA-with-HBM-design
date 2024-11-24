@@ -116,94 +116,119 @@ Finally, we demonstrate the results of MD simulations of argon and DHFR using ou
 % Assuming that a simulation system is divided into 1000 or more sub units and that the upper and lower hemispheres are computed separately, the design of the supervision module would be difficult. We use a multilevel supervision approach to ensure that the data in each sub unit is accurate during the computation.\\
 
 
-\section{Theoretical background}
-
-\subsection{Classic force field???}
+\section{Basic algorithms of classical MD and force field}
 
 \noindent
-MD program can divided into four parts.
-First, simulated system should read in the specified operation conditions, such as initial temperature, particle number, unit time step, etc\cite{ref1}.
-Second, initialization speed, determine the initial position and speed of particles.
-Third, Calculate the forces acting on the particles.
-Finally, Solving the Newton's equation of motion.
-Repeat steps 3 and 4 until the specified simulation step is met.\\
+In this work, we divide a classical MD program into four parts~\ref{ref1}:
+\begin{enumerate}
+\item Read in the specified simulation conditions, such as initial temperature, particle number, and time step.
+\item Determine the initial positions and velocities of the particles.
+\item Compute the forces acting on the particles.
+\item integrat Newton's equations to update velocities, and positions of all particles.
+\end{enumerate}
+Repeat steps 3 and 4 until the user specified simulation step is met. 
+In classical MD simulations, the force acting on each atom is often calculated using force fields which will be discuss in the next two subsection.
+Then integration of Newton's equations over the time step is achieved by algorithms named integrator which is discuss in the 3rd subsection.
 
 
+\subsection{Bonded force}
+
+\noindent
+Most force fields model interactions between particles using bonded and nonbonded terms:
 \begin{equation}
-\boldsymbol{F}^{\text {total}} = \boldsymbol{F}^{\text {bonded}} 
-                                + \boldsymbol{F}^{\text{non-bonded}}
+    \boldsymbol{F}^{\text {total}} = \boldsymbol{F}^{\text {bonded}} 
+                                    + \boldsymbol{F}^{\text{non-bonded}}
+\end{equation}
+,where the bonded force consists of bond, angle, dihedral and improper terms:
+\begin{equation}
+\boldsymbol{F}^{\text {bonded}} = \boldsymbol{F}^{\text {bonds}} 
+                                    + \boldsymbol{F}^{\text {angles}} 
+                                    + \boldsymbol{F}^{\text {dihedrals}} 
+                                    + \boldsymbol{F}^{\text{impropers}}
 \end{equation}
 
-where the bonded force consists of bond, angle, dihedral and improper terms:
+\noindent
+Most bonded terms are modeled by harmornic potentials, except the dihedrals are modeled using a summation of cosine functions.
+Because the bonded terms are only calculated when bonds exists between atoms, their computational cost can be regards as $\mathcal{O}(N)$.\\
 
+
+\subsection{Nonbonded force}
+
+\noindent
+The non-bonded terms often consist of van der Waals (vdW) and Coulomb terms:
 \begin{equation}
-\boldsymbol{F}^{\text {bonded}} = \boldsymbol{F}^{\text {bond}} 
-                                    + \boldsymbol{F}^{\text {angle}} 
-                                    + \boldsymbol{F}^{\text {dihedral}} 
-                                    + \boldsymbol{F}^{\text{improper}}
+    \boldsymbol{F}_{i}^\mathrm{LJ}\
+    =\sum_{j \neq i} \frac{\epsilon_{a b}}{\sigma_{a b}^{2}}\left\{12\left(\frac{\sigma_{a b}}{\left|\mathbf{r}_{j i}\right|}\right)^{14}-6\left(\frac{\sigma_{a b}}{\left|\mathbf{r}_{j i}\right|}\right)^{8}\right\} \mathbf{r}_{j i}
 \end{equation}
-
-
-Molecular Dynamics forces include bonded terms, pairwise bond, angle, and dihedral; and non-bonded terms, van der Waals and Coulomb .the equation of bond force is expressed as
-
-\begin{equation}
-\boldsymbol{F}_{i}^\mathrm{LJ}\
-=\sum_{j \neq i} \frac{\epsilon_{a b}}{\sigma_{a b}^{2}}\left\{12\left(\frac{\sigma_{a b}}{\left|\mathbf{r}_{j i}\right|}\right)^{14}-6\left(\frac{\sigma_{a b}}{\left|\mathbf{r}_{j i}\right|}\right)^{8}\right\} \mathbf{r}_{j i}
-\end{equation}
-
-
+    
 \begin{equation}
     \boldsymbol{F}_{i}^{\mathrm{Coulomb}}=
         \frac{q_{i}}{4 \pi \epsilon} \sum_{j \neq i}  
         \left\{\frac{1}{\left|\mathbf{r}_{j i}\right|}\right\}^{3}  
         \mathbf{r}_{ji}
 \end{equation}
+where, the $\epsilon_{a b}$ and $\sigma_{a b}$ are parameters of particles.
+Because the non-bonded force need to be calculated between nearly all pair-wise particles, the computational cost is $\mathcal{O}(N^2)$.
+Thus the bottom neck in MD is the calculation of nonbonded terms.
+
+\noindent
+Because the decay of coulomb force is slow with distance. it is always calculated with the PME algorithm in a perodical system:
+% Add PME
+
+\noindent
+To improve computational efficiency, the finite-range force uses a proximity list lookup method. 
+This method obtains the spatial relationships between particles using their coordinates and distances, and stores this data in a neighborhood list. 
+When affected by short-range forces, a particle only interacts with its neighboring particles. 
+As the distance increases, all particles in the neighborhood are treated as neighbors, and their coordinates are updated to reconstruct interrelationships in a new step. 
+The neighbor list is constructed based on each particle's position within a specific region, assuming that the interaction force between particles is truncated at a radius $r_cut$.Each particle contains a list of potential neighboring particles, which serves as input for the next computational cell.
+In addition, for perodical system, each simulation cell has 26 adjacent cells in the whole space. 
+According to Newton's third law, to reduce repeated calculations, only the particle pairs in the 13 neighboring cells in the upper half of the center cell are filtered and calculated.\\
+
+\noindent
+% too detail
+%First, the simulation data set is preprocessed, which is realized by the CPU software code.
+%The three-dimensional space where the simulated particles are located in the X-directions, Y-directions and Z-directions is divided into equal-sized squares, and based on the coordinates of the particles, the information of particles and the positions of neighboring squares are recorded in each cell.
+%The preprocessed particle data cells are stored in the form of a data list in the specific storage area of the global HBM in the FPGA. 
+%Next, in the proximity force calculation module of the FPGA, we will read each particle data cell sequentially, calculate the distances of all particle pairs in the cell, and select particle pairs within the truncated distances to calculate the proximity force and the finite-range Coulomb force. 
+\\
 
 
-the $\epsilon_{a b}$ and $\sigma_{a b}$ are parameters of particles.the non band force contain Lennard jones and Coulombic forces as equation 6 and 7.
+\subsection{Verlet integrator algorithm}
+
+\noindent
+Given the force acting on each particle, the velocity and position is updated by integrator. 
+Commonly used integrators include the Verlet algorithm and its variants, such as the Velocity Verlet and Leap-frog methods. 
+Using the acceleration and position at time $t_0$, the position ($\mathbf{r}$) and velocity ($\mathbf{v}$) of next step are obtained:
+
+\begin{equation}
+    \mathbf{r}_{i}(t_{0}+\Delta t ) = 
+        2\mathbf{r}_{i}(t_{0}) - \mathbf{r}_{i}(t_{0}-\Delta t) + (\Delta t^2/m_{i}) \boldsymbol{F}_{i}(t_{0})
+\end{equation}
+
+\begin{equation}
+    \mathbf{v}_{i}(t_{0}) = 
+        (\mathbf{r}_{i}(t_{0}+\Delta t )-\mathbf{r}_{i}(t_{0}-\Delta t ))/2\Delta t
+\end{equation}
+
+\noindent
+The Verlet algorithm requires a motion update calculation for each particle ($i$) in thesystem, and the calculation requires a two-step difference formulation. 
+It needs to utilize the position information of the particle at the previous moment $\mathbf{r}_{i}(t_{0}-\Delta t)$ and the acceleration $\boldsymbol{F}_{i}(t_{0})/m_{i}$ and position information at the current moment $\mathbf{r}_{i}(t_{0})$ . 
+In implementing the algorithm, the position and acceleration of the current moment and the position of the previous moment need to be stored.\\
 
 
-\subsection{Look Up Table}
-
-To improve the computational efficiency, the finite-range force uses the proximity list lookup method, which obtains the spatial relationship between each particle by using the coordinate and distance information for each particle and stores these data into the neighborhood. When affected by the short-range force, the particle only interacts with its surrounding cellular particles. When the distance increases, all particles in the neighborhood are treated as neighbors to update their coordinates and reconstruct the interrelationships in a new step. The construction of the neighbor list is based on each particle that exists only in a specific region. It is assumed that the interaction force between particles is truncated with a radius of Rm . in this approach, each particle contains a list of possible neighboring particles, which serves as an input to go to the next computational cell.
-
-
-First, the simulation data set is preprocessed, which is realized by the CPU software code. The three-dimensional space where the simulated particles are located in the X-directions, Y-directions and Z-directions is divided into equal-sized squares, and based on the coordinates of the particles, the information of particles and the positions of neighboring squares are recorded in each cell. The preprocessed particle data cells are stored in the form of a data list in the specific storage area of the global HBM in the FPGA. Next, in the proximity force calculation module of the FPGA, we will read each particle data cell sequentially, calculate the distances of all particle pairs in the cell, and select particle pairs within the truncated distances to calculate the proximity force and the finite-range Coulomb force. In addition, each data cell has 26 adjacent data cells in the three-dimensional space, therefore, particle pairs with inter-particle distances less than the cutoff distance between the center data cell and the adjacent data cells are selected and calculated accordingly. According to Newton's third law, half of the interaction forces between particles in the center data cell and its neighboring data cells can be calculated repeatedly. Therefore, to reduce the number of repeated calculations, only the particle pairs of the 13 neighboring data cells in the upper half of the center data cell are filtered and calculated.
 
 
 \begin{figure*}[ht]
 \centering
 \includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig1_Neighboursegment.png}
-\caption{ The protein structure (a) and cuboid simulated water box (c) were cut into Cells of equal size by Verlet algorithm (d).
+\caption{ The protein structure of DHFR(a) and cuboid simulated water box (c) were cut into Cells of equal size by Verlet algorithm (d).
 	Among them, Home Cell and the surrounding 26 Neighbor cells (e), of which the upper and lower two are divided into "upper hemisphere"(f) and "lower hemisphere"(g).
 	(h)According to the Verlet algorithm, the center particle and the surrounding particles can be divided into equal-sized squares according to the values of $Rm$ parameter and $Rcut$ off}
 \end{figure*}
 
-\subsection{Verlet Algorithm}
-
-The acceleration of an atom can be obtained after the force is calculated, and then Newton's equations are integrated over the time step to update the atom's next state of motion, commonly used integrators include the Frog Hopper algorithm and the Velocity Verlet algorithm.
-
-Applying the equations of motion it is then possible to calculate the velocity and position of the atom for the next time step based on the position and acceleration at the current moment and the position at the previous moment. The longer the time step, the more physical time can be modeled per calculation. The equations of motion need to be calculated for all particles in the system.
-Currently, the Verlet algorithm is used to update the positions of the atoms, and there are several versions of this algorithm, including the original Verlet algorithm, which is different in form but identical in nature.
-There are several versions of this algorithm, including the original Verlet method, the “Leap-frog” form, and the “Velocity Verlet” form.
 
 
-
-Using the acceleration and position at the moment $t_{0}$, the following formula is obtained:
-
-
-\begin{equation}
-    \mathbf{r}_{i}(t_{0}+\Delta t )= 2\mathbf{r}_{i}(t_{0})-\mathbf{r}_{i}(t_{0}-\Delta t)+ (\Delta t^2/m_{i})f_{i}(t_{0})
-\end{equation}
-
-
-\begin{equation}
-    \mathbf{v}_{i}(t_{0})=(\mathbf{r}_{i}(t_{0}+\Delta t )-\mathbf{r}_{i}(t_{0}-\Delta t ))/2\Delta t
-\end{equation}
-
-
-The Verlet algorithm requires a motion update calculation for each particle within the simulated system, and the calculation requires a two-step difference formulation. It needs to utilize the position information of the particle at the previous moment $t_{0}-\Delta t$ and the acceleration and position information at the current moment $t_{0}$. In implementing the algorithm, the position and acceleration of the current moment and the position of the previous moment need to be stored.
-
+% the 3rd section
 \section{Proposed architecture}
 
 Combined with the implementation block diagram above, the processing flow of data in the RL module is as follows: the CPU pre-processes the dataset of the MD simulation, and the pre-processed data will contain the following information, in which the cell serial number is obtained by segmenting the original data, and each particle will be assigned to a unique cell, and the particle information will be bound to the cell serial number to form the basic information of the particle to be processed. All other information in the data entry is obtained from the original data file. The side length of each data cell is determined based on the size of the truncation distance, and the number of data cells after CPU pre-processing is determined if the simulation data set exists in a deterministic rectangular space. Each data cell contains information about the particles it belongs to and the positions of the neighboring data cells, forming a data table to be stored in memorizer.
@@ -448,7 +473,7 @@ Module 6 is the data accumulation module, which completes the process of accumul
 Module 7 is the external storage device, the particle storage information is large, each Cell and the remaining 13 neighbor cells cumulative process needs to access 13 data blocks. 
 
 
-\section{Result}
+\section{Results}
 
 \subsection{High-Level Language Synthesis (HLS) Design Experiment Results}
 
@@ -527,7 +552,8 @@ Each RL module uses approximately one $R^2$ computational unit for particle pair
 	\caption{18,000 Argon  gas particles, using Inspur FPGA accelerator card plus OpenMM software interface for calculation results, data energy calculation results. (a) is the overall Energy Waveform.}
 \end{figure}
 
-
+% computational details of Argon and DHFR
+% and the results
 
 \section{Conclusions}
 
