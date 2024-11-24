@@ -261,8 +261,6 @@ It needs to utilize the position information of the particle at the previous mom
 In implementing the algorithm, the position and acceleration of the current moment and the position of the previous moment need to be stored.\\
 
 
-
-
 \begin{figure*}[ht]
 \centering
 \includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig1_Neighboursegment.png}
@@ -276,23 +274,39 @@ In implementing the algorithm, the position and acceleration of the current mome
 % the 3rd section
 \section{Proposed architecture}
 
-Combined with the implementation block diagram above, the processing flow of data in the RL module is as follows: the CPU pre-processes the dataset of the MD simulation, and the pre-processed data will contain the following information, in which the cell serial number is obtained by segmenting the original data, and each particle will be assigned to a unique cell, and the particle information will be bound to the cell serial number to form the basic information of the particle to be processed. All other information in the data entry is obtained from the original data file. The side length of each data cell is determined based on the size of the truncation distance, and the number of data cells after CPU pre-processing is determined if the simulation data set exists in a deterministic rectangular space. Each data cell contains information about the particles it belongs to and the positions of the neighboring data cells, forming a data table to be stored in memorizer.
+
+\noindent
+Based on MD algorithms, we proposed a design to accelerate MD simulations on FPGA. 
+As shown in the implementation block diagram (Fig.~\ref{fgr:implementation}), the data processing flow in the RL module is as follows: The CPU pre-processes the MD simulation data which includes the cell serial number, obtained by segmenting the original data, and each particle is assigned to a unique cell. 
+The particle information is bound to the cell serial number to form the basic information of the particle to be processed. 
+Other information in the data entry is obtained from the original data file. 
+The side length of each data cell is determined based on the truncation distance, and the number of data cells is determined if the simulation data set exists in a deterministic rectangular space. 
+Each data cell contains information about the particles it belongs to and the positions of the neighboring data cells, forming a data table stored in memory.\\
 
 
 \begin{figure*}[ht]
 \centering
 \includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig2_top_module_a_b.png}
 \caption{Block diagram of the implementation of the finite range force calculation module. Module b, for a single FPGA acceleration card, the user logic resources MD hardware computation is mainly divided into short-range force force, long-range force force and covalent bonding force three kinds of processing units. Module a,The whole RL module is composed in each sub-module of the frame.}
+\label{fgr:implementation}
 \end{figure*}
 
 
-Each particle occupies one row of storage space. The length of the data cell is created according to the maximum number of particles after pre-processing, with an appropriate margin. Based on the serial number of the data cell, the starting position of the data cell can be directly located. Excluding particle information in pairs directly creates the structure shown in the following table. The number of excluded particles and their storage addresses are configured in registers for use by the relevant modules. The proximity force calculation requires the use of interpolation and coefficient tables, which are also prepared by the CPU and configured in the RAM of the FPGA. The information of the particle pairs to be excluded mainly comes from the existing co-bonded particle pairs, and the information of the two bonded particles is combined together to form the exclusion information data table, which is stored in the memorizer.
+Each particle occupies one row of storage space. 
+The data cell length is determined based on the maximum number of particles after pre-processing, with an appropriate margin. 
+The starting position of each data cell is directly located using the cell serial number. 
+The structure of the data table excludes particle information in pairs. 
+The number of excluded particles and their storage addresses are configured in registers for use by relevant modules. 
+The proximity force calculation uses interpolation and coefficient tables, which are prepared by the CPU and configured in the FPGA's RAM. 
+The exclusion information data table, containing information from co-bonded particle pairs, is stored in memory.\\
 
-After the above configuration is completed, the CPU starts the prefetching particle data unit module to execute the next operation. The CPU can read the excluded particle information in parallel, and the particle reading module provides the particle pair information to be calculated.
+After configuration, the CPU starts the prefetching particle data unit to execute the next operation. 
+The CPU reads excluded particle information in parallel, and the particle reading module provides the particle pair information for calculation.
 
-Multi-Channel Calculation Filter Calculation Module, select each data cell as the main data cell in turn, take out the particle information of the main data cell and the particle information of the first 13 related data cells, take out a particle from the main cell, and take out one particle from each of the 13 neighboring cells, and form a particle pair to perform the distance calculation. Another particle is taken out from the main cell and formed into a particle pair with the current particle in the main cell for distance calculation. At this time, the current particle and 14 different particles are performing the distance calculation at the same time, and then based on the square of the distance calculation result and the square of the truncated distance, the particle pair smaller than the truncated distance is selected for the subsequent calculation. The coefficients of the interpolation table are obtained by querying the interpolation table based on the squared distances of the selected particle pairs, and the coefficients are obtained by checking the table based on the particle type information of the particle pairs. The coefficient values are based on the charge information in the FPGA which is needed for the calculation of the electrostatic force and the short-range force. At the end of the table, all the parameters for calculating the limited range force are obtained, and all the information is stored in the FPGA on-chip RAM and passed to the particle distance judgment module for screening, and only the particles within the distance range are allowed to carry out the next step in the force calculation pipeline. The calculation progress of the particles is passed to the proximity force calculation monitoring module, which is used to update the proximity force calculation result data table and supervise the progress of calculator calculation.
+The multi-channel calculation filter module processes each data cell as the main cell in turn. It retrieves particle information from the main cell and the first 13 related cells, forming particle pairs for distance calculation. Each particle from the main cell is paired with one particle from each of the 13 neighboring cells, and the distance is calculated. The module then selects particle pairs with distances smaller than the cutoff distance for further calculation. Interpolation table coefficients are obtained based on the squared distances of the selected particle pairs and the particle type information. These coefficients, based on charge information, are used for electrostatic and short-range force calculations. All parameters for the limited-range force calculation are stored in the FPGA's on-chip RAM and passed to the particle distance judgment module. Only particles within the distance range proceed to the next step in the force calculation pipeline. The calculation progress is monitored by the proximity force calculation module, which updates the force calculation result data table and supervises the progress.
 
-The proximity force calculation unit contains several calculation pipelines to match the force requirements of the upper and lower modules. The calculator performs all the calculations of the proximity force and obtains the results of the 3D coordinate axis decomposition based on the finite-range forces of the particle pairs. Since the calculation of the force from the same particle to different particles in each master data cell is performed continuously, the force of the first 13 neighboring data cells can be accumulated and then cached, and the data of these 13 neighboring data cells are cached into the particle pair force cache RAM according to the particle serial number, so as to accumulate all the force data of the particles. All the obtained force results and part of the force accumulation results are cached in the corresponding cache area according to the particle number at the source end. At least two accumulator pipelines and two memory entry generation modules are reserved for parallel processing to match the upstream and downstream processing capabilities.
+The proximity force calculation unit contains several calculation pipelines to match the force requirements of upstream and downstream modules. The calculator performs all proximity force calculations and decomposes the results into 3D coordinate axes based on the finite-range forces of the particle pairs. The force from the same particle to different particles in each main cell is accumulated and cached. The force data from the first 13 neighboring cells are cached in the particle pair force cache RAM according to the particle serial number. All force results and part of the accumulated force data are cached in the corresponding areas based on the particle number at the source end. At least two accumulator pipelines and two memory entry generation modules are reserved for parallel processing to match the upstream and downstream processing capabilities.
+
 
 \begin{figure}[ht]
 \centering
