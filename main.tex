@@ -11,6 +11,7 @@
 %----------------------------------------------
 \newcommand{\nomunit}[1]{%
 \renewcommand{\nomentryend}{\hspace*{\fill}#1}}
+\DeclareMathOperator{\erf}{erf}
 %----------------------------------------------
 \SetKwRepeat{Do}{do}{while}%
 
@@ -166,27 +167,31 @@ The non-bonded terms often consist of van der Waals (vdW) and Coulomb terms:
         \frac{q_{i}}{4 \pi \epsilon} \sum_{j \neq i}  
         \left\{\frac{1}{\left|\mathbf{r}_{j i}\right|}\right\}^{3}  
         \mathbf{r}_{ji}
+        \label{eqn:coulomb}
 \end{equation}
 where, the $\epsilon_{a b}$ and $\sigma_{a b}$ are parameters of particles.
 Because the non-bonded force need to be calculated between nearly all pair-wise particles, the computational cost is $\mathcal{O}(N^2)$.
 Thus the bottom neck in MD is the calculation of nonbonded terms.
 
 \noindent
-Because the decay of coulomb force is slow with distance. it is always calculated with the PME algorithm in a perodical system:
-% Add PME
-The PME algorithm is an algorithm for calculating long-range Coulomb forces in periodic systems. Assuming that the unit cell is square, the Coulomb potential on atom i can be expressed as Eq. It is clear that $E_i$ converges slowly with $r_{ij}$. The algorithm utilizes spherical Gaussian positive and negative charges with the same distribution to partition $E_i$ into real and inverse parts. The real part converges fast in real space and is safe to truncate at the cutoff, and the inverse part is also fast converging, but in in the inverse space.The electrostatic potential energy of the simulated system under PBC is expressed as:
+Because the decay of coulomb force is slow with distance. it is always calculated with the particle mesh Ewald PME algorithm in a perodical system to handle the long-range Coulomb forces. 
+Assuming that the unit cell is square, the Coulomb potential on atom $i$ can be expressed as Eq~\ref{eqn:coulomb}. 
+The algorithm utilizes spherical Gaussian positive and negative charges with the same distribution to partition $E^\mathrm{Coulomb}_i$ into real and inverse parts. 
+The real part converges fast in real space and is safe to truncate at the cutoff, and the inverse part is also fast converging, but in in the inverse space.
+The electrostatic potential energy of the simulated system under PBC is expressed as:
 
 
 \begin{center}
 	\begin{equation}
-		U_{coul}=1/4\varepsilon \pi \cdot 1/2 \sum_{n}^{} \sum_{i=1}^{N} \sum_{j=1}^{N} \frac{q_{i}q_{j} }{r_{ij}+nL} 
+		U_{coul}=1/4\varepsilon \pi \cdot 1/2 \sum_{n}^{} \sum_{i=1}^{N} \sum_{j=1}^{N} \frac{q_{i}q_{j} }{\left|r_{ij}+nL\right|} 
 	\end{equation}
 \end{center}
-The simulation box is a square of length L, where the number of charged particles is N. $r_{ij}$ is the distance between particle i and particle j, and $\epsilon$ is the vacuum dielectric constant. The simulation lattice extends indefinitely in the control according to the periodic boundary conditions, and n is an integer.
+The simulation box is a square of length $L$, where the number of charged particles is $N$. $r_{ij}$ is the distance between particle $i$ and particle $j$, and $\epsilon$ is the vacuum dielectric constant. 
+The simulation lattice extends indefinitely in the control according to the periodic boundary conditions, and $n$ is an integer.
 
 \begin{center}
 	\begin{equation}
-		E =E_{dir} +E_{rec}+E_{corr}
+		E =E_\mathrm{dir} +E_\mathrm{rec}+E_\mathrm{corr}
 	\end{equation}
 \end{center}
 
@@ -195,27 +200,28 @@ The Gaussian distribution function is introduced into the Ewald summation algori
 
 \begin{center}
 	\begin{equation}
-		E_{dir}=\frac{1}{2}\sum_{n}\sum_{i,j=1}^{N}\frac{q_jq_jerfc{\left( \beta\left|\mathbf{r}_j-\mathbf{r}_i+\mathbf{n}\right|\right )}}{\left|\mathbf{r}_j-\mathbf{r}_i+\mathbf{n}\right|}
+		E_\mathrm{dir} = \frac{1}{2} \sum_{n} \sum_{i,j=1}^{N} \frac{q_i q_j \erf{\left( \beta\left|\mathbf{r}_j - \mathbf{r}_i+\mathbf{n}\right|\right)}}{\left|\mathbf{r}_j - \mathbf{r}_i + \mathbf{n}\right|}
 	\end{equation}
 \end{center}
 
 \begin{center}
 	\begin{equation}
-		E_{rec}=\frac{1}{2\pi V}\sum_{m\neq0}{\frac{\exp{\left( -\pi^2\mathbf{m}^2/\beta^2\right )}}{\mathbf{m}^2}S\left( \mathbf{m}\right )S\left( -\mathbf{m}\right )}
+		E_\mathrm{rec} = \frac{1}{2\pi V}\sum_{m\neq0}{\frac{\exp{\left( -\pi^2\mathbf{m}^2/\beta^2 \right)}}{\mathbf{m}^2}S\left( \mathbf{m} \right) S \left( -\mathbf{m} \right)}
 	\end{equation}
 \end{center}
 
 \begin{center}
 	\begin{equation}
-		E_{corr}=-\frac{1}{2}\sum_{\left( i,j\right )\in M}\frac{q_iq_jerf{\left( \beta\left|\mathbf{r}_i-\mathbf{r}_j\right|\right )}}{\left|\mathbf{r}_i-\mathbf{r}_j\right|}-\frac{\beta}{\sqrt\pi}\sum_{i=1}^{N}q_i^2
+		E_\mathrm{corr}=-\frac{1}{2}\sum_{\left( i,j \right)\in M}\frac{q_i q_j \erf{\left( \beta\left|\mathbf{r}_i-\mathbf{r}_j\right| \right)}}{\left|\mathbf{r}_i-\mathbf{r}_j\right|}-\frac{\beta}{\sqrt\pi}\sum_{i=1}^{N}q_i^2
 	\end{equation}
 \end{center}
-
-The above corresponds to Direct space, Reciprocal space and Correction term respectively. The $\beta$ is called Ewald's coefficient, which regulates the speed of convergence of real space and Fourier space. The larger its value, the faster the real space converges and the slower the Fourier space converges. The smaller the value, the slower the real space converges and the faster the Fourier space converges. erf() is the Gaussian error function.
+,where the $\beta$ is called Ewald's coefficient, which regulates the speed of convergence of real space and Fourier space. 
+The larger its value, the faster the real space converges and the slower the Fourier space converges and vice versa.
+The $\erf$ is the Gaussian error function.\\
 
 
 \noindent
-To improve computational efficiency, the finite-range force uses a proximity list lookup method. 
+To improve computational efficiency, the finite-range force in the direct space uses a proximity list lookup method. 
 This method obtains the spatial relationships between particles using their coordinates and distances, and stores this data in a neighborhood list. 
 When affected by short-range forces, a particle only interacts with its neighboring particles. 
 As the distance increases, all particles in the neighborhood are treated as neighbors, and their coordinates are updated to reconstruct interrelationships in a new step. 
@@ -317,7 +323,7 @@ Module 5 is the computation progress supervision module for multiple short-range
 \end{figure}
 
 
-\section{Data Structure Memory}
+\subsection{Data Structure Memory}
 
 \begin{sidewaysfigure}[p]
 	\centering
@@ -358,7 +364,7 @@ The second row starts with the cached force vector data, each group of data occu
 There are three types of force vector data in the cache: the first one is the partially summed data, the second one is the force data calculated by the end particles in the particle pair, and the third one is the force data of the excluded particles. The maximum number of force data to be cached in each buffer is set aside as twice the maximum number of particles in the cell obtained during data pre-processing. The number of valid data is initially zero and is increased by one each time data is added. The parity bit is used to check the data in the index line of the cache information for errors and is the parity value of the first 16 bytes. Finite Role The initialization of the finite force buffer can be implemented by software or FPGA logic to restore the information index line of each particle force buffer to its initial value. The number of valid data is zero. Each time data is added, the data add position is calculated based on the number of valid data, and the values of the number of valid data and the parity bit are updated.
 
 
-\section{Memory}
+\subsection{??? Memory}
 
 \begin{figure}[H]
 \centering
@@ -392,7 +398,7 @@ coefficient lookup tables, it is more convenient to use integers, all $R^2$ is u
 Otherwise, they are ignored. Since the spatial center distance of adjacent cells is greater than or equal to the truncation distance, there exists a certain probability distribution for the selected usable particle pairs. To maximize the arithmetic power, we use eight computation and screening modules working in parallel with three ports outputting at the same time, and the related table lookup operation is also allowed to look up the table at the same time according to the number of output ports.
 
 
-\section{Generation of Interpolation and Coefficient Tables}
+\subsection{Generation of Interpolation and Coefficient Tables}
 
 
 \begin{equation}
@@ -492,7 +498,7 @@ The calculation of the proximity force also requires a table of coefficients for
 
 The inputs to the third-order interpolating proximity force calculation unit are all the parameters needed for the calculation formula, and the outputs are the three components of the force. Each clock cycle can input a set of calculation parameters, after the internal pipeline processing, each clock can output a set of settlement results. The following figure shows the realization of the proximity force calculation unit block diagram.
 
-\section{Mark Table}
+\subsection{Mark Table}
 
 \begin{figure}[H]
 	\centering
