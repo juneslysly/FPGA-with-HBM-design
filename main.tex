@@ -226,7 +226,7 @@ This method obtains the spatial relationships between particles using their coor
 When affected by short-range forces, a particle only interacts with its neighboring particles. 
 As the distance increases, all particles in the neighborhood are treated as neighbors, and their coordinates are updated to reconstruct interrelationships in a new step. 
 The neighbor list is constructed based on each particle's position within a specific region, assuming that the interaction force between particles is truncated at a radius $r_cut$.Each particle contains a list of potential neighboring particles, which serves as input for the next computational cell.
-In addition, for perodical system, each simulation cell has 26 adjacent cells in the whole space. 
+In addition, for periodical system, each simulation cell has 26 adjacent cells in the whole space. 
 According to Newton's third law, to reduce repeated calculations, only the particle pairs in the 13 neighboring cells in the upper half of the center cell are filtered and calculated.\\
 
 \noindent
@@ -274,22 +274,22 @@ In implementing the algorithm, the position and acceleration of the current mome
 % the 3rd section
 \section{Proposed architecture}
 
+\begin{figure*}[ht]
+	\centering
+	\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig2_top_module_a_b.png}
+	\caption{Block diagram of the implementation of the finite range force calculation module. Module b, for a single FPGA acceleration card, the user logic resources MD hardware computation is mainly divided into short-range force force, long-range force force and covalent bonding force three kinds of processing units. Module a,The whole RL module is composed in each sub-module of the frame.}
+	\label{fgr:implementation}
+\end{figure*}
+
 
 \noindent
+
 Based on MD algorithms, we proposed a design to accelerate MD simulations on FPGA. 
 As shown in the implementation block diagram (Fig.~\ref{fgr:implementation}), the data processing flow in the RL module is as follows: The CPU pre-processes the MD simulation data which includes the cell serial number, obtained by segmenting the original data, and each particle is assigned to a unique cell. 
 The particle information is bound to the cell serial number to form the basic information of the particle to be processed. 
 Other information in the data entry is obtained from the original data file. 
 The side length of each data cell is determined based on the truncation distance, and the number of data cells is determined if the simulation data set exists in a deterministic rectangular space. 
 Each data cell contains information about the particles it belongs to and the positions of the neighboring data cells, forming a data table stored in memory.\\
-
-
-\begin{figure*}[ht]
-\centering
-\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig2_top_module_a_b.png}
-\caption{Block diagram of the implementation of the finite range force calculation module. Module b, for a single FPGA acceleration card, the user logic resources MD hardware computation is mainly divided into short-range force force, long-range force force and covalent bonding force three kinds of processing units. Module a,The whole RL module is composed in each sub-module of the frame.}
-\label{fgr:implementation}
-\end{figure*}
 
 
 Each particle occupies one row of storage space. 
@@ -308,12 +308,32 @@ The multi-channel calculation filter module processes each data cell as the main
 The proximity force calculation unit contains several calculation pipelines to match the force requirements of upstream and downstream modules. The calculator performs all proximity force calculations and decomposes the results into 3D coordinate axes based on the finite-range forces of the particle pairs. The force from the same particle to different particles in each main cell is accumulated and cached. The force data from the first 13 neighboring cells are cached in the particle pair force cache RAM according to the particle serial number. All force results and part of the accumulated force data are cached in the corresponding areas based on the particle number at the source end. At least two accumulator pipelines and two memory entry generation modules are reserved for parallel processing to match the upstream and downstream processing capabilities.
 
 
+
+\subsection{Data is read and written using HBM memory}
+
 \begin{figure}[ht]
-\centering
-\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig3_HBM.png}
-\caption{Data is read and written using HBM memory}
+	\centering
+	\includegraphics[angle=0,width=0.4\textwidth]{./figures/Fig4_onecache.png}
+	\caption{Data cached at the same address, multiple channels read simultaneously}
 \end{figure}
 
+\begin{figure}[ht]
+	\centering
+	\includegraphics[angle=0,width=0.4\textwidth]{./figures/Fig5_twocache.png}
+	\caption{Data cached at the different address, multiple channels read simultaneously}
+\end{figure}
+
+The data can be divided according to the whole simulation box and the data is stored in shared memory after CPU preprocessing. The data after preprocessing can be stored in a single address block or in multiple independent address spaces matching the computation module.
+FPGA computations can be multiplexed using modules with the same computational function for parallel computation to increase the speed of computation. Each module can poll out computational parameters from the same address or computational data from separate address spaces.
+In order to improve the computational efficiency, we use multiple independent data storage spaces considering that the HBM has enough storage space.
+
+
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig3_HBM.png}
+	\caption{Data is read and written using HBM memory}
+\end{figure}
 
 
 Module a, the use of HBM multi-module multi interface, HBM for multi-channel read, can support up to 32 channels of data at the same time read and write storage area, data read and write using HBM driver IP, HBM for multi-channel read and write, each HBM supports 32 independent read and write channels, in the design of the internal RAM resources can be saved, the cached data will be stored in the external mass storage device. 
@@ -322,22 +342,11 @@ Module 3 is a multi-channel polling control module, which needs to notify the co
 Module 4 is a module for accumulating multiple HomeCells with the first 13 neighbor cells. 
 Module 5 is the computation progress supervision module for multiple short-range force computing modules. Multiple computing modules in a single FPGA logic chip require a secondary computation progress supervision circuit to supervise the Mark table module for each subcell. Module 6 accumulates the results for multiple HomeCells with the remaining 13 neighbor cells.
 
-\section{Memory}
-
-\begin{figure}[ht]
-\centering
-\includegraphics[angle=0,width=0.4\textwidth]{./figures/Fig4_onecache.png}
-\caption{Data cached at the same address, multiple channels read simultaneously}
-\end{figure}
-
-\begin{figure}[ht]
-\centering
-\includegraphics[angle=0,width=0.4\textwidth]{./figures/Fig5_twocache.png}
-\caption{Data cached at the different address, multiple channels read simultaneously}
-\end{figure}
 
 
-\subsection{Data Structure Memory}
+\subsection{Data Structure in HBM Memory}
+
+\subsubsection{Upper half of data structures}
 
 \begin{sidewaysfigure}[p]
 	\centering
@@ -360,6 +369,8 @@ The particle information is stored in the HomeCell data structure, the data leng
 
 Particle pair computation information is cached in the global memory with a bit width of 256bits. Since each HomeCell is precomputed with the first 13 Neighbor Cells, and there are still 13 Neighbor Cells left to be computed, the computation information of particle pairs needs to be cached in the global memory.
 
+\subsubsection{lower half of data structures}
+
 \begin{figure}[!ht]
 \centering
 \includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig7_lower_half_of_data_structures.png}
@@ -378,12 +389,13 @@ The second row starts with the cached force vector data, each group of data occu
 There are three types of force vector data in the cache: the first one is the partially summed data, the second one is the force data calculated by the end particles in the particle pair, and the third one is the force data of the excluded particles. The maximum number of force data to be cached in each buffer is set aside as twice the maximum number of particles in the cell obtained during data pre-processing. The number of valid data is initially zero and is increased by one each time data is added. The parity bit is used to check the data in the index line of the cache information for errors and is the parity value of the first 16 bytes. Finite Role The initialization of the finite force buffer can be implemented by software or FPGA logic to restore the information index line of each particle force buffer to its initial value. The number of valid data is zero. Each time data is added, the data add position is calculated based on the number of valid data, and the values of the number of valid data and the parity bit are updated.
 
 
-\subsection{??? Memory}
+\subsection{Generation of Interpolation}
 
-\begin{figure}[H]
-\centering
-\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig8_force_direct_calculation_unit_module.png}
-\caption{The block diagram of the direct calculation module, assuming that particle i and particle j have gone through the particle screening module, and the short-range force of the particle pairs needs to be calculated within a certain range of action. The particle pairs are calculated directly by the DSP calculation pipeline, and the calculation results are single-precision floating-point numbers, which are calculated by the Xilinx floating-point number calculation unit, which is a relatively high-precision calculation method that consumes a large amount of DSP resources.}
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig8_force_direct_calculation_unit_module.png}
+	\caption{The block diagram of the direct calculation module, assuming that particle i and particle j have gone through the particle screening module, and the short-range force of the particle pairs needs to be calculated within a certain range of action. The particle pairs are calculated directly by the DSP calculation pipeline, and the calculation results are single-precision floating-point numbers, which are calculated by the Xilinx floating-point number calculation unit, which is a relatively high-precision calculation method that consumes a large amount of DSP resources.}
 \end{figure}
 
 
@@ -391,10 +403,13 @@ Proximity force direct calculation unit module block diagram, assuming that part
 In the hardware floating-point calculation, opening the root sign needs to consume a lot of logic resources, so we calculate the inter-particle interaction force, transform the formula form, and use 2 to do multi-level multiplication to calculate 14 and 8 in place of  13 and 7, which replaces the floating-point computation IP open-root operation. Using the open-root number to handle another Coulomb force calculation pipeline, parallel computation does not interfere with each other in the computation time, the data is output to the last step after floating-point number multiplication and division calculation IP, and the corresponding particle parameters are read from the memory, such as A, B and other parameters in Fig. After the calculation, the results for the LJ force and the Coulomb short-range force.
 
 
-\begin{figure}[H]
-\centering
-\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig9_Third_order_linear_interpolation.png}
-\caption{The figure shows the framework diagram of the second-order interpolation table DSP processing flow, the information of each particle is read from the parameter cache, after the arbitration of the parameter selector, the particle pairs go through the distance judgment, and the particles within the computation range enter into the force computation channel, assuming that the particles to be computed are particle i and particle j. }
+
+
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig9_Third_order_linear_interpolation.png}
+	\caption{The figure shows the framework diagram of the second-order interpolation table DSP processing flow, the information of each particle is read from the parameter cache, after the arbitration of the parameter selector, the particle pairs go through the distance judgment, and the particles within the computation range enter into the force computation channel, assuming that the particles to be computed are particle i and particle j. }
 \end{figure}
 
 
@@ -412,7 +427,6 @@ coefficient lookup tables, it is more convenient to use integers, all $R^2$ is u
 Otherwise, they are ignored. Since the spatial center distance of adjacent cells is greater than or equal to the truncation distance, there exists a certain probability distribution for the selected usable particle pairs. To maximize the arithmetic power, we use eight computation and screening modules working in parallel with three ports outputting at the same time, and the related table lookup operation is also allowed to look up the table at the same time according to the number of output ports.
 
 
-\subsection{Generation of Interpolation and Coefficient Tables}
 
 
 \begin{equation}
@@ -422,7 +436,7 @@ Otherwise, they are ignored. Since the spatial center distance of adjacent cells
 \end{equation}
 
  
-wthere, 
+where, 
 
 \begin{equation}
     A_{ab} = 48\epsilon_{ab}\sigma_{ab}^{12}
@@ -446,7 +460,7 @@ The generation of the interpolating function should not only reduce the computat
 
 The $R^{-14}$, $R^{-8}$ and $R^{-3}$ can be fitted using a multi-order interpolation function of the form:
 
-
+ \subsection{Generation of Coefficient Tables}
 \begin{equation}
 \begin{array}{c}
  f(x) = C_{0}+C_{1}(x-a)+C_{2}(x-a)^2 +C_{3}(x-a)^3 + \cdots \\ 
@@ -512,9 +526,9 @@ The calculation of the proximity force also requires a table of coefficients for
 
 The inputs to the third-order interpolating proximity force calculation unit are all the parameters needed for the calculation formula, and the outputs are the three components of the force. Each clock cycle can input a set of calculation parameters, after the internal pipeline processing, each clock can output a set of settlement results. The following figure shows the realization of the proximity force calculation unit block diagram.
 
-\subsection{Mark Table}
+\subsection{The make table module is used to calculate the process control}
 
-\begin{figure}[H]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.7\textwidth]{./figures/Fig10_marktable.png}
 	\caption{The particle computing progress monitoring module is composed of several modules}
