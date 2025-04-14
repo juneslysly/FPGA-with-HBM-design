@@ -49,7 +49,7 @@ Additionally, potential strategies for continuing to improve the efficiency of M
 \noindent
 MD simulations have proven to provide critical insights into the properties and interactions of materials and biological systems, making them an important tool in materials science and drug discovery, and showing great promise in these fields~\cite{fep_runtong,fep_york,md_in_dd_jmc2016,md_in_material1}. 
 However, as the research interest grows in increasingly complex and larger-scale systems, the speed of MD simulations remains a significant challenge, directly impacting the efficiency of exploring their potential applications. 
-To address this, almost all existing MD programs have developed multi-CPUs parallel strategies and GPU-based codes to accelerate simulations, significantly enhancing computational performance~\cite{charmm_at_c45,amber_gpu1,amber_gpu2,namd_gpu,omm7,gmx}. \\
+To address this, almost all existing MD programs have developed multi-CPUs parallel strategies and GPU-based codes to accelerate simulations, significantly enhancing computational performance~\cite{charmm_at_c45,amber_gpu1,amber_gpu2,namd_gpu,omm7,gmx,2019arXiv190505359Y}. \\
 
 \noindent
 In addition to GPU and multi-core CPU approaches, several research groups around the world use dedicated computing hardware to accelerate MD simulations. 
@@ -58,7 +58,7 @@ However, the ANTON series of supercomputers are expensive to design, have long c
 Additionally, the MD-GRAPE series, which dates back to the late 1980s, uses MCUs, CPLDs (Complex Programmable Logic Devices), FPGAs, and other acceleration circuits to build a multi-node design~\cite{MD-GRAPE-3,MDGRAPE-4A}.
 This design is combined with a specialized fiber-optic transmission network to form a large-scale computational cluster. 
 The MD-GRAPE series has been developed through four generations, and its hardware devices are constantly updated and iterated, but the design cost remains very high. 
-Furthermore, the Novo-G series, which uses commercial FPGA accelerator cards from the Intel series, optimizes molecular dynamics computational efficiency from both hardware and software perspectives~\cite{Novo-G,Novo-G2}.\\
+Furthermore, the Novo-G series, which uses commercial FPGA accelerator cards from the Intel series, optimizes molecular dynamics computational efficiency from both hardware and software perspectives~\cite{Novo-G,Novo-G2,3dfft,bondforce}.\\
 % add comment for the Novo-G
 
 \noindent
@@ -81,7 +81,7 @@ Finally, we demonstrate the results of MD simulations of argon and DHFR using ou
 \section{Basic algorithms of classical MD and force field}
 
 \noindent
-In this work, we divide a classical MD program into four parts~\ref{ref1}:
+In this work, we divide a classical MD program into four parts~\cite{ref1}:
 \begin{enumerate}
 \item Read in the specified simulation conditions, such as initial temperature, particle number, and time step.
 \item Determine the initial positions and velocities of the particles.
@@ -264,23 +264,22 @@ The proximity force calculation unit contains several calculation pipelines to m
 
 
 \subsection{Data is read and written using HBM memory}
-
-
-The high-bandwidth memory (HBM) stores data cells with structured organization.  As illustrated in the accompanying diagram, each data cell configuration comprises multiple information layers.  The primary row specifies fundamental metadata including the cell serial number, physical dimensions, particle count, particle information offset addresses, and verification codes.  Subsequent quadrants systematically document adjacency relationships through serialized identifiers and HBM address offsets for neighboring cells, with each spatial dimension represented in consecutive 8-byte blocks.  The memory allocation follows strict alignment protocols where incomplete rows are padded to achieve full row boundary compliance.  Particle-specific serial numbers are sequentially stored in contiguous memory segments, maintaining the established alignment convention through terminal padding.  This hierarchical arrangement ensures efficient data retrieval while preserving memory architecture integrity.
+The high-bandwidth memory (HBM) stores data cells with structured organization.  As illustrated in the accompanying diagram, each data cell configuration comprises multiple information layers.  The primary row specifies fundamental metadata including the cell serial number, physical dimensions, particle count, particle information offset addresses, and verification codes.  Subsequent quadrants systematically document adjacency relationships through serialized identifiers and HBM address offsets for neighboring cells, with each spatial dimension represented in consecutive 8-byte blocks.  The memory allocation follows strict alignment protocols where incomplete rows are padded to achieve full row boundary compliance.  Particle-specific serial numbers are sequentially stored in contiguous memory segments, maintaining the established alignment convention through terminal padding.  This hierarchical arrangement ensures efficient data retrieval while preserving memory architecture integrity.Data cached at the same address, multiple channels read simultaneously;Data cached at the different address, multiple channels read simultaneously shown in Figure\ref{fig:subfig1}and Figure\ref{fig:subfig2}.
 
 \subsubsection{Particle information storage table Home Cell and Neighbor Cell storage relationship }
 Data cells accommodate individual particles through dedicated row allocations, with their dimensional parameters determined during preprocessing by the maximum anticipated particle count augmented by a defined safety margin. A hierarchical addressing mechanism enables direct access to any data cell using its unique serial number, which maps to precise memory coordinates. Structural omission of paired particle entries generates the specialized memory topology detailed in associated documentation, with exclusion criteria governed by registers storing both the count and physical addresses of excluded elements—parameters directly utilized by downstream computational modules. Critical to force calculations, interpolation coefficients and lookup tables are precomputed by the central processing unit (CPU) and loaded into dedicated on-chip RAM resources within the FPGA fabric. Exclusion data originates from predefined covalent particle bonds, where paired particle identifiers are aggregated into composite exclusion records stored natively in HBM arrays, ensuring low-latency access during simulation execution.
+
 \subsubsection{The storage relationship between Home Cell and Neighbor Cell in the particle information storage table }
 The particle information storage architecture establishes a dual-layer hierarchy between HomeCell and NeighborCell structures operating on 512-bit data buses, where non-functional regions undergo zero-padding optimization to maintain address alignment and facilitate efficient lookup operations  shown in Figure \ref{fig:subfig3}(b). This unified storage schema integrates 7 distinct functional segments characterized by predefined bit allocations: initial addressing utilizes a lookup code for rapid data classification, directing processing pipelines to appropriate computational modules based on encoded metadata. Serial number assignment implements a globally unique addressing scheme across all simulation entities, while spatial coordinates embed precise three-dimensional positioning parameters compliant with Cartesian coordinate systems. Particle identifiers adopt globally unique numbering conventions to track individual entities throughout simulation lifecycles. The system employs a hybrid addressing paradigm where hierarchical indexing of cell relationships coexists with direct particle access patterns, supported by register-mapped exclusion tables that dynamically configure FPGA resources for force calculation acceleration. This structured approach enables deterministic memory access latencies while preserving compatibility with parallel processing architectures.
 
 \subsubsection{The data structure of the particle information storage table Home Cell }
-
 The particle information repository employs a fixed-length encoding scheme within 512-bit HomeCell structures, adhering to memory alignment constraints through zero-padding strategies that optimize address resolution efficiency  shown in Figure \ref{fig:subfig3}(c). This standardized format segments data into 5 predefined fields with dedicated bit allocations, initiating with a machine-readable type identifier that directs processing workflows to designated arithmetic units. Each particle's physical attributes—including scalar charge magnitudes, vector velocity components, and three-dimensional Cartesian coordinates—are encoded using IEEE 754-compliant 32-bit floating-point representations for numerical stability.
 
-Parallel processing requirements necessitate dual-tier memory management: precomputed pairwise interaction data for the first 13 nearest NeighborCells resides in on-chip registers for immediate access, while remaining 13 required neighbor interactions are staged in 256-bit wide global memory buffers shown in Figure \ref{fig:subfig3}. This partitioning balances latency-critical intra-cell computations with bandwidth-intensive inter-cell calculations, facilitated by FPGA-optimized neighbor index register files that minimize off-chip memory transactions. The hybrid storage methodology simultaneously satisfies deterministic timing constraints for core physics kernels while maintaining scalable data handling capacity for large-scale particle systems.
+Parallel processing requirements necessitate dual-tier memory management: precomputed pairwise interaction data for the first 13 nearest NeighborCells resides in on-chip registers for immediate access, while remaining 13 required neighbor interactions are staged in 256-bit wide global memory buffers shown in Figure \ref{fig:subfig3}(c). This partitioning balances latency-critical intra-cell computations with bandwidth-intensive inter-cell calculations, facilitated by FPGA-optimized neighbor index register files that minimize off-chip memory transactions. The hybrid storage methodology simultaneously satisfies deterministic timing constraints for core physics kernels while maintaining scalable data handling capacity for large-scale particle systems.
 
 \subsubsection{The Home Cell and the remaining 13 neighbor cells accumulate the results}
 The particle-to-force caching and partial summation module implements latency-optimized data reuse by sequentially capturing force calculation results between a primary cell's particle and its intra-cell counterparts across successive clock cycles. This approach consolidates redundant force components into interim storage buffers, substantially reducing redundant data transfers while preserving computational coherence. Critical to this mechanism is the hierarchical aggregation logic that systematically associates force contributions with their originating source particle via unique serial number indexing, enabling parallelized accumulation of vector forces within dedicated on-chip registers. Resultant composite force vectors are then serialized into contiguous memory locations according to source particle identifiers, forming structured force caches that maintain strict alignment with downstream processing requirements. The RL (reaction) force buffer adopts a linear addressing scheme where entries align directly with particle enumeration, ensuring deterministic memory access patterns essential for maintaining synchronization during large-scale N-body simulations. This structured methodology simultaneously minimizes off-chip bandwidth consumption and maximizes FPGA resource utilization through register-file optimized data structures.
+
 \subsubsection{The remaining 13 neighbor cells  storage table }
 The particle force cache employs a hierarchical storage architecture with unified 512-bit data frames shown in Figure \ref{fig:subfig4}(b), comprising two functional rows: an index row containing metadata and a data row storing force vector payloads. The index row encodes critical operational parameters through dedicated bit fields—including type classification flags, particle identifiers, buffer capacity parameters (predefined as double the maximum particle count observed during preprocessing), valid entry counters initialized to zero, and a 16-byte segment checksum for error detection. The data row implements a contiguous memory block partitioned into 16-byte aligned entries, each storing one of three force vector types: intermediate partial sums from ongoing pairwise calculations, boundary force contributions from terminal particles in cell interactions, and excluded particle forces derived from covalent bond constraints.
 
@@ -305,20 +304,19 @@ Buffer management follows a dual-phase protocol where data insertion calculates 
 	\centering
 	\includegraphics[angle=0,width=0.9\textwidth]{./figures/Fig6_Upper_half_of_data_structures.png}
 	\caption{(a),Particle information storage table Home Cell and Neighbor Cell storage relationship.
-		(b), The storage relationship between Home Cell and Neighbor Cell in the particle information storage table, the data length is 512 bits, and the data is mainly composed of six parts.
-		(c), the data structure of the particle information storage table Home Cell, the data length of the Home Cell is 512 bits bit width, and the non-data part needs to be zeroed in to facilitate the addressing
-		(d), particle pair computational information cache, data bit width is 256 bits bit width, since each Home Cell data is pre-computed with the first 13 Neighbor Cells}
+	      	 (b), The storage relationship between Home Cell and Neighbor Cell in the particle information storage table, the data length is 512 bits, and the data is mainly composed of six parts.
+		     (c), the data structure of the particle information storage table Home Cell, the data length of the Home Cell is 512 bits bit width, and the non-data part needs to be zeroed in to facilitate the addressing
+	      	 (d), particle pair computational information cache, data bit width is 256 bits bit width, since each Home Cell data is pre-computed with the first 13 Neighbor Cells}
 	\label{fig:subfig3}
 \end{sidewaysfigure*}
 
 \begin{figure*}[!ht]
 	\centering
 	\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig7_lower_half_of_data_structures.png}
-	\caption{(a), the Home Cell and the remaining 13 neighbor cells accumulate the results, and the data needs to be filtered a lot before the particles in the corresponding cell can calculate the final short-range force. (b), the block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, and the storage length of each particle information is 512 bits.Block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, the storage length of each particle information is 256bits, and the calculation result of each step is stored in a specific storage space, which is carried by the CPU for the remaining calculation processing.}
+	\caption{(a), the Home Cell and the remaining 13 neighbor cells accumulate the results, and the data needs to be filtered a lot before the particles in the corresponding cell can   calculate the final short-range force.
+		 (b), the block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, and the storage length of each particle information is 512 bits.Block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, the storage length of each particle information is 256bits, and the calculation result of each step is stored in a specific storage space, which is carried by the CPU for the remaining calculation processing.}
 	\label{fig:subfig4}
 \end{figure*}
-
-
 
 	\subsection{Generation of Interpolation and Coefficient Tables}
 \begin{figure}[!ht]
@@ -533,7 +531,7 @@ Each RL module uses approximately one $R^2$ computational unit for particle pair
 		PLL & 17 & 34 \\  
 		\bottomrule
 	\end{tabular*}
-	\caption {The FPGA platform was Xilinx Virtex UltraScale+ VU37P with Inspur F37X.}
+	\caption {The FPGA platform was Xilinx Virtex UltraScale+ VU37P with Inspur F37X.Comparison of resources used by a single module and two RL modules in finite range.}
 \end{table*}
 
 
@@ -614,7 +612,7 @@ Each RL module uses approximately one $R^2$ computational unit for particle pair
 		FPGA & VU37P & 250MHz & 22.0 & 143.7 \\
 		FPGA & VU37P & 300MHz & 18.33 & 119.7 \\
 		NVIDIA\cite{8056853} & Tesla K20c & 0.73GHz & 29 & 92 \\
-		Anton\cite{Anton1} & ~ & ~ & 4 & 13 \\
+		Anton\cite{anton1} & ~ & ~ & 4 & 13 \\
 		\bottomrule
 	\end{tabular*}
 	\caption[Performance comparison of 3D FFT computation module at different clock frequencies]{Implementation of 3D FFT computation module using Xilinx Virtex UltraScale+ VU37P accelerator card. The module completes data reading, 3D FFT computation, convolution, inverse transform, and data storage. Pipelined mode is configured for testing. Input data includes single-precision floating-point matrices of dimensions 32×32×32 and 64×64×64.}
@@ -671,7 +669,9 @@ The LJ potential energy calculations (Table~\ref{tbl:argon}) demonstrate <5\% in
 \end{table}
 
 
+After validating the energy calculations of the protein system, we further conducted molecular dynamics (MD) simulations on the FPGA platform to verify its capability for authentic simulation tasks. As illustrated in Figures 5-15 and 5-16, the test system employed the dihydrofolate reductase (DHFR) model, a benchmark protein consisting of 159 amino acid residues and 2489 atoms commonly used in computational studies. The FPGA accelerator utilized the Xilinx Virtex UltraScale+ VU37P chip for implementation.
 
+The simulation parameters included a time step of 2 fs and three-dimensional Fourier transform (3D-FFT) with two spatial resolutions: 32×32×32 and 64×64×64. Comparative analyses were performed against CPU and GPU implementations. During the 3D-FT process, systematic errors were observed, primarily attributed to two factors: (1) The FPGA's native FFT IP core only supports matrix dimensions as powers of two (e.g., 32-bit or 64-bit inputs), and (2) The FFT v9.0 IP core offers both 32-bit floating-point and fixed-point modes, with distinct resource consumption trade-offs.
 
 
  \begin{figure}[H]
