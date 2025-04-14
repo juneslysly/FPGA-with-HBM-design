@@ -581,7 +581,27 @@ Each RL module uses approximately one $R^2$ computational unit for particle pair
 	\caption[64-bit sequence resource utilization based on URAM bar chart]{Layout routing uses Xilinx Virtex UltraScale+ VU37P chip, FFT 64-bit sequence resource utilization based on URAM bar chart.  }
 \end{table}
 
-
+\begin{table}[!ht]
+	\centering
+	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
+		\toprule
+		Resource Name & Utilization\% \\
+		\midrule
+		LUT & 15 \\
+		LUTRAM & 4 \\
+		FF & 14 \\
+		BRAM & 24 \\
+		URAM & 13 \\
+		DSP & 3 \\
+		IO & 1 \\
+		GT & 17 \\
+		BUFG & 2 \\
+		MMCM & 8 \\
+		PCIe & 17 \\
+		\bottomrule
+	\end{tabular*}
+	\caption[Resource utilization of RTL covalent bond module]{Resource utilization rates for covalent bond module implemented on Xilinx Virtex UltraScale+ VU37P chip through layout routing.}
+\end{table}
 
 
 \begin{table}[!ht]
@@ -646,7 +666,7 @@ The results, shown in Figures~\ref{lj_energy_force} and~\ref{zoom_lj_energy_forc
 \end{figure*}
 
 
-Building upon successful validation of the Lennard-Jones (LJ) potential in two-particle systems, this work extends characterization to a 15-atom Argon cluster under periodic boundary conditions (30 Å cubic box). Parameters derived from the CHARMM force field (σ = 3.8220 Å, ε = 0.238065 kcal/mol) were implemented with a 12 Å non-bonded interaction cutoff. Five distinct structural configurations were tested across FPGA, GPU, and CPU platforms using identical hardware setups as previously reported.
+Building upon successful validation of the Lennard-Jones (LJ) potential in two-particle systems, this work extends characterization to a 15-atom Argon cluster under periodic boundary conditions (30 \AA cubic box). Parameters derived from the CHARMM force field ($\sigma$ = 3.8220 \AA, $\varepsilon$ = 0.238065 kcal/mol) were implemented with a 12 \AA~non-bonded interaction cutoff. Five distinct structural configurations were tested across FPGA, GPU, and CPU platforms using identical hardware setups as previously reported.
 The LJ potential energy calculations (Table~\ref{tbl:argon}) demonstrate <5\% inter-platform RMS deviation across all test cases, confirming FPGA implementation accuracy. This cross-platform consistency validates the FPGA's computational precision in handling LJ interactions through optimized parallel architectures and memory bandwidth utilization.
 \begin{table}[!ht]
 	\centering
@@ -667,11 +687,11 @@ The LJ potential energy calculations (Table~\ref{tbl:argon}) demonstrate <5\% in
 
 The Inspur F37X FPGA accelerator card was selected for its advanced programmable logic architecture, offering high flexibility and precise customization to address specific algorithmic requirements of the project. This adaptability effectively overcomes performance bottlenecks inherent in traditional computing architectures, enabling breakthroughs in technical barriers and fostering innovative research pathways. The accelerator card leverages the Xilinx Virtex UltraScale+ VU37P chip, integrating 8GB HBM2 high-bandwidth memory with a bandwidth of 460GB/s, delivering 28.1 TOPS INT8 compute performance at <75W power consumption. This configuration enables high-speed AI inference and scientific computing while maintaining energy efficiency, outperforming CPUs in scenarios requiring low latency and high throughput .
 
-Performance comparisons with mainstream GPUs (e.g., NVIDIA GTX 1650) revealed that the FPGA platform currently matches the Intel i5-8400 CPU in efficiency but lags behind GPUs. This gap stems from incomplete optimization of the FPGA implementation and suboptimal resource utilization. For instance, the Virtex UltraScale+ architecture’s DSP slices and logic units require further pipeline optimization and operator fusion to fully exploit parallelism. Despite this, the FPGA demonstrates strong accuracy in energy calculations across molecular dynamics simulations. For example, the Root Mean Square Error (RMSE) between FPGA and CPU/GPU energy computations for Lennard-Jones (LJ) interactions is 3.5×10⁻⁶ kcal/mol, validating computational consistency. Multi-particle argon system tests further confirmed negligible energy deviations, while CHARMM TIP3P water model simulations validated the fidelity of LJ and electrostatic interactions under rigid constraints and Particle Mesh Ewald (PME) treatments .
+Performance comparisons with mainstream GPUs (e.g., NVIDIA GTX 1650) revealed that the FPGA platform currently matches the Intel i5-8400 CPU in efficiency but lags behind GPUs. This gap stems from incomplete optimization of the FPGA implementation and suboptimal resource utilization. For instance, the Virtex UltraScale+ architecture's DSP slices and logic units require further pipeline optimization and operator fusion to fully exploit parallelism. Despite this, the FPGA demonstrates strong accuracy in energy calculations across molecular dynamics simulations. For example, the Root Mean Square Error (RMSE) between FPGA and CPU/GPU energy computations for Lennard-Jones (LJ) interactions is $3.5 times 10^{-6}$ kcal/mol, validating computational consistency. Multi-particle argon system tests further confirmed negligible energy deviations, while CHARMM TIP3P water model simulations validated the fidelity of LJ and electrostatic interactions under rigid constraints and Particle Mesh Ewald (PME) treatments .
 
-The choice of FP32 floating-point arithmetic in HLS-based three-level interpolation modules prioritizes precision over immediate resource savings. FP32’s 24-bit mantissa ensures minimal cumulative errors in intermediate calculations, critical for algorithms like interpolation where decimal precision impacts convergence. While lower-precision types (FP16/INT8) might suffice for some tasks, they risk instability in complex workflows requiring high dynamic range. This approach aligns with future FPGA advancements, where increased logic resources will enable seamless integration of FP32-optimized IP blocks without sacrificing accuracy .
+The choice of FP32 floating-point arithmetic in HLS-based three-level interpolation modules prioritizes precision over immediate resource savings. FP32's 24-bit mantissa ensures minimal cumulative errors in intermediate calculations, critical for algorithms like interpolation where decimal precision impacts convergence. While lower-precision types (FP16/INT8) might suffice for some tasks, they risk instability in complex workflows requiring high dynamic range. This approach aligns with future FPGA advancements, where increased logic resources will enable seamless integration of FP32-optimized IP blocks without sacrificing accuracy .
 
-In contrast to RTL designs, which demand meticulous state machine engineering and timing constraint programming (3–5× longer development cycles), HLS accelerates prototyping through high-level abstractions. Tools like Vivado HLS automate resource allocation and pipeline optimization, reducing manual intervention. However, RTL remains essential for ultra-optimized, latency-sensitive modules, such as those requiring strict deterministic timing—a balance critical for molecular dynamics applications where both speed and precision are paramount .
+In contrast to RTL designs, which demand meticulous state machine engineering and timing constraint programming (3-5$\times$ longer development cycles), HLS accelerates prototyping through high-level abstractions. Tools like Vivado HLS automate resource allocation and pipeline optimization, reducing manual intervention. However, RTL remains essential for ultra-optimized, latency-sensitive modules, such as those requiring strict deterministic timing—a balance critical for molecular dynamics applications where both speed and precision are paramount .
 \section{Conclusions}
 
 \noindent
