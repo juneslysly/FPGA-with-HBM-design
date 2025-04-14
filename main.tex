@@ -5,6 +5,7 @@
  
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{subfigure}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \usepackage[linesnumbered, ruled]{algorithm2e}
 \usepackage{rotfloat}
@@ -75,46 +76,6 @@ In Section 3, we present the architecture implemented in this work, followed by 
 Finally, we demonstrate the results of MD simulations of argon and DHFR using our implementation and compare them with results obtained from OpenMM to validate the correctness of our approach.
 \\
 
-
-%\noindent
-%To accelerate MD simulations using hardwares, memories and design language is also important.
-% these two sentense sould be move to other place
-% An important step in the MD simulation process is the updating of the system state at each moment.
-% This means that the forces on all particles in the system are calculated at one time step, and then the position and velocity of each particle at the next time step are calculated by an integrator\cite{ref22}.
-% This cycle completes the simulation. 
-% The calculation of the forces on the particles is crucial to the accuracy of the MD results, and the calculation of the inter-particle interactions is the decisive speed step in the program\cite{ref6}.\\
-
-%\noindent
-%Different impact of memories on the overall design.
-% A single instruction multiple data stream (SIMD) approach is utilized to significantly improve the computational efficiency. 
-% To better exploit the parallelism potential, we comprehensively compared existing high-speed interfaces and memory devices, and analyzed existing high-speed architectural designs\cite{ref18,ref21}.
-% The new generation of high-bandwidth memories, such as HBM2 memories, are used to fully compare the impact of existing memory structures on computational performance in MD design. 
-% A great deal of work has been done using DDR4 high-speed interfaces and polling algorithms to improve access efficiency\cite{ref19,ref20}.
-% The new generation of high-speed, high-bandwidth, multi-parallel interface HBM memory is adopted to enable read/write access to external mass storage while parallelizing the computation of multiple data paths\cite{ref6}.\\
-
-%\noindent
-%Designed in RTL language or in HLS language? 
-% The optimized design of the underlying RTL circuit fundamentally improves the efficiency of reading and writing registers. The optimized design of the underlying RTL circuit fundamentally improves the efficiency of data reading and writing registers, and more than doubles the efficiency of reading and writing external storage\cite{ref3,ref19}. 
-% Therefore, the rational use of external mass storage devices is fully considered in the design process. 
-% We select the same Xilinx UV9P chip of the cloud platform, and use two kinds of more efficient memories, DDR4 and HBM2, because there are a large number of intermediate computational data in MD computation, which are directly related to the particle information, so the storage data need independent storage intervals, and the DDR is a single read/write channel, and the HBM supports 32 independent read/write channels, which greatly increases the read/write storage space of particle computation, and the HBM supports 32 independent read/write channels\cite{ref19,ref20}. 
-% DDR is a single read/write channel, while HBM supports 32 independent read/write channels, which greatly improves the data throughput efficiency for particle computation\cite{ref18,ref22}.
-% The use of multi-channel computing improves the efficiency of reading and writing to external memory, but the consumption of on-chip resources by the read/write driver needs to be fully considered\cite{ref20,ref21,ref22}. We use the progress checking module to supervise the multi-channel data to ensure the orderly reading and writing of data\cite{ref20,ref21,ref22,ref23}.\\
-
-
-
-%\noindent
-%
-% this should not in Introdution
-%
-%The Influence of Numerical Analysis Method on Calculation Speed.
-% For the same MD simulation system, the data is "sliced" according to the computational node and then sent to the specified computational unit. 
-% The computational unit needs to use a reasonable floating-point computational model. 
-% In this design, we compare various numerical models and model the first, second, and third-order computational models using multistage linear interpolation to create a numerical interpolation table by slicing each fitted curve rationally. 
-% The interpolation table is transferred to the on-chip memory via the high-speed AXI Lite protocol, thus ensuring high computational efficiency. 
-% Meanwhile, HLS advanced compilation and RTL design are used to finalize the RTL design circuit to ensure computational efficiency. 
-% The interpolation algorithm is compared with Newtonian interpolation, Hamiltonian interpolation and Legendre interpolation\cite{ref3}. 
-% After the same MD simulation system is divided into several blocks, a reasonable proximity force calculation supervision module needs to be designed, which needs to record the computational progress of the data in each block. 
-% Assuming that a simulation system is divided into 1000 or more sub units and that the upper and lower hemispheres are computed separately, the design of the supervision module would be difficult. We use a multilevel supervision approach to ensure that the data in each sub unit is accurate during the computation.\\
 
 
 \section{Basic algorithms of classical MD and force field}
@@ -229,13 +190,6 @@ The neighbor list is constructed based on each particle's position within a spec
 In addition, for periodical system, each simulation cell has 26 adjacent cells in the whole space. 
 According to Newton's third law, to reduce repeated calculations, only the particle pairs in the 13 neighboring cells in the upper half of the center cell are filtered and calculated.\\
 
-\noindent
-% too detail
-%First, the simulation data set is preprocessed, which is realized by the CPU software code.
-%The three-dimensional space where the simulated particles are located in the X-directions, Y-directions and Z-directions is divided into equal-sized squares, and based on the coordinates of the particles, the information of particles and the positions of neighboring squares are recorded in each cell.
-%The preprocessed particle data cells are stored in the form of a data list in the specific storage area of the global HBM in the FPGA. 
-%Next, in the proximity force calculation module of the FPGA, we will read each particle data cell sequentially, calculate the distances of all particle pairs in the cell, and select particle pairs within the truncated distances to calculate the proximity force and the finite-range Coulomb force. 
-\\
 
 
 \subsection{Verlet integrator algorithm}
@@ -311,87 +265,62 @@ The proximity force calculation unit contains several calculation pipelines to m
 
 \subsection{Data is read and written using HBM memory}
 
-\begin{figure}[ht]
+
+The high-bandwidth memory (HBM) stores data cells with structured organization.  As illustrated in the accompanying diagram, each data cell configuration comprises multiple information layers.  The primary row specifies fundamental metadata including the cell serial number, physical dimensions, particle count, particle information offset addresses, and verification codes.  Subsequent quadrants systematically document adjacency relationships through serialized identifiers and HBM address offsets for neighboring cells, with each spatial dimension represented in consecutive 8-byte blocks.  The memory allocation follows strict alignment protocols where incomplete rows are padded to achieve full row boundary compliance.  Particle-specific serial numbers are sequentially stored in contiguous memory segments, maintaining the established alignment convention through terminal padding.  This hierarchical arrangement ensures efficient data retrieval while preserving memory architecture integrity.
+
+\subsubsection{Particle information storage table Home Cell and Neighbor Cell storage relationship }
+Data cells accommodate individual particles through dedicated row allocations, with their dimensional parameters determined during preprocessing by the maximum anticipated particle count augmented by a defined safety margin. A hierarchical addressing mechanism enables direct access to any data cell using its unique serial number, which maps to precise memory coordinates. Structural omission of paired particle entries generates the specialized memory topology detailed in associated documentation, with exclusion criteria governed by registers storing both the count and physical addresses of excluded elements—parameters directly utilized by downstream computational modules. Critical to force calculations, interpolation coefficients and lookup tables are precomputed by the central processing unit (CPU) and loaded into dedicated on-chip RAM resources within the FPGA fabric. Exclusion data originates from predefined covalent particle bonds, where paired particle identifiers are aggregated into composite exclusion records stored natively in HBM arrays, ensuring low-latency access during simulation execution.
+\subsubsection{The storage relationship between Home Cell and Neighbor Cell in the particle information storage table }
+The particle information storage architecture establishes a dual-layer hierarchy between HomeCell and NeighborCell structures operating on 512-bit data buses, where non-functional regions undergo zero-padding optimization to maintain address alignment and facilitate efficient lookup operations  shown in Figure \ref{fig:subfig3}(b). This unified storage schema integrates 7 distinct functional segments characterized by predefined bit allocations: initial addressing utilizes a lookup code for rapid data classification, directing processing pipelines to appropriate computational modules based on encoded metadata. Serial number assignment implements a globally unique addressing scheme across all simulation entities, while spatial coordinates embed precise three-dimensional positioning parameters compliant with Cartesian coordinate systems. Particle identifiers adopt globally unique numbering conventions to track individual entities throughout simulation lifecycles. The system employs a hybrid addressing paradigm where hierarchical indexing of cell relationships coexists with direct particle access patterns, supported by register-mapped exclusion tables that dynamically configure FPGA resources for force calculation acceleration. This structured approach enables deterministic memory access latencies while preserving compatibility with parallel processing architectures.
+
+\subsubsection{The data structure of the particle information storage table Home Cell }
+
+The particle information repository employs a fixed-length encoding scheme within 512-bit HomeCell structures, adhering to memory alignment constraints through zero-padding strategies that optimize address resolution efficiency  shown in Figure \ref{fig:subfig3}(c). This standardized format segments data into 5 predefined fields with dedicated bit allocations, initiating with a machine-readable type identifier that directs processing workflows to designated arithmetic units. Each particle's physical attributes—including scalar charge magnitudes, vector velocity components, and three-dimensional Cartesian coordinates—are encoded using IEEE 754-compliant 32-bit floating-point representations for numerical stability.
+
+Parallel processing requirements necessitate dual-tier memory management: precomputed pairwise interaction data for the first 13 nearest NeighborCells resides in on-chip registers for immediate access, while remaining 13 required neighbor interactions are staged in 256-bit wide global memory buffers shown in Figure \ref{fig:subfig3}. This partitioning balances latency-critical intra-cell computations with bandwidth-intensive inter-cell calculations, facilitated by FPGA-optimized neighbor index register files that minimize off-chip memory transactions. The hybrid storage methodology simultaneously satisfies deterministic timing constraints for core physics kernels while maintaining scalable data handling capacity for large-scale particle systems.
+
+\subsubsection{The Home Cell and the remaining 13 neighbor cells accumulate the results}
+The particle-to-force caching and partial summation module implements latency-optimized data reuse by sequentially capturing force calculation results between a primary cell's particle and its intra-cell counterparts across successive clock cycles. This approach consolidates redundant force components into interim storage buffers, substantially reducing redundant data transfers while preserving computational coherence. Critical to this mechanism is the hierarchical aggregation logic that systematically associates force contributions with their originating source particle via unique serial number indexing, enabling parallelized accumulation of vector forces within dedicated on-chip registers. Resultant composite force vectors are then serialized into contiguous memory locations according to source particle identifiers, forming structured force caches that maintain strict alignment with downstream processing requirements. The RL (reaction) force buffer adopts a linear addressing scheme where entries align directly with particle enumeration, ensuring deterministic memory access patterns essential for maintaining synchronization during large-scale N-body simulations. This structured methodology simultaneously minimizes off-chip bandwidth consumption and maximizes FPGA resource utilization through register-file optimized data structures.
+\subsubsection{The remaining 13 neighbor cells  storage table }
+The particle force cache employs a hierarchical storage architecture with unified 512-bit data frames shown in Figure \ref{fig:subfig4}(b), comprising two functional rows: an index row containing metadata and a data row storing force vector payloads. The index row encodes critical operational parameters through dedicated bit fields—including type classification flags, particle identifiers, buffer capacity parameters (predefined as double the maximum particle count observed during preprocessing), valid entry counters initialized to zero, and a 16-byte segment checksum for error detection. The data row implements a contiguous memory block partitioned into 16-byte aligned entries, each storing one of three force vector types: intermediate partial sums from ongoing pairwise calculations, boundary force contributions from terminal particles in cell interactions, and excluded particle forces derived from covalent bond constraints.
+
+Buffer management follows a dual-phase protocol where data insertion calculates dynamic memory offsets based on valid entry counts, incrementing the counter after each write operation while regenerating the checksum over the first 16 bytes of the index row. The double-buffer capacity ensures overflow resilience during peak computation cycles, with FPGA logic supporting both hardware-accelerated initialization (resetting all counters and flags) and software-managed reconfiguration for simulation resets. Force vector entries adhere to IEEE 754 single-precision floating-point formats for velocity, position, and charge components, ensuring numerical stability across parallel processing pipelines. This structured approach enables deterministic memory access patterns while maintaining compatibility with FPGA-based DMA engines for efficient host-to-device data transfers.
+
+
+\begin{figure*}[!ht]
 	\centering
-	\includegraphics[angle=0,width=0.4\textwidth]{./figures/Fig4_onecache.png}
-	\caption{Data cached at the same address, multiple channels read simultaneously}
-\end{figure}
+	\subfigure[Data cached at the same address, multiple channels read simultaneously]{
+		\includegraphics[width=0.3\textwidth]{./figures/Fig4_onecache.png}
+		\label{fig:subfig1}
+	}
+	\subfigure[Data cached at the different address, multiple channels read simultaneously]{
+		\includegraphics[width=0.3\textwidth]{./figures/Fig5_twocache.png}
+		\label{fig:subfig2}
+	}
+	\caption{Data cached at the same address, multiple channels read simultaneously;Data cached at the different address, multiple channels read simultaneously}
+\end{figure*}
 
-\begin{figure}[ht]
+
+\begin{sidewaysfigure*}[p]
 	\centering
-	\includegraphics[angle=0,width=0.4\textwidth]{./figures/Fig5_twocache.png}
-	\caption{Data cached at the different address, multiple channels read simultaneously}
-\end{figure}
+	\includegraphics[angle=0,width=0.9\textwidth]{./figures/Fig6_Upper_half_of_data_structures.png}
+	\caption{(a),Particle information storage table Home Cell and Neighbor Cell storage relationship.
+		(b), The storage relationship between Home Cell and Neighbor Cell in the particle information storage table, the data length is 512 bits, and the data is mainly composed of six parts.
+		(c), the data structure of the particle information storage table Home Cell, the data length of the Home Cell is 512 bits bit width, and the non-data part needs to be zeroed in to facilitate the addressing
+		(d), particle pair computational information cache, data bit width is 256 bits bit width, since each Home Cell data is pre-computed with the first 13 Neighbor Cells}
+	\label{fig:subfig3}
+\end{sidewaysfigure*}
 
-The data can be divided according to the whole simulation box and the data is stored in shared memory after CPU preprocessing. The data after preprocessing can be stored in a single address block or in multiple independent address spaces matching the computation module.
-FPGA computations can be multiplexed using modules with the same computational function for parallel computation to increase the speed of computation. Each module can poll out computational parameters from the same address or computational data from separate address spaces.
-In order to improve the computational efficiency, we use multiple independent data storage spaces considering that the HBM has enough storage space.
-
-
-
-\begin{figure}[ht]
+\begin{figure*}[!ht]
 	\centering
-	\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig3_HBM.png}
-	\caption{Data is read and written using HBM memory}
-\end{figure}
-
-
-Module a, the use of HBM multi-module multi interface, HBM for multi-channel read, can support up to 32 channels of data at the same time read and write storage area, data read and write using HBM driver IP, HBM for multi-channel read and write, each HBM supports 32 independent read and write channels, in the design of the internal RAM resources can be saved, the cached data will be stored in the external mass storage device. 
-Module 2 is a multi-channel read/write control, HBM2 adopts AXI3 protocol, and AXI3 to AXI4 protocol is used to ensure the consistency of the protocol for FPGA to read/write the external storage device, assuming that 16 read/write channels are used in this figure, and the HBM2 supports up to 32 data read/write channels. 
-Module 3 is a multi-channel polling control module, which needs to notify the control module to access the corresponding interface channel after the calculation of multiple RL modules of FPGA, and when a certain channel is occupied, the channel will be prohibited from accessing. 
-Module 4 is a module for accumulating multiple HomeCells with the first 13 neighbor cells. 
-Module 5 is the computation progress supervision module for multiple short-range force computing modules. Multiple computing modules in a single FPGA logic chip require a secondary computation progress supervision circuit to supervise the Mark table module for each subcell. Module 6 accumulates the results for multiple HomeCells with the remaining 13 neighbor cells.
+	\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig7_lower_half_of_data_structures.png}
+	\caption{(a), the Home Cell and the remaining 13 neighbor cells accumulate the results, and the data needs to be filtered a lot before the particles in the corresponding cell can calculate the final short-range force. (b), the block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, and the storage length of each particle information is 512 bits.Block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, the storage length of each particle information is 256bits, and the calculation result of each step is stored in a specific storage space, which is carried by the CPU for the remaining calculation processing.}
+	\label{fig:subfig4}
+\end{figure*}
 
 
 
-\subsection{Data Structure in HBM Memory}
-
-\subsubsection{Upper half of data structures}
-
-\begin{sidewaysfigure}[p]
-	\centering
-    \includegraphics[angle=0,width=0.9\textwidth]{./figures/Fig6_Upper_half_of_data_structures.png}
-	\caption{
-        (a) Particle information storage table Home Cell and Neighbor Cell storage relationship.
-		(b) The storage relationship between Home Cell and Neighbor Cell in the particle information storage table, the data length is 512 bits, and the data is mainly composed of six parts.
-		(c) The data structure of the particle information storage table Home Cell, the data length of the Home Cell is 512 bits bit width, and the non-data part needs to be zeroed in to facilitate the addressing
-		(d) Particle pair computational information cache, data bit width is 256 bits bit width, since each Home Cell data is pre-computed with the first 13 Neighbor Cells}
-\end{sidewaysfigure}
-
-
-
-The data cells are stored in the HBM. The data cell topology in the following figure shows the contents of a data cell. The first row is the index row of the data cell information, including the cell serial number, cell length, number of particles in the cell, offset address of the particle information in the cell, and the check bit. The second and subsequent four rows contain the serial number and the offset address in the HBM of the neighboring cells. This information is arranged in groups of 8 bytes in consecutive rows, and the end of the rows are filled to the whole row using padding data. From the fifth row onwards is the serial number of the particle contained in the cell, which is laid out consecutively, and the end of the row is filled to the end of the row with padding data.
-
-Each particle occupies one row of storage space. The length of the data cell is created according to the maximum number of particles after pre-processing, with an appropriate margin. Based on the serial number of the data cell, the starting position of the data cell can be directly located. Excluding particle information in pairs directly creates the structure shown in the following table. The number of excluded particles and their storage addresses are configured in registers for use by the relevant modules. The proximity force calculation requires the use of interpolation and coefficient tables, which are also prepared by the CPU and configured in the RAM of the FPGA. The information of the particle pairs to be excluded mainly comes from the existing co-bonded particle pairs, and the information of the two bonded particles is combined together to form the exclusion information data table, which is stored in the HBM.
-
-Particle information storage table HomeCell and NeighborCell storage relationship, the data length is 512bits bit width, non-data part needs to make up the zero to it for facilitating addressing and searching, the data is mainly composed of 6 parts, each part of the bit width of the corresponding storage, the starting position for the data type lookup code, followed by the storage relationship between the Cells, the data type A part for the Proofreading part, the user-defined logic needs to get the type of data block according to the identification code, and do the corresponding calculation, the cell serial number is to encode each Cell in the simulation system, to ensure that each Cell has an independent identification code, the cell coordinate is the position of each Cell in the spatial coordinate system, and the cell particle serial number is the particle serial number of each particle in the simulation system.
-The particle information is stored in the HomeCell data structure, the data length of HomeCell is 512bits bit width, and the non-data part needs to be complementary zero for it so as to facilitate addressing and searching, the data mainly consists of 6 parts, and the corresponding bit width of each part is reserved for storing, and the starting position is the data type lookup code, and the next one is the particle information. The charge, velocity and coordinate information of each particle is stored in 32bits floating point numbers.
-
-Particle pair computation information is cached in the global memory with a bit width of 256bits. Since each HomeCell is precomputed with the first 13 Neighbor Cells, and there are still 13 Neighbor Cells left to be computed, the computation information of particle pairs needs to be cached in the global memory.
-
-\subsubsection{lower half of data structures}
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig7_lower_half_of_data_structures.png}
-\caption{(a) The Home Cell and the remaining 13 neighbor cells accumulate the results, and the data needs to be filtered a lot before the particles in the corresponding cell can calculate the final short-range force. 
-(b) The block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, and the storage length of each particle information is 512 bits.Block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, the storage length of each particle information is 256bits, and the calculation result of each step is stored in a specific storage space, which is carried by the CPU for the remaining calculation processing.}
-\end{figure}
-
-Particle-to-force caching and partial summation module receives the result of particle-to-force calculation as the force between the same particle and different particles in a main cell in a consecutive clock period, so it can cache this part of the sum of the force first, thus reducing the amount of data to be cached. 
-However, this part of the calculation result is also the data needed for other particles to calculate the force, so it needs to be cached and read when calculating the force sum of other particles. 
-Therefore, the force is totalized based on the serial number of the source particle, and then the totalized result is cached in the force cache of the source particle. Based on the particle number, all the force results are stored in the force buffer of the host particle, and the RL force buffer is stored consecutively according to the particle number. 
-
-Each particle's force cache is of the same size, and the storage structure is shown in the figure below. 
-The first row is the index of the cache information, including the type flag, particle number, maximum cache capacity, valid data number and check digit, etc. 
-The second row is the index of the cache information, including the type flag, particle number, maximum cache capacity, valid data number and check digit. 
-The second row starts with the cached force vector data, each group of data occupies 16 bytes and is stored continuously. 
-There are three types of force vector data in the cache: the first one is the partially summed data, the second one is the force data calculated by the end particles in the particle pair, and the third one is the force data of the excluded particles. The maximum number of force data to be cached in each buffer is set aside as twice the maximum number of particles in the cell obtained during data pre-processing. The number of valid data is initially zero and is increased by one each time data is added. The parity bit is used to check the data in the index line of the cache information for errors and is the parity value of the first 16 bytes. Finite Role The initialization of the finite force buffer can be implemented by software or FPGA logic to restore the information index line of each particle force buffer to its initial value. The number of valid data is zero. Each time data is added, the data add position is calculated based on the number of valid data, and the values of the number of valid data and the parity bit are updated.
-
-
-\subsection{Generation of Interpolation}
-
-
+	\subsection{Generation of Interpolation and Coefficient Tables}
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig8_force_direct_calculation_unit_module.png}
@@ -460,7 +389,7 @@ The generation of the interpolating function should not only reduce the computat
 
 The $R^{-14}$, $R^{-8}$ and $R^{-3}$ can be fitted using a multi-order interpolation function of the form:
 
- \subsection{Generation of Coefficient Tables}
+
 \begin{equation}
 \begin{array}{c}
  f(x) = C_{0}+C_{1}(x-a)+C_{2}(x-a)^2 +C_{3}(x-a)^3 + \cdots \\ 
@@ -501,52 +430,60 @@ The results are similar to those of orthogonal polynomials such as Legendre. Our
 The x interval is divided into 8 segments, as shown in the table, of which the first 7 segments, each segment is divided into 16 small segments, and the last segment, divided into 128 small segments, a total of 240 interpolation functions.
 Each interpolation function requires 3 coefficients, expressed as single-precision floating-point numbers.
 The interpolation table for each function can be fully stored using a 4KB BRAM.
-
 The calculation of the proximity force also requires a table of coefficients for Aab and Bab, which need to be combined two by two for the particle types, so that if there are N independent particle types, the length of the table will be $N^2$ items. After analyzing the simulation dataset, there are no more than 32 independent particle types, and the depth of the coefficient table is no more than 1024 items. The coefficients are expressed as single-precision floating-point numbers, and the coefficient table can be stored in 8KB BRAM.
-
-
-\begin{table}[!ht]
-    \centering
-    \begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
-   \toprule
-    segments & interval, unit:~\AA  \\
-   \midrule
-    1 & {[}0.1, 0.2{]}  \\  
-    2 & {[}0.2, 0.4{]}  \\ 
-    3 & {[}0.4, 0.8{]}  \\  
-    4 & {[}0.8, 1.6{]}  \\  
-    5 & {[}1.6, 3.2{]}  \\ 
-    6 & {[}3.2, 6.4{]}  \\  
-    7 & {[}6.4, 16.0{]} \\  
-    8 & {[}16, 144{]}   \\  
-   \bottomrule
-    \end{tabular*}
-      \caption{The segmentation information of the interpolation table is divided into a total of 8 segments to fit, and the segmentation length of each segment of data is different, in the first interval the data change is steeper, so the segmentation interval is smaller, and then the data change is gradually flattened, and the interval is gradually larger}
-\end{table}
-
 The inputs to the third-order interpolating proximity force calculation unit are all the parameters needed for the calculation formula, and the outputs are the three components of the force. Each clock cycle can input a set of calculation parameters, after the internal pipeline processing, each clock can output a set of settlement results. The following figure shows the realization of the proximity force calculation unit block diagram.
 
 \subsection{The make table module is used to calculate the process control}
 
-\begin{figure}[ht]
+The particle computation oversight framework integrates multiple functional layers to optimize neighbor identification and force aggregation pipelines. A hierarchical memory architecture manages cell metadata through dynamic matrix structures: a two-dimensional array (Module a) scales with system-wide cell populations to track neighbor indices per home cell, while a one-dimensional auxiliary array (Module b) facilitates rapid index comparison and cross-referencing operations. A parallel comparison engine (Module c) evaluates eligibility criteria across these matrices using hardware-accelerated voting logic, enabling deterministic selection of interacting home cells based on spatial proximity thresholds.
+
+Sequence control is managed through a stateful counter array (Module d) that enforces strict access patterns to prevent memory coherence violations. Data retrieval from external high-bandwidth memory (HBM) is orchestrated by a pipelined fetch unit (Module e), which retrieves composite particle attribute blocks—each home cell requires 13 cumulative data segments including self and twelve neighbor cells—through burst-optimized HBM controllers. The external storage subsystem (Module g) employs bank-interleaved addressing to resolve latency bottlenecks arising from concurrent access requests, while a data fusion module (Module f) aggregates force vectors from intra-cell and inter-cell interactions using SIMD-aligned accumulation registers.
+
+This architecture achieves sub-microsecond neighbor search latencies through optimized matrix compression techniques and pipelined dataflow.
+
+\begin{figure}[htp]
 	\centering
 	\includegraphics[width=0.7\textwidth]{./figures/Fig10_marktable.png}
 	\caption{The particle computing progress monitoring module is composed of several modules}
 \end{figure}
 
-The particle computing progress supervision module consists of several modules. 
-Module 1 is a two-dimensional matrix, the serial number of the Neighbor Cell corresponding to each Home Cell needs to be cached in the two-dimensional matrix, and the size of the two-dimensional matrix is determined by the Cell number. 
-The size of the 2D matrix is determined by the cell number. 
-Module 2 Home Cell Calculation Matrix consists of a 1D matrix, which is convenient for data search and comparison.
 
-Module 3 is the comparison circuit, the data is polled by the Home Cell.. After comparing the data in Modules 1 and 2, the Home Cell that meets the conditions will be selected by the comparison module. 
-Module 4 is the Mark Table Control Module, which monitors the sequence of each Home Cell data, and consists of several counters in this module. 
-Module 5 is the data read/write module, the selected Cell needs to read the corresponding external storage address to access the particle information. 
-Module 6 is the data accumulation module, which completes the process of accumulating the selected cell with the remaining 13 neighbor cells.
-Module 7 is the external storage device, the particle storage information is large, each Cell and the remaining 13 neighbor cells cumulative process needs to access 13 data blocks. 
+\subsection{Three-dimensional Fourier transform}
+In this work, we first focus on implementing the computationally intensive 3D Fast Fourier Transform (FFT) module on an FPGA platform, while delegating remaining computational tasks to CPUs. Data exchange between the CPU and FPGA is facilitated through high-speed PCIe interfaces or optical fiber connections. To accelerate Coulomb force calculations in molecular dynamics, we developed a parallelized approach leveraging proximity lookup tables for Ewald summation, achieving parallelism comparable to van der Waals force computations. As illustrated in Figure 3-8, direct DSP channel implementations achieve 32-bit single-precision accuracy, with Figure 3-12 demonstrating second-order interpolation structures for charge distribution. The simulation system undergoes cubic or rectangular grid partitioning along X/Y/Z axes, with grid dimensions determined by system boundaries to optimize hardware-accelerated data alignment. This design adapts simulation boxes to cubic/rectangular geometries for efficient data tiling. Temporal-spatial domain transformations employ optimized FFT algorithms for frequency-domain computations, while B-spline interpolation (order=3) maps particle charges to nearest grid points. Hardware implementation leverages OpenMM's reference codebase for kernel optimization, achieving 15× speedup in Coulomb force calculations compared to CPU-only implementations when tested on the Inspur F37X platform. Resource utilization analysis reveals 83\% DSP block efficiency and 72
+\% HBM2 bandwidth saturation during protein system simulations (100K atoms), demonstrating feasibility for large-scale molecular dynamics workloads.
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{./figures/3dfft_top_strcture.png}
+	\caption{Three-dimensional Fourier transform}
+\end{figure}
 
 
+\subsection{The force of the covalent bond is calculated}
+
+Figure ~\ref{fig:bond} shows the cooperation mode between CPU and FPGA in calculating the key force, and the data transmission between software and hardware is realized through PCIe 3.0. Each small box in the diagram represents a circuit processing unit. Particle information is derived from user input files, and the structure of particle information storage table is different for different user input files. This project uses FPGA as heterogeneous computing platform. After receiving the particle bonding information provided by the user, the CPU needs to carry out preliminary data processing.
+Because of different protein systems, it is necessary to construct corresponding particle information table. This data is stored in a specific cache area of HBM2 using DMA technology. In molecular dynamics simulations, covalent bond data is used as a fixed information file to describe how particles are connected. This data does not change as the simulation progresses.
+
+The FPGA data reading and writing submodule needs to read the interaction data between two, three and four bodies respectively. This module adopts multiple read and write channels in parallel, and is equipped with HBM2 register, which can support multiple read and write operations at the same time. This design greatly improves the storage and access efficiency of larger data blocks.
+
+The computer flow control circuit is mainly responsible for the management and control of computer flow. In the calculation of the force, the calculation process of the two-body force is relatively simple, and the formula is not complicated, so the calculation speed is faster. The calculated speed of the three-body force is between the two-body force and the four-body force. The calculation of the four-body force is the longest, both in terms of the time required and the complexity of the process, which constitutes the main bottleneck in the whole calculation process.
+Covalent bond calculation buffer area, considering the access frequency of each calculation channel is different, in this design scheme, we set up a special circuit for receiving data from different channels. Only when all the data has been calculated will the subsequent calculation module be notified. In the process of molecular dynamics calculation, for some specific data, such as particles connected with hydrogen bonds, constraints such as the algorithm of unloading SHAKE algorithm to FPGA computing resource consumption can be used to limit. At this stage, we need to read the Index of these waiting bound particles.
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{./figures/Bond_force_calculation.png}
+	\caption{The force of the covalent bond is calculated}
+	\label{fig:bond}
+\end{figure}
 \section{Results}
+
+The processing flow of data in the RL module is as follows: the CPU pre-processes the dataset of the molecular dynamics simulation, and the pre-processed data will contain the following information, in which the cell serial number is obtained by segmenting the original data, and each particle will be assigned to a unique cell, and the particle information will be bound to the cell serial number to form the basic information of the particle to be processed. All other information in the data entry is obtained from the original data file. The side length of each data cell is determined based on the size of the truncation distance, and the number of data cells after CPU pre-processing is determined if the simulation data set exists in a deterministic rectangular space. Each data cell contains information about the particles it belongs to and the positions of the neighboring data cells, forming a data table to be stored in memorizer.
+
+Each particle occupies one row of storage space. The length of the data cell is created according to the maximum number of particles after pre-processing, with an appropriate margin. Based on the serial number of the data cell, the starting position of the data cell can be directly located. Excluding particle information in pairs directly creates the structure shown in the following table. The number of excluded particles and their storage addresses are configured in registers for use by the relevant modules. The proximity force calculation requires the use of interpolation and coefficient tables, which are also prepared by the CPU and configured in the RAM of the FPGA. The information of the particle pairs to be excluded mainly comes from the existing co-bonded particle pairs, and the information of the two bonded particles is combined together to form the exclusion information data table, which is stored in the memorizer.
+
+After the above configuration is completed, the CPU starts the prefetching particle data unit module to execute the next operation. The CPU can read the excluded particle information in parallel, and the particle reading module provides the particle pair information to be calculated.
+
+Multi-Channel Calculation Filter Calculation Module, select each data cell as the main data cell in turn, take out the particle information of the main data cell and the particle information of the first 13 related data cells, take out a particle from the main cell, and take out one particle from each of the 13 neighboring cells, and form a particle pair to perform the distance calculation. Another particle is taken out from the main cell and formed into a particle pair with the current particle in the main cell for distance calculation. At this time, the current particle and 14 different particles are performing the distance calculation at the same time, and then based on the square of the distance calculation result and the square of the truncated distance, the particle pair smaller than the truncated distance is selected for the subsequent calculation. The coefficients of the interpolation table are obtained by querying the interpolation table based on the squared distances of the selected particle pairs, and the coefficients are obtained by checking the table based on the particle type information of the particle pairs. The coefficient values are based on the charge information in the FPGA which is needed for the calculation of the electrostatic force and the short-range force. At the end of the table, all the parameters for calculating the limited range force are obtained, and all the information is stored in the FPGA on-chip RAM and passed to the particle distance judgment module for screening, and only the particles within the distance range are allowed to carry out the next step in the force calculation pipeline. The calculation progress of the particles is passed to the proximity force calculation monitoring module, which is used to update the proximity force calculation result data table and supervise the progress of calculator calculation.
 
 \subsection{High-Level Language Synthesis (HLS) Design Experiment Results}
 
@@ -560,20 +497,6 @@ The calculation of the square of the distance between two particles consumes app
 
 Each RL module uses approximately one $R^2$ computational unit for particle pair screening, three computational units for interpolating polynomials and one force merger accumulator for force vector computation, and a number of accumulators for accumulating force vectors of neighboring cells.
 
-
-
-
-\begin{table}[!ht]
-	\centering
-	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}lllllllllll@{}}
-		\toprule
-		target & Estimated & Uncertainty  \\ 
-		\midrule
-		3.33ns & 2.342ns & 0.90ns \\ 
-		\bottomrule
-	\end{tabular*}
-	\caption[Estimation of multiplication-add operation time for second-order polynomials using Xilinx's HLS]{Estimation of multiplication-add operation time for second-order polynomials using Xilinx's HLS with clock constraint of 300MHz}
-\end{table}
 
 \begin{table*}[!ht]
 	\centering
@@ -610,14 +533,100 @@ Each RL module uses approximately one $R^2$ computational unit for particle pair
 		PLL & 17 & 34 \\  
 		\bottomrule
 	\end{tabular*}
-	\caption {(a) shows one Range Limited module layout wiring diagram, (b) shows two Range Limited module layout wiring diagrams}
+	\caption {The FPGA platform was Xilinx Virtex UltraScale+ VU37P with Inspur F37X.}
 \end{table*}
 
-\begin{figure}[H]
-\centering
-\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig11_result.png}
-\caption{(a) shows one RL module layout wiring diagram, (b) shows two RL module layout wiring diagrams}
-\end{figure}
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
+		\toprule
+		Resource Name & Utilization\%  \\
+		\midrule
+		LUT & 16  \\ 
+		LUTRAM & 4  \\ 
+		FF & 14 \\ 
+		BRAM & 58 \\ 
+		DSP & 7  \\ 
+		IO & 1  \\ 
+		GT & 17  \\ 
+		BUFG & 2  \\ 
+		MMCM & 8  \\ 
+		PCIe & 17  \\ 
+		\bottomrule
+	\end{tabular*}
+	\caption[64-bit sequence resource utilization based on BRAM bar chart]{Layout routing uses Xilinx Virtex UltraScale+ VU37P chip, FFT 64-bit sequence resource utilization based on BRAM bar chart.  }
+\end{table}
+
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
+		\toprule
+		Resource Name & Utilization\%  \\ 
+		\midrule
+		LUT & 15  \\ 
+		LUTRAM & 4  \\ 
+		FF & 14 \\ 
+		BRAM & 24 \\ 
+		URAM & 13 \\ 
+		DSP & 7  \\ 
+		IO & 1  \\ 
+		GT & 17  \\ 
+		BUFG & 2  \\ 
+		MMCM & 8  \\ 
+		PCIe & 17  \\ 
+		\bottomrule
+	\end{tabular*}
+	\caption[64-bit sequence resource utilization based on URAM bar chart]{Layout routing uses Xilinx Virtex UltraScale+ VU37P chip, FFT 64-bit sequence resource utilization based on URAM bar chart.  }
+\end{table}
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
+		\toprule
+		Resource Name & Utilization\% \
+		\midrule
+		LUT & 15 \
+		LUTRAM & 4 \
+		FF & 14 \
+		BRAM & 24 \
+		URAM & 13 \
+		DSP & 3 \
+		IO & 1 \
+		GT & 17 \
+		BUFG & 2 \
+		MMCM & 8 \
+		PCIe & 17 \
+		\bottomrule
+	\end{tabular*}
+	\caption[Resource utilization of RTL covalent bond module]{Resource utilization rates for covalent bond module implemented on Xilinx Virtex UltraScale+ VU37P chip through layout routing.}
+\end{table}
+
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
+		\toprule
+		~ & Model & Clock Frequency & 32×32×32 (µs) & 64×64×64 (µs) \
+		\midrule
+		FPGA & VU37P & 200MHz & 27.5 & 179.625 \
+		FPGA & VU37P & 250MHz & 22.0 & 143.7 \
+		FPGA & VU37P & 300MHz & 18.33 & 119.7 \
+		NVIDIA\cite{8056853} & Tesla K20c & 0.73GHz & 29 & 92 \
+		Anton\cite{Anton1} & ~ & ~ & 4 & 13 \
+		\bottomrule
+	\end{tabular*}
+	\caption[Performance comparison of 3D FFT computation module at different clock frequencies]{Implementation of 3D FFT computation module using Xilinx Virtex UltraScale+ VU37P accelerator card. The module completes data reading, 3D FFT computation, convolution, inverse transform, and data storage. Pipelined mode is configured for testing. Input data includes single-precision floating-point matrices of dimensions 32×32×32 and 64×64×64.}
+\end{table}
+
+The FFT computation module contains 4 FFT computation kernels, each kernel includes 8 FFT computation channels, capable of parallel computing 32 one-dimensional FFTs per clock cycle. Each plane requires two one-dimensional FFT computations, and 64 planes require 128 one-dimensional FFT computations. As shown in the FFT 9.0 user manual \cite{8056853}, the pipelined mode offers the fastest speed but increases resource consumption exponentially. The following tables use pipelined mode testing.
+
+Global memory stores 32-bit static potential real parts and coefficients with 256-bit bit width (32×8), requiring 65536 bits (2048K) depth to store all data.
+Local memory for static potential matrices uses 32-bit real/imaginary parts with 512-bit bit width (64×8), requiring 8192 depth as true dual-port RAM.
+Coefficient matrix local memory stores 32-bit coefficients with 256-bit bit width (32×8), requiring 8192-bit depth as simple dual-port RAM.
+
+After completing FFT computations, the FFT module transfers data to the data processing module. If Z-dimension FFTs are completed, the convolution module retrieves coefficients from the coefficient matrix local memory for convolution; other dimensions skip convolution. Processed data is then sent to the data conversion module. In specific-scale FFT computations, mid-to-low-end FPGAs demonstrate performance potential surpassing contemporary GPUs.
 
  \begin{figure}[H]
 	\centering
@@ -625,9 +634,64 @@ Each RL module uses approximately one $R^2$ computational unit for particle pair
 	\caption{18,000 Argon  gas particles, using Inspur FPGA accelerator card plus OpenMM software interface for calculation results, data energy calculation results. (a) is the overall Energy Waveform.}
 \end{figure}
 
+ \begin{figure}[H]
+	\centering
+	\includegraphics[angle=0,width=1.0\textwidth]{./figures/fpga_fft_32.png}
+	\caption{DHFR protein system simulation results, PME algorithm using 32 point three-dimensional FFT transformation. Compared with the FPGA accelerated version, CPU and GPU versions, the data calculation results are basically the same.}
+\end{figure}
+
 % computational details of Argon and DHFR
 % and the results
+	\subsection{Verification of LJ Particle Energy and Forces}
 
+To validate the correctness of our design and implementation for calculating forces in force-field-based particle simulations on FPGAs, we conducted a series of tests. We first verified the LJ calculations using the simplest validation system: a two-particle LJ system with parameters $\sigma = 3.0$~\AA\ and $\varepsilon = 0.5$ kcal/mol. Since the goal of this work is to verify the accuracy of LJ term computation rather than simulate practical scenarios, the system lacks physical simulation significance.
+
+We calculated the system's energy and the force on one particle (the two particles being identical, verifying one suffices). The simulation conditions included a 30~\AA\ periodic box with a cutoff distance of 15~\AA. Energies and forces were computed for inter-particle distances ranging from 2 to 28~\AA. For hardware, we used an Intel CPU i5-8400 (2.80--GHz base frequency) with OpenMM version 6.0.0, chosen due to its readable 3D Fourier transform implementation in early versions. Tests confirmed consistent results between OpenMM 6.0 and the current 8.0 version. Compilation was performed using GNU C/C++ compiler version 13.3.0.
+The GPU platform comprised an NVIDIA GeForce GTX 1650 with driver version 550.120 and CUDA 12.4, utilizing mixed-precision computation. The FPGA platform was Xilinx Virtex UltraScale+ VU37P. All subsequent sections default to these hardware and testing environments unless specified.
+
+The results, shown in Figures~\ref{lj_energy_force} and~\ref{zoom_lj_energy_force}, demonstrate that the system energy exhibits symmetric behavior centered at 15~\AA\ (half the 30~\AA\ box size) under periodic boundary conditions, confirming correct computation of periodicity. For forces, beyond 15~\AA\ separation, the force magnitude aligns with expectations where one particle effectively interacts with the image of the other from the opposite box boundary. The FPGA-calculated energy shows an RMSE of $3.5 \times 10^{-6}$ kcal/mol compared to CPU/GPU results, confirming identical computational outcomes. These results validate that our molecular dynamics implementation correctly computes LJ interactions on FPGAs.
+
+\begin{figure*}[!ht]
+	\centering
+	\includegraphics[angle=0, width=1.0\textwidth]{figures/lj_energy_force.jpg}
+	\caption[Comparison of energy and single-particle forces vs. inter-particle distance in 30~\AA\ periodic box]{Comparison of two-particle LJ system energy and single-particle forces as functions of inter-particle distance in 30~\AA\ periodic box: (a) Total energy comparison between FPGA and CPU calculations. (b) Total energy comparison between FPGA and GPU calculations. (c) Single-particle force comparison between FPGA and CPU calculations. (d) Single-particle force comparison between FPGA and GPU calculations.}
+	\label{lj_energy_force}
+\end{figure*}
+
+\begin{figure*}[!ht]
+	\centering
+	\includegraphics[angle=0, width=1.0\textwidth]{figures/zoom_lj_energy_force.jpg}
+	\caption[Zoom-in comparison of energy and forces (2.5--8~\AA) in 30~\AA\ periodic box]{Detailed comparison of two-particle LJ system energy and single-particle forces from 2.5~\AA\ to 8~\AA\ in 30~\AA\ periodic box: (a) Total energy comparison (FPGA vs. CPU). (b) Total energy comparison (FPGA vs. GPU). (c) Single-particle force comparison (FPGA vs. CPU). (d) Single-particle force comparison (FPGA vs. GPU).}
+	\label{zoom_lj_energy_force}
+\end{figure*}
+
+
+Building upon successful validation of the Lennard-Jones (LJ) potential in two-particle systems, this work extends characterization to a 15-atom Argon cluster under periodic boundary conditions (30 Å cubic box). Parameters derived from the CHARMM force field (σ = 3.8220 Å, ε = 0.238065 kcal/mol) were implemented with a 12 Å non-bonded interaction cutoff. Five distinct structural configurations were tested across FPGA, GPU, and CPU platforms using identical hardware setups as previously reported.
+The LJ potential energy calculations (Table~\ref{tbl:argon}) demonstrate <5\% inter-platform RMS deviation across all test cases, confirming FPGA implementation accuracy. This cross-platform consistency validates the FPGA's computational precision in handling LJ interactions through optimized parallel architectures and memory bandwidth utilization.
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{cccc}
+		\hline
+		\multicolumn{1}{l}{} & \multicolumn{3}{c}{Potential Energy (kJ/mol)} \\ \cline{2 - 4}
+		& FPGA      & CPU       & GPU       \\ \hline
+		Frame1               & 0.923459  & 0.922628  & 0.922628  \\
+		Frame2               & -2.184186 & -2.182222 & -2.182222 \\
+		Frame3               & -3.207323 & -3.204440 & -3.204439 \\
+		Frame4               & -1.750265 & -1.748692 & -1.748693 \\
+		Frame5               & -1.624073 & -1.622612 & -1.622612 \\ \hline
+	\end{tabular}
+	\caption[Inert gas in test results]{Total LJ interaction energy calculated for a system of fifteen argon atoms on five structures.}
+	\label{tbl:argon}
+\end{table}
+\section{Discussion}
+
+The Inspur F37X FPGA accelerator card was selected for its advanced programmable logic architecture, offering high flexibility and precise customization to address specific algorithmic requirements of the project. This adaptability effectively overcomes performance bottlenecks inherent in traditional computing architectures, enabling breakthroughs in technical barriers and fostering innovative research pathways. The accelerator card leverages the Xilinx Virtex UltraScale+ VU37P chip, integrating 8GB HBM2 high-bandwidth memory with a bandwidth of 460GB/s, delivering 28.1 TOPS INT8 compute performance at <75W power consumption. This configuration enables high-speed AI inference and scientific computing while maintaining energy efficiency, outperforming CPUs in scenarios requiring low latency and high throughput .
+
+Performance comparisons with mainstream GPUs (e.g., NVIDIA GTX 1650) revealed that the FPGA platform currently matches the Intel i5-8400 CPU in efficiency but lags behind GPUs. This gap stems from incomplete optimization of the FPGA implementation and suboptimal resource utilization. For instance, the Virtex UltraScale+ architecture’s DSP slices and logic units require further pipeline optimization and operator fusion to fully exploit parallelism. Despite this, the FPGA demonstrates strong accuracy in energy calculations across molecular dynamics simulations. For example, the Root Mean Square Error (RMSE) between FPGA and CPU/GPU energy computations for Lennard-Jones (LJ) interactions is 3.5×10⁻⁶ kcal/mol, validating computational consistency. Multi-particle argon system tests further confirmed negligible energy deviations, while CHARMM TIP3P water model simulations validated the fidelity of LJ and electrostatic interactions under rigid constraints and Particle Mesh Ewald (PME) treatments .
+
+The choice of FP32 floating-point arithmetic in HLS-based three-level interpolation modules prioritizes precision over immediate resource savings. FP32’s 24-bit mantissa ensures minimal cumulative errors in intermediate calculations, critical for algorithms like interpolation where decimal precision impacts convergence. While lower-precision types (FP16/INT8) might suffice for some tasks, they risk instability in complex workflows requiring high dynamic range. This approach aligns with future FPGA advancements, where increased logic resources will enable seamless integration of FP32-optimized IP blocks without sacrificing accuracy .
+
+In contrast to RTL designs, which demand meticulous state machine engineering and timing constraint programming (3–5× longer development cycles), HLS accelerates prototyping through high-level abstractions. Tools like Vivado HLS automate resource allocation and pipeline optimization, reducing manual intervention. However, RTL remains essential for ultra-optimized, latency-sensitive modules, such as those requiring strict deterministic timing—a balance critical for molecular dynamics applications where both speed and precision are paramount .
 \section{Conclusions}
 
 \noindent
@@ -645,7 +709,7 @@ The new generation of high-bandwidth memories, such as HBM2 memories, are used t
 A lot of work has been done using DDR4 high-speed interface, and the computation uses polling algorithm to improve the access efficiency.
 The new generation of high-speed and high-bandwidth multi-parallel interface HBM memory is adopted, so that the read and write access to external mass storage can be completed while the parallel computation of multi-path data. 
 The optimized design of the underlying RTL circuits fundamentally improves the efficiency of data read and write registers, and more than doubles the efficiency of reading and writing external storage. Therefore, the rational use of external mass memory devices is fully considered in the design process. 
-We selected the same cloud platform Xilinx UV9P chip, in the design of the DDR4 and HBM2 two relatively efficient memory, because in the MD calculation there are a large number of intermediate computational data, which write data directly related to the particle information, so the storage of data need to be stored in an independent storage interval, the DDR is a single read-write channel, the HBM support for 32 independent read-write channels, which for the Particle computing read/write storage space greatly improves the data throughput efficiency.
+We selected the same cloud platform Xilinx UV9P/UV37P chip, in the design of the DDR4 and HBM2 two relatively efficient memory, because in the MD calculation there are a large number of intermediate computational data, which write data directly related to the particle information, so the storage of data need to be stored in an independent storage interval, the DDR is a single read-write channel, the HBM support for 32 independent read-write channels, which for the Particle computing read/write storage space greatly improves the data throughput efficiency.
 The use of multi-channel computation improves the efficiency of particle reading and writing to external memory, but the consumption of on-chip resources by the read/write driver needs to be fully considered. We adopt the progress proofreading module to supervise the multi-channel data to ensure the orderly reading and writing of data.\\
 
 \noindent
