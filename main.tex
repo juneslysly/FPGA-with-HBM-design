@@ -581,40 +581,20 @@ Each RL module uses approximately one $R^2$ computational unit for particle pair
 	\caption[64-bit sequence resource utilization based on URAM bar chart]{Layout routing uses Xilinx Virtex UltraScale+ VU37P chip, FFT 64-bit sequence resource utilization based on URAM bar chart.  }
 \end{table}
 
-\begin{table}[!ht]
-	\centering
-	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
-		\toprule
-		Resource Name & Utilization\% \
-		\midrule
-		LUT & 15 \
-		LUTRAM & 4 \
-		FF & 14 \
-		BRAM & 24 \
-		URAM & 13 \
-		DSP & 3 \
-		IO & 1 \
-		GT & 17 \
-		BUFG & 2 \
-		MMCM & 8 \
-		PCIe & 17 \
-		\bottomrule
-	\end{tabular*}
-	\caption[Resource utilization of RTL covalent bond module]{Resource utilization rates for covalent bond module implemented on Xilinx Virtex UltraScale+ VU37P chip through layout routing.}
-\end{table}
+
 
 
 \begin{table}[!ht]
 	\centering
 	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
 		\toprule
-		~ & Model & Clock Frequency & 32×32×32 (µs) & 64×64×64 (µs) \
+		~ & Model & Clock Frequency & 32×32×32 (µs) & 64×64×64 (µs) \\
 		\midrule
-		FPGA & VU37P & 200MHz & 27.5 & 179.625 \
-		FPGA & VU37P & 250MHz & 22.0 & 143.7 \
-		FPGA & VU37P & 300MHz & 18.33 & 119.7 \
-		NVIDIA\cite{8056853} & Tesla K20c & 0.73GHz & 29 & 92 \
-		Anton\cite{Anton1} & ~ & ~ & 4 & 13 \
+		FPGA & VU37P & 200MHz & 27.5 & 179.625 \\
+		FPGA & VU37P & 250MHz & 22.0 & 143.7 \\
+		FPGA & VU37P & 300MHz & 18.33 & 119.7 \\
+		NVIDIA\cite{8056853} & Tesla K20c & 0.73GHz & 29 & 92 \\
+		Anton\cite{Anton1} & ~ & ~ & 4 & 13 \\
 		\bottomrule
 	\end{tabular*}
 	\caption[Performance comparison of 3D FFT computation module at different clock frequencies]{Implementation of 3D FFT computation module using Xilinx Virtex UltraScale+ VU37P accelerator card. The module completes data reading, 3D FFT computation, convolution, inverse transform, and data storage. Pipelined mode is configured for testing. Input data includes single-precision floating-point matrices of dimensions 32×32×32 and 64×64×64.}
