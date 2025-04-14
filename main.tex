@@ -628,20 +628,6 @@ Coefficient matrix local memory stores 32-bit coefficients with 256-bit bit widt
 
 After completing FFT computations, the FFT module transfers data to the data processing module. If Z-dimension FFTs are completed, the convolution module retrieves coefficients from the coefficient matrix local memory for convolution; other dimensions skip convolution. Processed data is then sent to the data conversion module. In specific-scale FFT computations, mid-to-low-end FPGAs demonstrate performance potential surpassing contemporary GPUs.
 
- \begin{figure}[H]
-	\centering
-	\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig12_fpga_fft_64.png}
-	\caption{18,000 Argon  gas particles, using Inspur FPGA accelerator card plus OpenMM software interface for calculation results, data energy calculation results. (a) is the overall Energy Waveform.}
-\end{figure}
-
- \begin{figure}[H]
-	\centering
-	\includegraphics[angle=0,width=1.0\textwidth]{./figures/fpga_fft_32.png}
-	\caption{DHFR protein system simulation results, PME algorithm using 32 point three-dimensional FFT transformation. Compared with the FPGA accelerated version, CPU and GPU versions, the data calculation results are basically the same.}
-\end{figure}
-
-% computational details of Argon and DHFR
-% and the results
 	\subsection{Verification of LJ Particle Energy and Forces}
 
 To validate the correctness of our design and implementation for calculating forces in force-field-based particle simulations on FPGAs, we conducted a series of tests. We first verified the LJ calculations using the simplest validation system: a two-particle LJ system with parameters $\sigma = 3.0$~\AA\ and $\varepsilon = 0.5$ kcal/mol. Since the goal of this work is to verify the accuracy of LJ term computation rather than simulate practical scenarios, the system lacks physical simulation significance.
@@ -683,6 +669,26 @@ The LJ potential energy calculations (Table~\ref{tbl:argon}) demonstrate <5\% in
 	\caption[Inert gas in test results]{Total LJ interaction energy calculated for a system of fifteen argon atoms on five structures.}
 	\label{tbl:argon}
 \end{table}
+
+
+
+
+
+ \begin{figure}[H]
+	\centering
+	\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig12_fpga_fft_64.png}
+	\caption{18,000 Argon  gas particles, using Inspur FPGA accelerator card plus OpenMM software interface for calculation results, data energy calculation results. (a) is the overall Energy Waveform.}
+\end{figure}
+
+ \begin{figure}[H]
+	\centering
+	\includegraphics[angle=0,width=1.0\textwidth]{./figures/fpga_fft_32.png}
+	\caption{DHFR protein system simulation results, PME algorithm using 32 point three-dimensional FFT transformation. Compared with the FPGA accelerated version, CPU and GPU versions, the data calculation results are basically the same.}
+\end{figure}
+
+% computational details of Argon and DHFR
+% and the results
+
 \section{Discussion}
 
 The Inspur F37X FPGA accelerator card was selected for its advanced programmable logic architecture, offering high flexibility and precise customization to address specific algorithmic requirements of the project. This adaptability effectively overcomes performance bottlenecks inherent in traditional computing architectures, enabling breakthroughs in technical barriers and fostering innovative research pathways. The accelerator card leverages the Xilinx Virtex UltraScale+ VU37P chip, integrating 8GB HBM2 high-bandwidth memory with a bandwidth of 460GB/s, delivering 28.1 TOPS INT8 compute performance at <75W power consumption. This configuration enables high-speed AI inference and scientific computing while maintaining energy efficiency, outperforming CPUs in scenarios requiring low latency and high throughput .
