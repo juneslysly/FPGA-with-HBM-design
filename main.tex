@@ -18,7 +18,7 @@
 
 \title{
 	\textbf{
-      Accelerate MD Simulations by FPGA with HBM design
+      Accelerating Molecular Dynamics Simulations by FPGA with High-Bandwidth Memory (HBM2) Design
     }} 
 \author{1,1,1,1,1,1}
 \date{2024/10/23}
@@ -47,15 +47,16 @@ Additionally, potential strategies for continuing to improve the efficiency of M
 \section{Introduction}
 
 \noindent
-MD simulations have proven to provide critical insights into the properties and interactions of materials and biological systems, making them an important tool in materials science and drug discovery, and showing great promise in these fields~\cite{fep_runtong,fep_york,md_in_dd_jmc2016,md_in_material1}. 
-However, as the research interest grows in increasingly complex and larger-scale systems, the speed of MD simulations remains a significant challenge, directly impacting the efficiency of exploring their potential applications. 
-To address this, almost all existing MD programs have developed multi-CPUs parallel strategies and GPU-based codes to accelerate simulations, significantly enhancing computational performance~\cite{charmm_at_c45,amber_gpu1,amber_gpu2,namd_gpu,omm7,gmx,2019arXiv190505359Y}. \\
+Molecular dynamics (MD) simulations have shown critical importance in material and drug discovery due to its ability to provide detailed mechanistic insights into various material functions and biophysical interactions~\cite{fep_runtong,fep_york,md_in_dd_jmc2016,md_in_material1}. 
+However, functionally-relevant processes are driven by the collective motions of molecules, most of which feature large spatial scales and long timescales that are computationally intensive to be model atomically by MD.
+Contemporary mainstream MD implementations have incorporated multi-CPUs parallel strategies and GPU-based codes, aiming to extend the simulations scales accessible to modern computational power. ~\cite{charmm_at_c45,amber_gpu1,amber_gpu2,namd_gpu,omm7,gmx,2019arXiv190505359Y}.
+Running molecular dynamics simulations on supercomputers often takes a lot of time. The calculations of a large simulation system can take months to complete. Although most supercomputers are equipped with high-end parallel computing technology, they still need more powerful computing power for large-scale, long-term simulation tasks. To speed up the simulation and ensure accuracy, we delve into classical molecular dynamics algorithms. Based on Amdahl's law, accelerated molecular dynamics algorithms focus on two core problems: the calculation of non-bonding forces and the design of motion integrators. Conventional commercial software subdivides the calculation of non-bonding forces into Range Limited forces and Long Range forces~\cite{charmm_at_c45}. The finite range force includes van der Waals force calculation and the direct calculation part of PME calculation. The long range force is used to realize the PME inverse space calculation.\\
 
 \noindent
-In addition to GPU and multi-core CPU approaches, several research groups around the world use dedicated computing hardware to accelerate MD simulations. 
-The commercial ANTON supercomputers (Generations I to III) all utilize the application specific integrated circuit (ASIC) process and have up to 512 nodes of dedicated clusters~\cite{anton1,anton2,anton3}.
+In addition to GPU and CPU-based approaches, several research groups have reported the developments of novel hardware architectures dedicated to accelerate MD simulations. 
+The commercial ANTON-series supercomputers utilized the application specific integrated circuit (ASIC) process and have up to 512 nodes of dedicated clusters~\cite{anton1,anton2,anton3}.
 However, the ANTON series of supercomputers are expensive to design, have long commissioning and development cycles, and can not easily access. 
-Additionally, the MD-GRAPE series, which dates back to the late 1980s, uses MCUs, CPLDs (Complex Programmable Logic Devices), FPGAs, and other acceleration circuits to build a multi-node design~\cite{MD-GRAPE-3,MDGRAPE-4A}.
+Additionally, the MD-GRAPE series, which dates back to the late 1980s, uses MCUs, Complex Programmable Logic Devices (CPLDs), FPGAs, and other acceleration circuits to build a multi-node design~\cite{MD-GRAPE-3,MDGRAPE-4A}.
 This design is combined with a specialized fiber-optic transmission network to form a large-scale computational cluster. 
 The MD-GRAPE series has been developed through four generations, and its hardware devices are constantly updated and iterated, but the design cost remains very high. 
 Furthermore, the Novo-G series, which uses commercial FPGA accelerator cards from the Intel series, optimizes molecular dynamics computational efficiency from both hardware and software perspectives~\cite{Novo-G,Novo-G2,3dfft,bondforce}.\\
@@ -119,12 +120,12 @@ Because the bonded terms are only calculated when bonds exists between atoms, th
 \noindent
 The non-bonded terms often consist of van der Waals (vdW) and Coulomb terms:
 \begin{equation}
-    \boldsymbol{F}_{i}^\mathrm{LJ}\
+    \boldsymbol{F}_{i,LJ}\
     =\sum_{j \neq i} \frac{\epsilon_{a b}}{\sigma_{a b}^{2}}\left\{12\left(\frac{\sigma_{a b}}{\left|\mathbf{r}_{j i}\right|}\right)^{14}-6\left(\frac{\sigma_{a b}}{\left|\mathbf{r}_{j i}\right|}\right)^{8}\right\} \mathbf{r}_{j i}
 \end{equation}
     
 \begin{equation}
-    \boldsymbol{F}_{i}^{\mathrm{Coulomb}}=
+    \boldsymbol{F}_{i,Coulomb}=
         \frac{q_{i}}{4 \pi \epsilon} \sum_{j \neq i}  
         \left\{\frac{1}{\left|\mathbf{r}_{j i}\right|}\right\}^{3}  
         \mathbf{r}_{ji}
@@ -144,7 +145,7 @@ The electrostatic potential energy of the simulated system under PBC is expresse
 
 \begin{center}
 	\begin{equation}
-		U_{coul}=1/4\varepsilon \pi \cdot 1/2 \sum_{n}^{} \sum_{i=1}^{N} \sum_{j=1}^{N} \frac{q_{i}q_{j} }{\left|r_{ij}+nL\right|} 
+		E_{Coulomb}=1/4\varepsilon \pi \cdot 1/2 \sum_{n}^{} \sum_{i=1}^{N} \sum_{j=1}^{N} \frac{q_{i}q_{j} }{\left|r_{ij}+nL\right|} 
 	\end{equation}
 \end{center}
 The simulation box is a square of length $L$, where the number of charged particles is $N$. $r_{ij}$ is the distance between particle $i$ and particle $j$, and $\epsilon$ is the vacuum dielectric constant. 
