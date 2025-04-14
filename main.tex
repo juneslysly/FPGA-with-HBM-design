@@ -54,9 +54,9 @@ Running molecular dynamics simulations on supercomputers often takes a lot of ti
 
 \noindent
 In addition to GPU and CPU-based approaches, several research groups have reported the developments of novel hardware architectures dedicated to accelerate MD simulations. 
-The commercial ANTON-series supercomputers utilized the application specific integrated circuit (ASIC) process and have up to 512 nodes of dedicated clusters~\cite{anton1,anton2,anton3}.
+The commercial ANTON-series supercomputers utilized the Application Specific Integrated Circuit (ASIC) process and have up to 512 nodes of dedicated clusters~\cite{anton1,anton2,anton3}.
 However, the ANTON series of supercomputers are expensive to design, have long commissioning and development cycles, and can not easily access. 
-Additionally, the MD-GRAPE series, which dates back to the late 1980s, uses MCUs, Complex Programmable Logic Devices (CPLDs), FPGAs, and other acceleration circuits to build a multi-node design~\cite{MD-GRAPE-3,MDGRAPE-4A}.
+Additionally, the MD-GRAPE series, which dates back to the late 1980s, uses Microcontrollers (MCUs), Complex Programmable Logic Devices (CPLDs), Field Programmable Gate Arrays(FPGAs), and other acceleration circuits to build a multi-node design~\cite{MD-GRAPE-3,MDGRAPE-4A}.
 This design is combined with a specialized fiber-optic transmission network to form a large-scale computational cluster. 
 The MD-GRAPE series has been developed through four generations, and its hardware devices are constantly updated and iterated, but the design cost remains very high. 
 Furthermore, the Novo-G series, which uses commercial FPGA accelerator cards from the Intel series, optimizes molecular dynamics computational efficiency from both hardware and software perspectives~\cite{Novo-G,Novo-G2,3dfft,bondforce}.\\
@@ -437,7 +437,6 @@ The inputs to the third-order interpolating proximity force calculation unit are
 The particle computation oversight framework integrates multiple functional layers to optimize neighbor identification and force aggregation pipelines. A hierarchical memory architecture manages cell metadata through dynamic matrix structures: a two-dimensional array (Module a) scales with system-wide cell populations to track neighbor indices per home cell, while a one-dimensional auxiliary array (Module b) facilitates rapid index comparison and cross-referencing operations. A parallel comparison engine (Module c) evaluates eligibility criteria across these matrices using hardware-accelerated voting logic, enabling deterministic selection of interacting home cells based on spatial proximity thresholds.
 
 Sequence control is managed through a stateful counter array (Module d) that enforces strict access patterns to prevent memory coherence violations. Data retrieval from external high-bandwidth memory (HBM) is orchestrated by a pipelined fetch unit (Module e), which retrieves composite particle attribute blocks—each home cell requires 13 cumulative data segments including self and twelve neighbor cells—through burst-optimized HBM controllers. The external storage subsystem (Module g) employs bank-interleaved addressing to resolve latency bottlenecks arising from concurrent access requests, while a data fusion module (Module f) aggregates force vectors from intra-cell and inter-cell interactions using SIMD-aligned accumulation registers.
-
 This architecture achieves sub-microsecond neighbor search latencies through optimized matrix compression techniques and pipelined dataflow.
 
 \begin{figure}[htp]
@@ -471,7 +470,7 @@ Covalent bond calculation buffer area, considering the access frequency of each 
 \begin{figure}[htp]
 	\centering
 	\includegraphics[width=0.7\textwidth]{./figures/Bond_force_calculation.png}
-	\caption{The force of the covalent bond is calculated}
+	\caption{The force of the covalent bond is calculated.These include two-force, three-force, four-force calculations, during which a portion of the IP can be reused.}
 	\label{fig:bond}
 \end{figure}
 \section{Results}
@@ -609,8 +608,6 @@ Each RL module uses approximately one $R^2$ computational unit for particle pair
 		\toprule
 		~ & Model & Clock Frequency & 32×32×32 (µs) & 64×64×64 (µs) \\
 		\midrule
-		FPGA & VU37P & 200MHz & 27.5 & 179.625 \\
-		FPGA & VU37P & 250MHz & 22.0 & 143.7 \\
 		FPGA & VU37P & 300MHz & 18.33 & 119.7 \\
 		NVIDIA\cite{8056853} & Tesla K20c & 0.73GHz & 29 & 92 \\
 		Anton\cite{anton1} & ~ & ~ & 4 & 13 \\
