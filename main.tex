@@ -49,9 +49,7 @@ Additionally, potential strategies for continuing to improve the efficiency of M
 Due to its ability to provide detailed mechanistic insights into various physical interactions at atomic level, molecular dynamics (MD) simulations have shown paramount importance for driving the rational discovery of therapeutic agents and functional materials~\cite{fep_runtong,fep_york,md_in_dd_jmc2016,md_in_material1}.
 However, the functionally-relevant processes are mostly driven by the motions of aggregated ensemble of molecules, which feature large spatial scales that are computationally demanding to model comprehensively.
 Consider the many body systems interacting through classical pairwise potentials, the computational demand for integrating the equation of motions quickly escalates with the number of interacting particles in the simulation.
-Moreover, most of the biophysical activated processes that are of mechanistic interests are known to feature heterogeneous timescales. 
-% cite: https://doi.org/10.1146/annurev.physchem.040808.090412
-% cite: https://pubs.acs.org/doi/10.1021/acs.jctc.4c01032 
+Moreover, most of the biophysical activated processes that are of mechanistic interests are known to feature heterogeneous timescales.\cite{Weinan}.
 For example, essential cellular activities fundamental to life, such as active solute transports.\cite{PRXLife.2.043001}
 , could take place at the sub-seconds scale, while the vibrational motions of the molecules is characterized on feco-to-picoseconds. 
 The multi-scale nature of the simulated system limits the length of time steps to be sufficiently short (typically 0.5 to 2 fecoseconds) for the dynamical integration, rendering the computational modeling of long time collective behaviors of the molecules highly intensive.
@@ -67,12 +65,12 @@ On the other hand, the Novo-G reconfigurable computing design combines tradition
 
 \noindent
 Compared to the alternative computing hardware, FPGAs offer greater design flexibility and higher environmental friendlies with competitive computational efficiency.\cite{ref3}. 
-FPGAs incorporate a variety of unique production techniques, such as the flash process and the reverse fusion process, which allow them to support multiple reconfigurations and debugs in the commercial sector, accommodating different experimental design requirements\cite{ref22}. 
-In the chip design phase, FPGA design is considered the core of prototyping, indicating that FPGA circuit design has significant potential for practical application in the later stages of conversion into an ASIC process \cite{ref18}. 
-With their high parallel computing capability, reconfigurability, and excellent energy efficiency ratio, FPGAs (Field Programmable Gate Arrays) exhibit unique advantages in molecular dynamics simulations. They can significantly accelerate intensive floating point computations by processing particle interaction forces, such as van der Waals forces and Coulomb forces, in parallel through thousands of configurable logic units. The hardware pipeline design of FPGAs enables efficient coordination of adjacent list generation, force calculation, and integration processes. Moreover, FPGAs can flexibly adapt to different potential functions, such as the Lennard-Jones and AMBER force fields, as well as various numerical integration methods, like the Verlet algorithm, thereby meeting the diverse requirements of both rigid body and coarse-grained models.\cite{2019arXiv190505359Y}\\
+FPGAs incorporate a variety of unique production techniques, such as the flash process and the reverse fusion process, which allow them to support multiple reconfigurations and debugs in the commercial sector, accommodating different experimental design requirements.\cite{ref22}. 
+In the chip design phase, FPGA design is considered the core of prototyping, indicating that FPGA circuit design has significant potential for practical application in the later stages of conversion into an ASIC process. \cite{ref18}. 
+With their high parallel computing capability, reconfigurability, and excellent energy efficiency ratio, FPGAs (Field Programmable Gate Arrays) exhibit unique advantages in molecular dynamics simulations. They can significantly accelerate intensive floating point computations by processing particle interaction forces, such as van der Waals forces and Coulomb forces, in parallel through thousands of configurable logic units. The hardware pipeline design of FPGAs enables efficient coordination of adjacent list generation, force calculation, and integration processes. Moreover, FPGAs can flexibly adapt to different potential functions, such as the Lennard-Jones and AMBER force fields, as well as various numerical integration methods, like the Verlet algorithm, thereby meeting the diverse requirements of both rigid body and coarse-grained models.\cite{2019arXiv190505359Y}.\\
 
 \noindent
-In this study, we report the co-design of both hardware and software facilities based on a hybrid CPU/FPGA architecture specially purposed for MD simulations with the classical CHARMM36 force field\cite{CHARMM36m}. 
+In this study, we report the co-design of both hardware and software facilities based on a hybrid CPU/FPGA architecture specially purposed for MD simulations with the classical CHARMM36 force field.\cite{CHARMM36m}. 
 Oriented towards optimal computation load scheduling, our design retains the calculations of bonded interactions on the CPU and dispatches the heavy-weight evaluations of nonbonded interactions to the FPGA.
 We demonstrate the practical implementations of the long range FPGA computing units specifically designed for the scalable computation of the electrostatic interactions based on the particle-mesh Ewald (PME) algorithm centered on the 3-dimensional fast Fourier transform kernels.
 Moreover, we report the development of a Single Instruction, Multiple Data (SIMD) software framework to enhance the data processing capabilities of the circuit.
@@ -259,7 +257,7 @@ In implementing the algorithm, the position and acceleration of the current mome
 
 
 \noindent
-Based on the molecular dynamics algorithm, this paper proposes an FPGA architecture for accelerating MD simulations. As shown in Figure ~\ref{fgr:implementation}, in the Range limited (RL) mode, the data processing flow is as follows: First, the CPU preprocesses the MD simulation data, assigns a unique identifier to each particle, and divides the original data according to the cell serial number, thereby obtaining each cell. Then, the particle information is bound to the corresponding cell serial number. The side length of the cell is determined by the cutoff distance, and the number of cells depends on the size of the simulation box in which the simulation dataset is located. Each cell contains not only the information of the particles inside it but also the information of the neighboring cells, and these pieces of information together form a data table stored in the memory.\\
+Based on the molecular dynamics algorithm, this paper proposes an FPGA architecture for accelerating MD simulations. As shown in Figure~\ref{fgr:implementation}, in the Range limited (RL) mode, the data processing flow is as follows: First, the CPU preprocesses the MD simulation data, assigns a unique identifier to each particle, and divides the original data according to the cell serial number, thereby obtaining each cell. Then, the particle information is bound to the corresponding cell serial number. The side length of the cell is determined by the cutoff distance, and the number of cells depends on the size of the simulation box in which the simulation dataset is located. Each cell contains not only the information of the particles inside it but also the information of the neighboring cells, and these pieces of information together form a data table stored in the memory.\\
 
 \noindent
 Each particle occupies one row of storage space. The starting position of the data unit (cell) 
@@ -332,7 +330,7 @@ directs processing workflows to designated arithmetic units.
 Each particle's physical attributes—including scalar charge magnitudes, vector 
 velocity components, and 3D Cartesian coordinates are encoded using IEEE 
 754-compliant 32-bit floating-point representations for numerical 
-stability~\cite{IEEE_Std_754_2019}.\\
+stability~.\cite{IEEE_Std_754_2019}.\\
 
 \noindent
 Parallel processing requirements necessitate dual-tier memory management: 
@@ -738,7 +736,7 @@ accumulators for accumulating force vectors of neighboring cells.
 \subsection{Resource Consumption of the Computing Units in Several Main Modules}
 
 This study focuses on the core challenges of using FPGA to accelerate molecular dynamics simulations. Aiming at the most time-consuming part, i.e., the non-bonded force calculation, a system optimization scheme based on a heterogeneous computing architecture is proposed. By comparing the performance characteristics of general-purpose computing and dedicated hardware architectures, the technical advantages of FPGA in meeting future high computing power requirements are established. The research covers the entire process of coprocessor microarchitecture design, algorithm development, hardware debugging, and system integration, and constructs a heterogeneous platform that includes software preprocessing and hardware acceleration, achieving a breakthrough improvement in computing efficiency on high-performance FPGA chips such as Xilinx VU9P/UV37.The following table presents the resource consumption of the limited range force module and that of the double limited range force module .As shown in Table~\ref{RL}. In the future computing platform, these components are to be assembled into a large scale computing matrix.
-Regarding the Coulomb force, it shows the resource consumption of the long - range force calculation module, which makes use of the Xilinx FFT 9.0 calculation IP.As shown in Table~\ref{fft32}and Table~\ref{fft64} .
+Regarding the Coulomb force, it shows the resource consumption of the long - range force calculation module, which makes use of the Xilinx FFT 9.0 calculation IP.As shown in Table~\ref{fft32} and Table~\ref{fft64} .
 Also included is the resource consumption of the bonded force module.As shown in Table~\ref{bond}.
 
 \begin{table*}[!ht]
