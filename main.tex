@@ -428,18 +428,7 @@ Although direct DSP single - precision 32 - bit floating - point calculations ca
  they consume a vast amount of computing resources.
   The RTL circuit design can be contrasted with the existing FPGA HLS design.
  %??? mark
- 
-In the hardware floating-point calculation, the root operation always consume a 
-lot of logic resources, so we calculate the inter-particle interaction force, 
-transform the formula form, and use $R^2$ to do multi-level multiplication to 
-calculate $R^{14}$ and $R^{8}$ in place of $R^{13}$ and $R^{7}$, which replaces the floating-point 
-computation IP root operation. 
-Using another lookup table to handle Coulomb force calculation pipeline, 
-parallel computation does not interfere with each other in the computation 
-time, the data is output to the last step after floating-point number 
-multiplication and division calculation IP, and the corresponding particle 
-parameters are read from the memory, such as A, B and other parameters in Figure\ref{3order}. %??? mark
-After the calculation, the results for the LJ force and the Coulomb short-range force.Since parameters such as A and B are determined constants in the simulation system that determines the particle type, the constant particle pair lookup table can be pre-established, which can reduce the calculation logic and calculation time in FPGA.
+
 %???^ mark
 
 \begin{figure}[ht]
@@ -450,15 +439,7 @@ After the calculation, the results for the LJ force and the Coulomb short-range 
 \end{figure}
 
 \noindent
-% 距离这个可以删掉？mark
 
-The design of the calculation module of the multi-channel calculation screener 
-is realized as follows:
-The calculation of the particle pair distance squared and the particle pair 
-screening function is to include the 3D coordinates of the two particles in the 
-information of the particle pair to be calculated, and the distance squared of 
-the particles is equal to the sum of the squares of the differences of the 
-coordinates in the three dimensions.\\
 
 \begin{equation}
     r_{ij}^2 = ( x_{i} - x_{j} )^2 + ( y_{i} - y_{j} )^2 + ( z_{i} - z_{j} )^2 
@@ -466,9 +447,6 @@ coordinates in the three dimensions.\\
 
 \noindent
 % ??? mark
-
-
-
 \begin{equation}
     F^{RL}/r_{ij} = A_{ab} r_{ij}^{-14} 
                   + B_{ab} r_{ij}^{-8} 
@@ -531,7 +509,6 @@ The following formula is a set of equations for the 2nd-order interpolation
 function to find the value of the interval $[x_{0}, x_{1}]$, for example, can 
 be calculated to find the values of the 3 coefficients $a$, $b$ and $c$:
 
-
 \begin{equation}
 \begin{array}{c}
 f(x_{0}) = cx_{0}^2 +bx_{0}+a\\
@@ -554,8 +531,6 @@ the coefficient table.
 In addition, the higher the order of the interpolation function, the stronger 
 the ability to track the function curve changes, the higher the accuracy, the 
 more computing and storage resources consumed.
-
-
 %???
 The $x [0.1, 144]$ interval is divided into 8 segments, {[}0.1， 0.2{]} ,
  {[}0.2， 0.4{]}  ,
@@ -577,8 +552,18 @@ be $N^2$ items.
 After analyzing the simulation dataset, there are no more than 
 32 independent particle types, and the depth of the coefficient table is no 
 more than 1024 items. 
-
-
+ 
+In the hardware floating-point calculation, the root operation always consume a 
+lot of logic resources, so we calculate the inter-particle interaction force, 
+transform the formula form, and use $R^2$ to do multi-level multiplication to 
+calculate $R^{14}$ and $R^{8}$ in place of $R^{13}$ and $R^{7}$, which replaces the floating-point 
+computation IP root operation. 
+Using another lookup table to handle Coulomb force calculation pipeline, 
+parallel computation does not interfere with each other in the computation 
+time, the data is output to the last step after floating-point number 
+multiplication and division calculation IP, and the corresponding particle 
+parameters are read from the memory, such as $A_{ab}$,$B_{ab}$ and other parameters in Figure\ref{3order}. %??? mark
+After the calculation, the results for the LJ force and the Coulomb short-range force.Since parameters such as A and B are determined constants in the simulation system that determines the particle type, the constant particle pair lookup table can be pre-established, which can reduce the calculation logic and calculation time in FPGA.
 \subsection{The make table module is used to calculate the process control.}
 
 \noindent 
