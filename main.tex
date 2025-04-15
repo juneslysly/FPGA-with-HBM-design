@@ -87,7 +87,7 @@ traditional computing architectures, enabling breakthroughs in technical
 barriers and fostering innovative research pathways.
 The accelerator card leverages the Xilinx Virtex UltraScale+ VU37P chip, 
 integrating 8~GB HBM2 high-bandwidth memory with a bandwidth of 460~GB/s, 
-delivering 28.1 TOPS INT8 compute performance at <75W power consumption. 
+delivering 28.1 TOPS INT8 compute performance at $<$ 75W power consumption. 
 This configuration enables high-speed AI inference and scientific computing 
 while maintaining energy efficiency, outperforming CPUs in scenarios requiring 
 low latency and high throughput.
@@ -326,8 +326,8 @@ bit allocations, initiating with a machine-readable type identifier that
 directs processing workflows to designated arithmetic units. 
 Each particle's physical attributes—including scalar charge magnitudes, vector 
 velocity components, and 3D Cartesian coordinates are encoded using IEEE 
-754-compliant 32-bit floating-point representations for numerical stability\cite{IEEE Std 754-2019}.\\
-% cite paper or document for IEEE 754 ^
+754-compliant 32-bit floating-point representations for numerical 
+stability~\cite{IEEE_Std_754_2019}.\\
 
 \noindent
 Parallel processing requirements necessitate dual-tier memory management: 
@@ -532,14 +532,14 @@ In addition, the higher the order of the interpolation function, the stronger
 the ability to track the function curve changes, the higher the accuracy, the 
 more computing and storage resources consumed.
 %???
-The $x [0.1, 144]$ interval is divided into 8 segments, {[}0.1， 0.2{]} ,
- {[}0.2， 0.4{]}  ,
- {[}0.4， 0.8{]}  , 
- {[}0.8， 1.6{]} , 
- {[}1.6， 3.2{]},
- {[}3.2， 6.4{]} ,
- {[}6.4， 16.0{]},
- {[}16， 144{]}  , of which the 
+The $x [0.1, 144]$ interval is divided into 8 segments, {[}0.1, 0.2{]} ,
+ {[}0.2, 0.4{]}  ,
+ {[}0.4, 0.8{]}  , 
+ {[}0.8, 1.6{]} , 
+ {[}1.6, 3.2{]},
+ {[}3.2, 6.4{]} ,
+ {[}6.4, 16.0{]},
+ {[}16, 144{]}  , of which the 
 first 7 segments, each segment is divided into 16 small segments, and the last 
 segment, divided into 128 small segments, a total of 240 interpolation functions.
 Each interpolation function requires 3 coefficients, expressed as 
@@ -906,14 +906,14 @@ interactions on FPGAs.
 
 \begin{figure*}[!ht]
 	\centering
-	\includegraphics[angle=0, width=1.0\textwidth]{figures/lj_energy_force.jpg}
+	\includegraphics[angle=0, width=0.4\textwidth]{figures/lj_energy_force.jpg}
 	\caption[Comparison of energy and single-particle forces vs. inter-particle distance in 30~\AA\ periodic box]{Comparison of two-particle LJ system energy and single-particle forces as functions of inter-particle distance in 30~\AA\ periodic box: (a) Total energy comparison between FPGA and CPU calculations. (b) Total energy comparison between FPGA and GPU calculations. (c) Single-particle force comparison between FPGA and CPU calculations. (d) Single-particle force comparison between FPGA and GPU calculations.}
 	\label{lj_energy_force}
 \end{figure*}
 
 \begin{figure*}[!ht]
 	\centering
-	\includegraphics[angle=0, width=1.0\textwidth]{figures/zoom_lj_energy_force.jpg}
+	\includegraphics[angle=0, width=0.4\textwidth]{figures/zoom_lj_energy_force.jpg}
 	\caption[Zoom-in comparison of energy and forces (2.5--8~\AA) in 30~\AA\ periodic box]{Detailed comparison of two-particle LJ system energy and single-particle forces from 2.5~\AA\ to 8~\AA\ in 30~\AA\ periodic box: (a) Total energy comparison (FPGA vs. CPU). (b) Total energy comparison (FPGA vs. GPU). (c) Single-particle force comparison (FPGA vs. CPU). (d) Single-particle force comparison (FPGA vs. GPU).}
 	\label{zoom_lj_energy_force}
 \end{figure*}
@@ -1040,7 +1040,7 @@ Overall, the current design verifies the feasibility of FPGAs in molecular dynam
 
 This study focuses on the core challenges of using FPGA to accelerate molecular dynamics simulations. Aiming at the most time-consuming part, i.e., the non-bonded force calculation, a system optimization scheme based on a heterogeneous computing architecture is proposed. By comparing the performance characteristics of general-purpose computing and dedicated hardware architectures, the technical advantages of FPGA in meeting future high computing power requirements are established. The research covers the entire process of coprocessor microarchitecture design, algorithm development, hardware debugging, and system integration, and constructs a heterogeneous platform that includes software preprocessing and hardware acceleration, achieving a breakthrough improvement in computing efficiency on high-performance FPGA chips such as Xilinx VU9P/UV37.
 
-The innovation of the system architecture is reflected in multi-dimensional optimizations: The 32-channel parallel read-write characteristics of HBM are utilized to improve data throughput; the communication interface design supports both PCIe and fiber optic modes, and a three-dimensional topological data transmission is realized through a six-node static routing network, with the bandwidth utilization rate between nodes reaching 87\%. To meet the requirements of large-scale cluster expansion, a hierarchical multipole expansion scheme based on the FMM algorithm is proposed. By calculating the charge multipole moments hierarchically, the complexity of matrix operations is reduced from O(N²) to O(N log N), providing a feasible path for simulations at the million-atom level.
+The innovation of the system architecture is reflected in multi-dimensional optimizations: The 32-channel parallel read-write characteristics of HBM are utilized to improve data throughput; the communication interface design supports both PCIe and fiber optic modes, and a three-dimensional topological data transmission is realized through a six-node static routing network, with the bandwidth utilization rate between nodes reaching 87\%. To meet the requirements of large-scale cluster expansion, a hierarchical multipole expansion scheme based on the FMM algorithm is proposed. By calculating the charge multipole moments hierarchically, the complexity of matrix operations is reduced from $\mathcal{O}(N^2)$ to $\mathcal{O}(N \cdot \log{N} )$, providing a feasible path for simulations at the million-atom level.
 
 The engineering value of this study lies in establishing the hardware acceleration paradigm of FPGA in the field of molecular dynamics: Its modular design method supports algorithm-hardware co-optimization and can be extended to scientific computing fields such as quantum chemical calculations; the proposed hierarchical storage-communication architecture provides a reusable design template for heterogeneous computing platforms. The technical forward-looking nature is reflected in the research on the hardware adaptability of the FMM algorithm, and this scheme is expected to break through the existing energy efficiency bottleneck of GPUs in the calculation of long-range forces. With the implementation of 7nm FPGA chip technology and the development of multi-core heterogeneous integration technology, the energy efficiency ratio advantage of FPGA in the field of molecular simulation will be further highlighted, providing revolutionary acceleration solutions for high-precision computing scenarios such as drug design and material research and development. 
 
