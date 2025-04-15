@@ -2,7 +2,7 @@
 \usepackage[english]{babel}
 \usepackage{booktabs} 
 \usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
-\usepackage{multirow} % 引入multirow包
+\usepackage{multirow}
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{subfigure}
@@ -18,7 +18,7 @@
 
 \title{
 	\textbf{
-      Accelerating Molecular Dynamics Simulations by FPGA with High-Bandwidth Memory (HBM2) Design
+		A FPGA High-Bandwidth Memory(HBM2) Based Molecular Dynamics Simulations 
     }} 
 \author{1,1,1,1,1,1}
 \date{2024/10/23}
@@ -37,8 +37,7 @@ The speed of MD simulations is one of the key challenges that prevent their appl
 To address this, a full hardware module based on field programmable gate arrays (FPGAs) has been designed to accelerate all parts of MD simulations. 
 The solution aims to increase computational speed by utilizing pipeline techniques (Pipeline) to optimize the allocation of individual tasks within the entire parallel system.
 We have also explored the impact of high-bandwidth memory (HBM2) on computational performance, comparing it with existing memory structures.
-The work includes the use of DDR4 high-speed interfaces and the implementation of polling algorithms to improve access efficiency.
-The optimized design of the underlying register-transfer level (RTL) circuitry for a single node has fundamentally enhanced the efficiency of data read and write operations to and from registers, with external storage read and write efficiency improved by more than 2.0 times.
+The optimized design of the underlying register transfer level (RTL) circuitry for a single node has fundamentally enhanced the efficiency of data read and write operations to and from registers, with external storage read and write efficiency improved by more than 2.0 times.
 The implementation of our work was demonstrated by comparing the simulation results of noble gas argon and dihydrofolate reductase (DHFR) with those obtained from OpenMM.
 Additionally, potential strategies for continuing to improve the efficiency of MD simulations are also discussed.
 
@@ -47,38 +46,46 @@ Additionally, potential strategies for continuing to improve the efficiency of M
 \section{Introduction}
 
 \noindent
-MD simulations have shown critical importance in material and drug discovery due to its ability to provide detailed mechanistic insights into various material functions and biophysical interactions~\cite{fep_runtong,fep_york,md_in_dd_jmc2016,md_in_material1}. 
-However, functionally-relevant processes are driven by the collective motions of molecules, most of which feature large spatial scales and long timescales that are computationally intensive to be model atomically by MD.
-Contemporary mainstream MD implementations have incorporated multi-CPUs parallel strategies and GPU-based codes, aiming to extend the simulations scales accessible to modern computational power. ~\cite{charmm_at_c45,amber_gpu1,amber_gpu2,namd_gpu,omm7,gmx,2019arXiv190505359Y}.
-Running MD simulations on supercomputers often takes a lot of time. The calculations of a large simulation system can take months to complete. Although most supercomputers are equipped with high-end parallel computing technology, they still need more powerful computing power for large-scale, long-term simulation tasks. To speed up the simulation and ensure accuracy, we delve into classical MD algorithms. Based on Amdahl's law, accelerated MD algorithms focus on two core problems: the calculation of non-bonding forces and the design of motion integrators. Conventional commercial software subdivides the calculation of non-bonding forces into Range Limited forces and Long Range forces~\cite{charmm_at_c45}. The finite range force includes van der Waals force calculation and the direct calculation part of Particle Mesh Ewald( PME)calculation. The long range force is used to realize the PME inverse space calculation.\\
+Due to its ability to provide detailed mechanistic insights into various physical interactions at atomic level, molecular dynamics (MD) simulations have shown paramount importance for driving the rational discovery of therapeutic agents and functional materials~\cite{fep_runtong,fep_york,md_in_dd_jmc2016,md_in_material1}.
+However, the functionally-relevant processes are mostly driven by the motions of aggregated ensemble of molecules, which feature large spatial scales that are computationally demanding to model comprehensively.
+Consider the many body systems interacting through classical pairwise potentials, the computational demand for integrating the equation of motions quickly escalates with the number of interacting particles in the simulation.
+Moreover, most of the biophysical activated processes that are of mechanistic interests are known to feature heterogeneous timescales. 
+% cite: https://doi.org/10.1146/annurev.physchem.040808.090412
+% cite: https://pubs.acs.org/doi/10.1021/acs.jctc.4c01032 
+For example, essential cellular activities fundamental to life, such as active solute transports
+% cite: https://doi.org/10.1103/PRXLife.2.043001
+, could take place at the sub-seconds scale, while the vibrational motions of the molecules is characterized on feco-to-picoseconds. 
+The multi-scale nature of the simulated system limits the length of time steps to be sufficiently short (typically 0.5 to 2 fecoseconds) for the dynamical integration, rendering the computational modeling of long time collective behaviors of the molecules highly intensive.
+Aiming to extend the accessible simulation scales subjected to modern computation hardware, contemporary mainstream MD implementations have incorporated multi-CPUs parallel strategies and GPU-based codes. ~\cite{charmm_at_c45,amber_gpu2,namd_gpu,omm7,gmx}.
+However, even with GPU acceleration, the reported trajectory lengths in present MD studies merely exceed several microseconds, and numerically solving the molecular trajectories by MD could cost months of fully loaded computational power for model systems containing a million particles.\\
 
 \noindent
-In addition to GPU and CPU-based approaches, several research groups have reported the developments of novel hardware architectures dedicated to accelerate MD simulations. 
-The commercial ANTON-series supercomputers utilized the Application Specific Integrated Circuit (ASIC) process and have up to 512 nodes of dedicated clusters~\cite{anton1,anton2,anton3}.
-However, the ANTON series of supercomputers are expensive to design, have long commissioning and development cycles, and can not easily access. 
-Additionally, the MD-GRAPE series, which dates back to the late 1980s, uses Microcontrollers (MCUs), Complex Programmable Logic Devices (CPLDs), Field Programmable Gate Arrays(FPGAs), and other acceleration circuits to build a multi-node design~\cite{MD-GRAPE-3,MDGRAPE-4A}.
-This design is combined with a specialized fiber-optic transmission network to form a large-scale computational cluster. 
-The MD-GRAPE series has been developed through four generations, and its hardware devices are constantly updated and iterated, but the design cost remains very high. 
-Furthermore, the Novo-G series, which uses commercial FPGA accelerator cards from the Intel series, optimizes MD computational efficiency from both hardware and software perspectives~\cite{Novo-G,Novo-G2,3dfft,bondforce}.\\
-Novo-G, an influential supercomputing project in the field of Reconfigurable Computing, is being developed by a research team at the University of Florida\cite{Novo-G,Novo-G2}. It is considered one of the pioneers in the field of scalable, reconfigurable supercomputing and aims to break through energy efficiency and performance bottlenecks by combining traditional CPUs with programmable hardware such as FPGAs.
-% add comment for the Novo-G
+In addition to CPU and GPU based approaches, several research groups have reported the developments of novel hardware architectures dedicated to MD simulations. 
+Tetsu el al integrated multiple Microcontrollers (MCUs), Complex Programmable Logic Devices (CPLDs), Field Programmable Gate Arrays(FPGAs) through a specialized fiber-optic network to form the MD-GRAPE computational cluster for MD simulations.~\cite{MD-GRAPE-3,MDGRAPE-4A}.
+The commercial ANTON supercomputer series utilized the Application Specific Integrated Circuit (ASIC) process and have up to 512 nodes in a specifically designed cluster.~\cite{anton1,anton2,anton3}
+However, these architectures are commercially expensive to implement, which limits their applicability for routine computations.
+On the other hand, the Novo-G reconfigurable computing design combines traditional CPUs with programmable hardware (such as FPGAs) to tackle the energy efficiency and performance bottlenecks, and have shown prominent potential for MD simulations.~\cite{Novo-G,Novo-G2}.\\
 
 \noindent
-Although FPGAs are less dense and slower than ASICs, they offer greater design flexibility, are more cost-effective, and consume less power compared to other devices \cite{ref3}. 
-FPGAs incorporate a variety of unique production techniques, such as the flash process and the reverse fusion process, which allow them to support multiple reconfigurations and debugs in the commercial sector, accommodating different experimental design needs \cite{ref22}. 
-In the chip design phase, FPGA design is considered the core of prototyping, indicating that FPGA circuit design has significant potential for practical application in the later stages of conversion into an ASIC process \cite{ref3,ref18}. 
-Therefore, using FPGAs to accelerate MD simulations remains a promising approach.\\
+Compared to the alternative computing hardware, FPGAs offer greater design flexibility and higher environmental friendlies with competitive computational efficiency.\cite{ref3}. 
+FPGAs incorporate a variety of unique production techniques, such as the flash process and the reverse fusion process, which allow them to support multiple reconfigurations and debugs in the commercial sector, accommodating different experimental design requirements\cite{ref22}. 
+In the chip design phase, FPGA design is considered the core of prototyping, indicating that FPGA circuit design has significant potential for practical application in the later stages of conversion into an ASIC process \cite{ref18}. 
+With their high parallel computing capability, reconfigurability, and excellent energy efficiency ratio, FPGAs (Field Programmable Gate Arrays) exhibit unique advantages in molecular dynamics simulations. They can significantly accelerate intensive floating point computations by processing particle interaction forces, such as van der Waals forces and Coulomb forces, in parallel through thousands of configurable logic units. The hardware pipeline design of FPGAs enables efficient coordination of adjacent list generation, force calculation, and integration processes. Moreover, FPGAs can flexibly adapt to different potential functions, such as the Lennard-Jones and AMBER force fields, as well as various numerical integration methods, like the Verlet algorithm, thereby meeting the diverse requirements of both rigid body and coarse-grained models.\cite{2019arXiv190505359Y}\\
 
 \noindent
-Motivated by the desire to accelerate MD simulations, a full hardware module has been designed to speed up all aspects of the MD computation. 
-This module aims to increase computational speed and utilizes pipeline techniques to optimize the allocation of tasks in the entire parallel system \cite{ref12,ref23}. 
-Additionally, we have built a software framework dedicated to SIMD (Single Instruction, Multiple Data) to enhance the data processing capabilities of the circuit. 
-Our work is structured as follows: in Section 2, we revisit the critical algorithms in MD simulations and discuss our considerations for improving their performance. 
-In Section 3, we present the architecture implemented in this work, followed by comparison results that highlight the necessity of our approach. 
-Finally, we demonstrate the results of MD simulations of argon and DHFR using our implementation and compare them with results obtained from OpenMM to validate the correctness of our approach.
-\\
+In this study, we report the co-design of both hardware and software facilities based on a hybrid CPU/FPGA architecture specially purposed for MD simulations with the classical CHARMM36 force field. 
+% cite: http://onlinelibrary.wiley.com/doi/10.1002/jcc.23354/full
+Oriented towards optimal computation load scheduling, our design retains the calculations of bonded interactions on the CPU and dispatches the heavy-weight evaluations of nonbonded interactions to the FPGA.
+We demonstrate the practical implementations of the long range FPGA computing units specifically designed for the scalable computation of the electrostatic interactions based on the particle-mesh Ewald (PME) algorithm centered on the 3-dimensional fast Fourier transform kernels.
+Moreover, we report the development of a Single Instruction, Multiple Data (SIMD) software framework to enhance the data processing capabilities of the circuit.
+The rest of the paper is organized as follows.
+In section 2, we introduce the FPGA model used in our design and review the algorithms encountered in MD simulations and the implications for optimal computing performance in practical implementations.
+In section 3, we detail the algorithmic implementation on the FPGA hardware for massive parallel computation of nonbonded interactions based on the Network-on-Chip (NoC) architecture, as well as a high-bandwidth memory (HBM) design for efficient data dispatching with optimal memory consumption.
+In section 4, we validate our hybrid hardware implementation for MD simulations on two model systems under periodic boundary: the noble gas (Ar) particles and the dihydrofolate reductase (DHFR) protein in explicit solvent.
+Finally, discussions and concluding remarks are provided in section 5.\\
 
-\section{Hardware}
+\section{Methods}
+\subsection{Hardware}
 In this work, the Inspur F37X FPGA accelerator card was selected for its 
 advanced  programmable logic architecture, offering high flexibility and precise 
 customization to address specific algorithmic requirements of the project. 
@@ -87,14 +94,14 @@ traditional computing architectures, enabling breakthroughs in technical
 barriers and fostering innovative research pathways.
 The accelerator card leverages the Xilinx Virtex UltraScale+ VU37P chip, 
 integrating 8~GB HBM2 high-bandwidth memory with a bandwidth of 460~GB/s, 
-delivering 28.1 TOPS INT8 compute performance at $<$ 75W power consumption. 
-This configuration enables high-speed AI inference and scientific computing 
+delivering 28.1 TOPS INT8 compute performance at $<75$ W power consumption. 
+This configuration enables high-speed scientific computing 
 while maintaining energy efficiency, outperforming CPUs in scenarios requiring 
 low latency and high throughput.
 
 
 
-\section{Basic algorithms of classical MD and force field}
+\subsection{Basic algorithms of classical MD and force field}
 
 \noindent
 In this work, we divide a classical MD program into four parts~\cite{ref1}:
@@ -102,7 +109,7 @@ In this work, we divide a classical MD program into four parts~\cite{ref1}:
 \item Read in the specified simulation conditions, such as initial temperature, particle number, and time step.
 \item Determine the initial positions and velocities of the particles.
 \item Compute the forces acting on the particles.
-\item integrat Newton's equations to update velocities, and positions of all particles.
+\item integrate Newton's equations to update velocities, and positions of all particles.
 \end{enumerate}
 Repeat steps 3 and 4 until the user specified simulation step is met. 
 In classical MD simulations, the force acting on each atom is often calculated using force fields which will be discuss in the next two subsection.
@@ -114,15 +121,15 @@ Then integration of Newton's equations over the time step is achieved by algorit
 \noindent
 Most force fields model interactions between particles using bonded and nonbonded terms:
 \begin{equation}
-    \boldsymbol{F}^{\text {total}} = \boldsymbol{F}^{\text {bonded}} 
-                                    + \boldsymbol{F}^{\text{non-bonded}}
+    \boldsymbol{F}_{total} = \boldsymbol{F}_{bonded} 
+                             + \boldsymbol{F}_{nonbonded}
 \end{equation}
 ,where the bonded force consists of bond, angle, dihedral and improper terms:
 \begin{equation}
-\boldsymbol{F}^{\text {bonded}} = \boldsymbol{F}^{\text {bonds}} 
-                                    + \boldsymbol{F}^{\text {angles}} 
-                                    + \boldsymbol{F}^{\text {dihedrals}} 
-                                    + \boldsymbol{F}^{\text{impropers}}
+\boldsymbol{F}_{bonded} = \boldsymbol{F}_{bonds}
+                                    + \boldsymbol{F}_{angles} 
+                                    + \boldsymbol{F}_{dihedrals} 
+                                    + \boldsymbol{F}_{impropers}
 \end{equation}
 
 \noindent
@@ -135,12 +142,12 @@ Because the bonded terms are only calculated when bonds exists between atoms, th
 \noindent
 The non-bonded terms often consist of van der Waals (vdW) and Coulomb terms:
 \begin{equation}
-    \boldsymbol{F}_{i,LJ}\
+    \boldsymbol{F}_{LJ,i}\
     =\sum_{j \neq i} \frac{\epsilon_{a b}}{\sigma_{a b}^{2}}\left\{12\left(\frac{\sigma_{a b}}{\left|\mathbf{r}_{j i}\right|}\right)^{14}-6\left(\frac{\sigma_{a b}}{\left|\mathbf{r}_{j i}\right|}\right)^{8}\right\} \mathbf{r}_{j i}
 \end{equation}
     
 \begin{equation}
-    \boldsymbol{F}_{i,Coulomb}=
+    \boldsymbol{F}_{Coulomb,i}=
         \frac{q_{i}}{4 \pi \epsilon} \sum_{j \neq i}  
         \left\{\frac{1}{\left|\mathbf{r}_{j i}\right|}\right\}^{3}  
         \mathbf{r}_{ji}
@@ -153,14 +160,13 @@ Thus the bottom neck in MD is the calculation of nonbonded terms.
 \noindent
 Because the decay of coulomb force is slow with distance. it is always calculated with the particle mesh Ewald PME algorithm in a perodical system to handle the long-range Coulomb forces. 
 Assuming that the unit cell is square, the Coulomb potential on atom $i$ can be expressed as Eq~\ref{eqn:coulomb}. 
-The algorithm utilizes spherical Gaussian positive and negative charges with the same distribution to partition $E^\mathrm{Coulomb}_i$ into real and inverse parts. 
-The real part converges fast in real space and is safe to truncate at the cutoff, and the inverse part is also fast converging, but in in the inverse space.
+The algorithm utilizes spherical Gaussian positive and negative charges with the same distribution to partition $E_{Coulomb,i}$ into two parts in the real and the inverse spaces. 
 The electrostatic potential energy of the simulated system under PBC is expressed as:
 
 
 \begin{center}
 	\begin{equation}
-		E_{Coulomb}=\frac{1}{4\varepsilon \pi} \cdot 1/2 \sum_{n}^{} \sum_{i=1}^{N} \sum_{j=1}^{N} \frac{q_{i}q_{j} }{\left|r_{ij}+nL\right|} 
+		E_{Coulomb}=\frac{1}{4\varepsilon \pi} \cdot\frac{1}{2}\sum_{n}^{} \sum_{i=1}^{N} \sum_{j=1}^{N} \frac{q_{i}q_{j} }{\left|r_{ij}+nL\right|} 
 	\end{equation}
 \end{center}
 The simulation box is a square of length $L$, where the number of charged particles is $N$. $r_{ij}$ is the distance between particle $i$ and particle $j$, and $\epsilon$ is the vacuum dielectric constant. 
@@ -226,7 +232,7 @@ Using the acceleration and position at time $t_0$, the position ($\mathbf{r}$) a
 \end{equation}
 
 \noindent
-The Verlet algorithm requires a motion update calculation for each particle ($i$) in thesystem, and the calculation requires a two-step difference formulation. 
+The Verlet algorithm requires a motion update calculation for each particle ($i$) in the system, and the calculation requires a two step difference formulation. 
 It needs to utilize the position information of the particle at the previous moment $\mathbf{r}_{i}(t_{0}-\Delta t)$ and the acceleration $\boldsymbol{F}_{i}(t_{0})/m_{i}$ and position information at the current moment $\mathbf{r}_{i}(t_{0})$ . 
 In implementing the algorithm, the position and acceleration of the current moment and the position of the previous moment need to be stored.\\
 
@@ -236,7 +242,7 @@ In implementing the algorithm, the position and acceleration of the current mome
 \includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig1_Neighboursegment.png}
 \caption{ The protein structure of DHFR(a) and cuboid simulated water box (c) were cut into Cells of equal size by Verlet algorithm (d).
 	Among them, Home Cell and the surrounding 26 Neighbor cells (e), of which the upper and lower two are divided into "upper hemisphere"(f) and "lower hemisphere"(g).
-	(h)According to the Verlet algorithm, the center particle and the surrounding particles can be divided into equal-sized squares according to the values of $Rm$ parameter and $Rcut$ off}
+	(h)According to the Verlet algorithm, the center particle and the surrounding particles can be divided into equal sized squares according to the values of $Rm$ parameter and $Rcut$ off}
 \end{figure*}
 
 
@@ -420,11 +426,11 @@ range limted force direct calculation unit module block diagram, assuming that
 particle $i$ and particle $j$ through the particle screening module, in a 
 certain range of action need to calculate the short-range force of particle 
 pairs, particle pairs through the DSP computing pipeline direct calculation, 
-the calculation result is a single-precision floating-point number, using the 
-Xilinx floating-point number calculation unit, this way of calculating the 
+the calculation result is a single precision floating point number, using the 
+Xilinx floating point number calculation unit, this way of calculating the 
 accuracy is relatively high, the consumption of DSP resources is more\ref{dsp}.
 In  existing  studies , interpolation lookup tables are employed to substitute the traditional direct calculation method. 
-Although direct DSP single - precision 32 - bit floating - point calculations can ensure calculation accuracy,
+Although direct DSP single precision 32  bit floating point calculations can ensure calculation accuracy,
  they consume a vast amount of computing resources.
   The RTL circuit design can be contrasted with the existing FPGA HLS design.
  %??? mark
@@ -543,7 +549,7 @@ The $x [0.1, 144]$ interval is divided into 8 segments, {[}0.1, 0.2{]} ,
 first 7 segments, each segment is divided into 16 small segments, and the last 
 segment, divided into 128 small segments, a total of 240 interpolation functions.
 Each interpolation function requires 3 coefficients, expressed as 
-single-precision floating-point numbers.
+single precision floating point numbers.
 The interpolation table for each function can be fully stored using a 4KB BRAM.
 The calculation of the range limted force also requires a table of coefficients 
 for Aab and Bab, which need to be combined two by two for the particle types, 
@@ -553,14 +559,14 @@ After analyzing the simulation dataset, there are no more than
 32 independent particle types, and the depth of the coefficient table is no 
 more than 1024 items. 
  
-In the hardware floating-point calculation, the root operation always consume a 
+In the hardware floating point calculation, the root operation always consume a 
 lot of logic resources, so we calculate the inter-particle interaction force, 
 transform the formula form, and use $R^2$ to do multi-level multiplication to 
-calculate $R^{14}$ and $R^{8}$ in place of $R^{13}$ and $R^{7}$, which replaces the floating-point 
+calculate $R^{14}$ and $R^{8}$ in place of $R^{13}$ and $R^{7}$, which replaces the floating point 
 computation IP root operation. 
 Using another lookup table to handle Coulomb force calculation pipeline, 
 parallel computation does not interfere with each other in the computation 
-time, the data is output to the last step after floating-point number 
+time, the data is output to the last step after floating point number 
 multiplication and division calculation IP, and the corresponding particle 
 parameters are read from the memory, such as $A_{ab}$,$B_{ab}$ and other parameters in Figure\ref{3order}. %??? mark
 After the calculation, the results for the LJ force and the Coulomb short-range force.Since parameters such as A and B are determined constants in the simulation system that determines the particle type, the constant particle pair lookup table can be pre-established, which can reduce the calculation logic and calculation time in FPGA.
@@ -583,10 +589,10 @@ enforces strict access patterns to prevent memory coherence violations.
 Data retrieval from external high-bandwidth memory (HBM) is orchestrated by a 
 pipelined fetch unit (Module e), which retrieves composite particle attribute 
 blocks—each home cell requires 13 cumulative data segments including self and 
-12 neighbor cells-through burst-optimized HBM controllers. 
+12 neighbor cells through burst optimized HBM controllers. 
 The external storage subsystem (Module g) employs bank-interleaved addressing 
 to resolve latency bottlenecks arising from concurrent access requests, while a 
-data fusion module (Module f) aggregates force vectors from intra-cell and 
+data fusion module (Module f) aggregates force vectors from intra cell and 
 inter-cell interactions using SIMD-aligned accumulation registers.
 This architecture achieves sub-microsecond neighbor search latencies through 
 optimized matrix compression techniques and pipelined dataflow.\\
@@ -604,7 +610,7 @@ optimized matrix compression techniques and pipelined dataflow.\\
 In this work, the computationally intensive 3D Fast Fourier Transform (FFT) 
 module on an FPGA platform was implemented, while delegating remaining 
 computational tasks to CPUs. 
-Data exchange between the CPU and FPGA is facilitated through high-speed PCIe 
+Data exchange between the CPU and FPGA is facilitated through high speed PCIe 
 interfaces or optical fiber connections.
 To accelerate Coulomb force calculations in MD, we developed a parallelized 
 approach leveraging proximity lookup tables for Ewald summation, achieving 
@@ -613,18 +619,18 @@ parallelism comparable to van der Waals(vdW) force computations.
 
 The simulation system undergoes cubic or rectangular grid partitioning 
 along X/Y/Z axes, with grid dimensions determined by system boundaries to 
-optimize hardware-accelerated data alignment. 
+optimize hardware accelerated data alignment. 
 This design adapts simulation boxes to cubic/rectangular geometries for 
 efficient data tiling. 
-Temporal-spatial domain transformations employ optimized FFT algorithms for 
-frequency-domain computations, while B-spline interpolation 
+Temporal spatial domain transformations employ optimized FFT algorithms for 
+frequency domain computations, while B-spline interpolation 
 (order=3) maps particle charges to nearest grid points. 
 Hardware implementation leverages OpenMM's reference codebase for kernel 
 optimization, achieving 15$times$ speedup in Coulomb force calculations 
-compared to CPU-only implementations when tested on the Inspur F37X platform. 
+compared to CPU only implementations when tested on the Inspur F37X platform. 
 Resource utilization analysis reveals 83\% DSP block efficiency and 72\% HBM2 
 bandwidth saturation during protein system simulations (100,000 atoms), 
-demonstrating feasibility for large-scale MD workloads.
+demonstrating feasibility for large scale MD workloads.
 
 \begin{figure}[htp]
 	\centering
@@ -716,6 +722,7 @@ accumulators for accumulating force vectors of neighboring cells.
 
 \begin{table*}[!ht]
 	\centering
+		\caption[Performance and Resource Evaluation]{Performance and resource evaluation of multiplication and addition of first-order polynomials using Xilinx's HLS, totaling 10 DSP48 modules. With a clock constraint of 300MHz, Pipeline requires 22 clock cycles to complete the functional implementation. The performance and resource evaluation of multiply-add second order polynomials using Xilinx's HLS is performed on a total of 16 DSP48 modules. Pipeline requires 34 clock cycles to complete the functional implementation; Xilinx's HLS is used to evaluate the performance and resources of the multiply-add operation for third-order polynomials, totaling 22 DSP48 modules. With a clock constraint of 300MHz, Pipeline requires 45 clock cycles to complete the function}.
 	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
 		\toprule
 		Modules&Latency(cycles) & Latency(ns) & DSP &FF &LUT \\\\ 
@@ -726,12 +733,13 @@ accumulators for accumulating force vectors of neighboring cells.
         Third Order Linear Interpolation Module &45 &148.514 & 22 & 2442 & 1452\\\\ 
 	\bottomrule
 	\end{tabular*}
-	\caption[Performance and Resource Evaluation]{Performance and resource evaluation of multiplication and addition of first-order polynomials using Xilinx's HLS, totaling 10 DSP48 modules. With a clock constraint of 300MHz, Pipeline requires 22 clock cycles to complete the functional implementation. The performance and resource evaluation of multiply-add second order polynomials using Xilinx's HLS is performed on a total of 16 DSP48 modules. Pipeline requires 34 clock cycles to complete the functional implementation; Xilinx's HLS is used to evaluate the performance and resources of the multiply-add operation for third-order polynomials, totaling 22 DSP48 modules. With a clock constraint of 300MHz, Pipeline requires 45 clock cycles to complete the function}.
+
 \end{table*}
 
 
 \begin{table*}[!ht]
 	\centering
+		\caption {The FPGA platform was Xilinx Virtex UltraScale+ VU37P with Inspur F37X.Comparison of resources used by a single module and two RL modules in finite range.}
 	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
 		\toprule
 		Type &Module 2 utilization rate\%&Module 1 utilization rate\%  \\ 
@@ -749,12 +757,13 @@ accumulators for accumulating force vectors of neighboring cells.
 		PLL & 17 & 34 \\  
 		\bottomrule
 	\end{tabular*}
-	\caption {The FPGA platform was Xilinx Virtex UltraScale+ VU37P with Inspur F37X.Comparison of resources used by a single module and two RL modules in finite range.}
+
 \end{table*}
 
 
 \begin{table}[!ht]
 	\centering
+		\caption[64-bit sequence resource utilization based on BRAM bar chart]{Layout routing uses Xilinx Virtex UltraScale+ VU37P chip, FFT 64-bit sequence resource utilization based on BRAM bar chart.  }
 	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
 		\toprule
 		Resource Name & Utilization\%  \\
@@ -771,12 +780,13 @@ accumulators for accumulating force vectors of neighboring cells.
 		PCIe & 17  \\ 
 		\bottomrule
 	\end{tabular*}
-	\caption[64-bit sequence resource utilization based on BRAM bar chart]{Layout routing uses Xilinx Virtex UltraScale+ VU37P chip, FFT 64-bit sequence resource utilization based on BRAM bar chart.  }
+
 \end{table}
 
 
 \begin{table}[!ht]
 	\centering
+		\caption[64-bit sequence resource utilization based on URAM bar chart]{Layout routing uses Xilinx Virtex UltraScale+ VU37P chip, FFT 64-bit sequence resource utilization based on URAM bar chart.  }
 	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
 		\toprule
 		Resource Name & Utilization\%  \\ 
@@ -794,11 +804,12 @@ accumulators for accumulating force vectors of neighboring cells.
 		PCIe & 17  \\ 
 		\bottomrule
 	\end{tabular*}
-	\caption[64-bit sequence resource utilization based on URAM bar chart]{Layout routing uses Xilinx Virtex UltraScale+ VU37P chip, FFT 64-bit sequence resource utilization based on URAM bar chart.  }
+
 \end{table}
 
 \begin{table}[!ht]
 	\centering
+		\caption[Resource utilization of RTL covalent bond module]{Resource utilization rates for covalent bond module implemented on Xilinx Virtex UltraScale+ VU37P chip through layout routing.}
 	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
 		\toprule
 		Resource Name & Utilization\% \\
@@ -816,12 +827,13 @@ accumulators for accumulating force vectors of neighboring cells.
 		PCIe & 17 \\
 		\bottomrule
 	\end{tabular*}
-	\caption[Resource utilization of RTL covalent bond module]{Resource utilization rates for covalent bond module implemented on Xilinx Virtex UltraScale+ VU37P chip through layout routing.}
+
 \end{table}
 
 
 \begin{table}[!ht]
 	\centering
+		\caption[Performance comparison of 3D FFT computation module at different clock frequencies]{Implementation of 3D FFT computation module using Xilinx Virtex UltraScale+ VU37P accelerator card. The module completes data reading, 3D FFT computation, convolution, inverse transform, and data storage. Pipelined mode is configured for testing. Input data includes single-precision floating-point matrices of dimensions 32$\times$32$\times$32 and 64$\times$64$\times$64.}
 	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
 		\toprule
 		~ & Model & Clock Frequency & 32×32×32 (µs) & 64×64×64 (µs) \\
@@ -831,7 +843,7 @@ accumulators for accumulating force vectors of neighboring cells.
 		Anton\cite{anton1} & ~ & ~ & 4 & 13 \\
 		\bottomrule
 	\end{tabular*}
-	\caption[Performance comparison of 3D FFT computation module at different clock frequencies]{Implementation of 3D FFT computation module using Xilinx Virtex UltraScale+ VU37P accelerator card. The module completes data reading, 3D FFT computation, convolution, inverse transform, and data storage. Pipelined mode is configured for testing. Input data includes single-precision floating-point matrices of dimensions 32$\times$32$\times$32 and 64$\times$64$\times$64.}
+
 	\label{fftspeed}
 \end{table}
 
@@ -861,16 +873,16 @@ If Z-dimension FFTs are completed, the convolution module retrieves
 coefficients from the coefficient matrix local memory for convolution; 
 other dimensions skip convolution. 
 Processed data is then sent to the data conversion module. 
-In specific-scale FFT computations, mid-to-low-end FPGAs demonstrate 
+In specific scale FFT computations, mid to low end FPGAs demonstrate 
 performance potential surpassing contemporary GPUs.
 
 \subsection{Verification of LJ Particle Energy and Forces}
 
 To validate the correctness of our design and implementation for calculating 
-forces in force-field-based particle simulations on FPGAs, we conducted a 
+forces in force field based particle simulations on FPGAs, we conducted a 
 series of tests. 
 We first verified the LJ calculations using the simplest validation system: 
-a two-particle LJ system with parameters $\sigma = 3.0$~\AA\ and 
+a two particle LJ system with parameters $\sigma = 3.0$~\AA\ and 
 $\varepsilon = 0.5$ kcal/mol. 
 Since the goal of this test is to verify the accuracy of LJ term computation 
 rather than simulate practical scenarios, the parameters is arbitary.
@@ -938,6 +950,7 @@ bandwidth utilization.
 
 \begin{table}[!ht]
 	\centering
+		\caption[Inert gas in test results]{Total LJ interaction energy calculated for a system of fifteen argon atoms on five structures.}
 	\begin{tabular}{cccc}
 		\hline
 		\multicolumn{1}{l}{} & \multicolumn{3}{c}{Potential Energy (kJ/mol)} \\ \cline{2 - 4}
@@ -948,12 +961,12 @@ bandwidth utilization.
 		Frame4               & -1.750265 & -1.748692 & -1.748693 \\
 		Frame5               & -1.624073 & -1.622612 & -1.622612 \\ \hline
 	\end{tabular}
-	\caption[Inert gas in test results]{Total LJ interaction energy calculated for a system of fifteen argon atoms on five structures.}
 	\label{tbl:argon}
 \end{table}
 
 \begin{table}[!ht]
 	\centering
+	\caption[Test system energy using AMBER force field]{Energy results of a system using AMBER force field under 5 different structures. }
 	\begin{tabular}{ccccc}
 		\hline
 		&           & \multicolumn{3}{c}{Potential Energy (kJ/mol)}    \\ \cline{3-5} 
@@ -984,7 +997,6 @@ bandwidth utilization.
 		& nonbonded & -310775.911073 & -310781.230700 & -310780.861400 \\
 		& total     & -296485.091978 & -296490.405800 & -296490.033800 \\ \hline
 	\end{tabular}
-	\caption[Test system energy using AMBER force field]{Energy results of a system using AMBER force field under 5 different structures. }
 	\label{tbl:dhfr_amber_eterm}
 \end{table}
 
@@ -1007,11 +1019,6 @@ v9.0 IP core offers both 32-bit floating-point and fixed-point modes, with
 distinct resource consumption trade-offs.
 
 
- \begin{figure}[H]
-	\centering
-	\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig12_fpga_fft_64.png}
-	\caption{18,000 Argon  gas particles, using Inspur FPGA accelerator card plus OpenMM software interface for calculation results, data energy calculation results. (a) is the overall Energy Waveform.}
-\end{figure}
 
  \begin{figure}[H]
 	\centering
@@ -1024,29 +1031,24 @@ distinct resource consumption trade-offs.
 % and the results
 
 
-\section{Discussion}
+\section{Discussions and Conclusion}
 % ??? 对这个工作有什么帮助？ mark
 
 
 We selected the Xilinx UV9P/UV37P chip on the same cloud platform and designed with two efficient memories, DDR4 and HBM2. In MD calculations, there is a large amount of intermediate data directly related to particle information, so data storage requires an independent interval. DDR has a single read-write channel, while HBM supports 32 independent channels, greatly improving data throughput for particle computing read/write storage. Multi-channel computation enhances particle read and write efficiency to external memory, but the on-chip resource consumption of the read/write driver must be considered. We use a progress proofreading module to supervise multi-channel data for orderly data access.
 
-In terms of computing performance, the current 250 MHz main frequency of the FPGA is on par with that of the CPU, but it is far from reaching its theoretical performance limit. This is mainly due to the fixed - point precision constraint of the Fourier transform IP core and the redundant logic levels in the pipeline design. For example, in the three - dimensional Fourier transform, the selection of 32 - bit fixed - point numbers balances resource consumption and error tolerance (error < 0.0001), yet it sacrifices some computing throughput. In the future, a mixed - precision architecture can be explored, introducing low - precision calculations in non - critical paths to increase the main frequency. Additionally, although the hardware - software co - design scheme for covalent bond calculation has verified its correctness, the data round - trip transmission (e.g., the SHAKE algorithm remains on the CPU side) introduces additional latency. In the future, it is necessary to explore a fully hardware - based force - field calculation pipeline design or optimize the heterogeneous interface to reduce communication overhead.
+In terms of computing performance, the current 250 MHz main frequency of the FPGA is on par with that of the CPU, but it is far from reaching its theoretical performance limit. This is mainly due to the fixed   point precision constraint of the Fourier transform IP core and the redundant logic levels in the pipeline design. For example, in the three  dimensional Fourier transform, the selection of 32   bit fixed point numbers balances resource consumption and error tolerance (error < 0.0001), yet it sacrifices some computing throughput. In the future, a mixed  precision architecture can be explored, introducing low   precision calculations in non  critical paths to increase the main frequency. Additionally, although the hardware/software co design scheme for covalent bond calculation has verified its correctness, the data round  trip transmission (e.g., the SHAKE algorithm remains on the CPU side) introduces additional latency. In the future, it is necessary to explore a fully hardware based force field calculation pipeline design or optimize the heterogeneous interface to reduce communication overhead.
 
-From the verification results, the FPGA shows highly consistent results with the CPU/GPU in the energy calculations of the Lennard - Jones potential, water box model, and protein system (DHFR), with the Root Mean Square Error (RMSE) as low as 1e - 6 kcal/mol, which proves the numerical stability and functional correctness of the hardware implementation. However, in the speed test, the FPGA's computing speed for the largest system (17,615 particles) is only 0.0287 ns/day, revealing the deficiency in large - scale parallel computing capabilities. This is related to both the main frequency limitation and the bandwidth bottleneck between the computing units and the storage subsystem. It is recommended that in subsequent optimizations, the FPGA's main frequency should be prioritized to be increased to the target frequency of 500 MHz, the data path should be reconfigured to reduce the logic delay of the critical path, and a Network - on - Chip (NoC) should be introduced to optimize the data interaction efficiency between multiple modules.
+From the verification results, the FPGA shows highly consistent results with the CPU/GPU in the energy calculations of the Lennard - Jones potential, water box model, and protein system (DHFR), with the Root Mean Square Error (RMSE) as low as $1e ^ 6 kcal/mol$, which proves the numerical stability and functional correctness of the hardware implementation. However, in the speed test, the FPGA's computing speed for the largest system (17,615 particles) is only 0.0287 ns/day, revealing the deficiency in large - scale parallel computing capabilities. This is related to both the main frequency limitation and the bandwidth bottleneck between the computing units and the storage subsystem. It is recommended that in subsequent optimizations, the FPGA's main frequency should be prioritized to be increased to the target frequency of 500 MHz, the data path should be reconfigured to reduce the logic delay of the critical path, and a Network - on - Chip (NoC) should be introduced to optimize the data interaction efficiency between multiple modules.
 
-Overall, the current design verifies the feasibility of FPGAs in molecular dynamics calculations. However, to achieve an energy - efficiency ratio comparable to that of GPUs, performance needs to be further improved through iterations of the hardware architecture (e.g., using a higher - rate DDR interface), adaptation of algorithms to hardware (e.g., customizing FFT modules), and compilation optimizations (e.g., timing - driven instruction scheduling). 
-
-\section{Conclusions}
+Overall, the current design verifies the feasibility of FPGAs in molecular dynamics calculations. However, to achieve an energy efficiency ratio comparable to that of GPUs, performance needs to be further improved through iterations of the hardware architecture (e.g., using a higher rate DDR interface), adaptation of algorithms to hardware (e.g., customizing FFT modules), and compilation optimizations (e.g., timing - driven instruction scheduling). 
 
 This study focuses on the core challenges of using FPGA to accelerate molecular dynamics simulations. Aiming at the most time-consuming part, i.e., the non-bonded force calculation, a system optimization scheme based on a heterogeneous computing architecture is proposed. By comparing the performance characteristics of general-purpose computing and dedicated hardware architectures, the technical advantages of FPGA in meeting future high computing power requirements are established. The research covers the entire process of coprocessor microarchitecture design, algorithm development, hardware debugging, and system integration, and constructs a heterogeneous platform that includes software preprocessing and hardware acceleration, achieving a breakthrough improvement in computing efficiency on high-performance FPGA chips such as Xilinx VU9P/UV37.
 
-The innovation of the system architecture is reflected in multi-dimensional optimizations: The 32-channel parallel read-write characteristics of HBM are utilized to improve data throughput; the communication interface design supports both PCIe and fiber optic modes, and a three-dimensional topological data transmission is realized through a six-node static routing network, with the bandwidth utilization rate between nodes reaching 87\%. To meet the requirements of large-scale cluster expansion, a hierarchical multipole expansion scheme based on the FMM algorithm is proposed. By calculating the charge multipole moments hierarchically, the complexity of matrix operations is reduced from $\mathcal{O}(N^2)$ to $\mathcal{O}(N \cdot \log{N} )$, providing a feasible path for simulations at the million-atom level.
-
-The engineering value of this study lies in establishing the hardware acceleration paradigm of FPGA in the field of molecular dynamics: Its modular design method supports algorithm-hardware co-optimization and can be extended to scientific computing fields such as quantum chemical calculations; the proposed hierarchical storage-communication architecture provides a reusable design template for heterogeneous computing platforms. The technical forward-looking nature is reflected in the research on the hardware adaptability of the FMM algorithm, and this scheme is expected to break through the existing energy efficiency bottleneck of GPUs in the calculation of long-range forces. With the implementation of 7nm FPGA chip technology and the development of multi-core heterogeneous integration technology, the energy efficiency ratio advantage of FPGA in the field of molecular simulation will be further highlighted, providing revolutionary acceleration solutions for high-precision computing scenarios such as drug design and material research and development. 
 
 
 \clearpage
-%
+% We are grateful Dr. Zilin Song for useful discussions and revisions to the manuscript.
 % Reference
 %
 
