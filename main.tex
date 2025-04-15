@@ -2,7 +2,7 @@
 \usepackage[english]{babel}
 \usepackage{booktabs} 
 \usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
- 
+\usepackage{multirow} % 引入multirow包
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{subfigure}
@@ -50,7 +50,7 @@ Additionally, potential strategies for continuing to improve the efficiency of M
 MD simulations have shown critical importance in material and drug discovery due to its ability to provide detailed mechanistic insights into various material functions and biophysical interactions~\cite{fep_runtong,fep_york,md_in_dd_jmc2016,md_in_material1}. 
 However, functionally-relevant processes are driven by the collective motions of molecules, most of which feature large spatial scales and long timescales that are computationally intensive to be model atomically by MD.
 Contemporary mainstream MD implementations have incorporated multi-CPUs parallel strategies and GPU-based codes, aiming to extend the simulations scales accessible to modern computational power. ~\cite{charmm_at_c45,amber_gpu1,amber_gpu2,namd_gpu,omm7,gmx,2019arXiv190505359Y}.
-Running MD simulations on supercomputers often takes a lot of time. The calculations of a large simulation system can take months to complete. Although most supercomputers are equipped with high-end parallel computing technology, they still need more powerful computing power for large-scale, long-term simulation tasks. To speed up the simulation and ensure accuracy, we delve into classical MD algorithms. Based on Amdahl's law, accelerated MD algorithms focus on two core problems: the calculation of non-bonding forces and the design of motion integrators. Conventional commercial software subdivides the calculation of non-bonding forces into Range Limited forces and Long Range forces~\cite{charmm_at_c45}. The finite range force includes van der Waals force calculation and the direct calculation part of PME calculation. The long range force is used to realize the PME inverse space calculation.\\
+Running MD simulations on supercomputers often takes a lot of time. The calculations of a large simulation system can take months to complete. Although most supercomputers are equipped with high-end parallel computing technology, they still need more powerful computing power for large-scale, long-term simulation tasks. To speed up the simulation and ensure accuracy, we delve into classical MD algorithms. Based on Amdahl's law, accelerated MD algorithms focus on two core problems: the calculation of non-bonding forces and the design of motion integrators. Conventional commercial software subdivides the calculation of non-bonding forces into Range Limited forces and Long Range forces~\cite{charmm_at_c45}. The finite range force includes van der Waals force calculation and the direct calculation part of Particle Mesh Ewald( PME)calculation. The long range force is used to realize the PME inverse space calculation.\\
 
 \noindent
 In addition to GPU and CPU-based approaches, several research groups have reported the developments of novel hardware architectures dedicated to accelerate MD simulations. 
@@ -60,6 +60,8 @@ Additionally, the MD-GRAPE series, which dates back to the late 1980s, uses Micr
 This design is combined with a specialized fiber-optic transmission network to form a large-scale computational cluster. 
 The MD-GRAPE series has been developed through four generations, and its hardware devices are constantly updated and iterated, but the design cost remains very high. 
 Furthermore, the Novo-G series, which uses commercial FPGA accelerator cards from the Intel series, optimizes MD computational efficiency from both hardware and software perspectives~\cite{Novo-G,Novo-G2,3dfft,bondforce}.\\
+% add comment for the Novo-G
+Novo-G, an influential supercomputing project in the field of Reconfigurable Computing, is being developed by a research team at the University of Florida. It is considered one of the pioneers in the field of scalable, reconfigurable supercomputing and aims to break through energy efficiency and performance bottlenecks by combining traditional CPUs with programmable hardware such as FPGAs.
 % add comment for the Novo-G
 
 \noindent
@@ -76,6 +78,20 @@ Our work is structured as follows: in Section 2, we revisit the critical algorit
 In Section 3, we present the architecture implemented in this work, followed by comparison results that highlight the necessity of our approach. 
 Finally, we demonstrate the results of MD simulations of argon and DHFR using our implementation and compare them with results obtained from OpenMM to validate the correctness of our approach.
 \\
+
+\section{Hardware}
+In this work, the Inspur F37X FPGA accelerator card was selected for its 
+advanced  programmable logic architecture, offering high flexibility and precise 
+customization to address specific algorithmic requirements of the project. 
+This adaptability effectively overcomes performance bottlenecks inherent in 
+traditional computing architectures, enabling breakthroughs in technical 
+barriers and fostering innovative research pathways.
+The accelerator card leverages the Xilinx Virtex UltraScale+ VU37P chip, 
+integrating 8~GB HBM2 high-bandwidth memory with a bandwidth of 460~GB/s, 
+delivering 28.1 TOPS INT8 compute performance at <75W power consumption. 
+This configuration enables high-speed AI inference and scientific computing 
+while maintaining energy efficiency, outperforming CPUs in scenarios requiring 
+low latency and high throughput.
 
 
 
@@ -238,121 +254,44 @@ In implementing the algorithm, the position and acceleration of the current mome
 
 
 \noindent
-Based on MD algorithms, we proposed a design to accelerate MD simulations on 
-FPGA. 
-As shown in Figure~\ref{fgr:implementation}, the data processing flow in the RL 
-module is as follows:
-The CPU preprocesses MD simulation data, assigning each particle to a unique 
-cell based on the cell serial number obtained by segmenting the original data.
-Particle information is then bound to the cell serial number. 
-The side length of each cell is determined by the truncation distance, and the 
-number of cells is determined by the simulation dataset's rectangular space. 
-Each cell contains information about its particles and neighboring cells, 
-forming a data table stored in memory.\\
+Based on the molecular dynamics algorithm, this paper proposes an FPGA architecture for accelerating MD simulations. As shown in Figure \ref{fgr:implementation}, in the Range limited (RL) mode, the data processing flow is as follows: First, the CPU preprocesses the MD simulation data, assigns a unique identifier to each particle, and divides the original data according to the cell serial number, thereby obtaining each cell. Then, the particle information is bound to the corresponding cell serial number. The side length of the cell is determined by the cutoff distance, and the number of cells depends on the size of the simulation box in which the simulation dataset is located. Each cell contains not only the information of the particles inside it but also the information of the neighboring cells, and these pieces of information together form a data table stored in the memory.\\
 
 \noindent
-Each particle occupies one row of storage space. 
-The starting position of each data cell is directly located using the cell 
-serial number while the data cell length is determined based on the maximum 
-number of particles with an appropriate margin. 
-% 这里什么意思？
-The exclusion information data table, containing information from bonded 
-particle pairs, is stored in memory.
-The structure of the data table excludes particle information in pairs and the 
-number of excluded particles as well as their storage addresses are configured 
-in registers for use by relevant modules. 
-The proximity force calculation uses interpolation and coefficient tables, 
-which are prepared by the CPU and configured in the FPGA's RAM. 
-After configuration, the CPU starts the prefetching particle data unit to 
-execute the next operatio and the paralleled particle 
-reading module provides the particle pair information for calculation.\\
-
-\noindent
-Next, the multi-channel calculation filter module processes each data cell as 
-the main cell. 
-It retrieves particle information from the main cell and the first 13 related 
-cells, forming particle pairs for distance calculation. 
-Each particle from the main cell is paired with one particle from each of the 
-13 neighboring cells, and the distance is calculated. 
-The module then selects particle pairs have a distance within the cutoff for 
-further calculation. 
-% 能不能引用一下精简一下这段？
-Interpolation table coefficients are obtained based on the squared distances of 
-the selected particle pairs and the particle type information. 
-These coefficients, based on charge information, are used for electrostatic and 
-short-range force calculations. 
-All parameters for the limited-range force calculation are stored in the FPGA's 
-on-chip RAM and passed to the particle distance judgment module. 
-Only particles within the distance range proceed to the next step in the force 
-calculation pipeline. 
-The calculation progress is monitored by the proximity force calculation 
-module, which updates the force calculation result data table and supervises 
-the progress.\\
-
-\noindent
-%过渡一下
-The proximity force calculation unit contains several calculation pipelines to 
-match the force requirements of upstream and downstream modules. 
-The calculator performs all proximity force calculations and decomposes the 
-results into 3D coordinates based on the finite-range forces of the 
-particle pairs. 
-The force from the same particle to different particles in each main cell is 
-accumulated and cached and the force from the first 13 neighboring cells are 
-cached in the particle pair force cache RAM according to the particle serial 
-number. 
-All force results and part of the accumulated force data are cached in the 
-corresponding areas based on the particle number at the source end. 
-At least two accumulator pipelines and two memory entry generation modules are 
-reserved for parallel processing to match the upstream and downstream 
-processing capabilities.\\
+Each particle occupies one row of storage space. The starting position of the data unit (cell) 
+can be directly located through the cell serial number,
+ and the length of the data unit is determined according to the maximum number of particles with an appropriate margin reserved. 
+% 这里什么意思？ mark
+The exclusion information data table containing the information of the bonded particle pairs is stored in the memory.
+ The data table structure will exclude the particle information in pairs, and the number of excluded particles and their storage addresses will be configured in the register for use by the relevant modules.
+The neighboring force calculation uses the interpolation table and coefficient table prepared by the CPU and configured in the RAM of the FPGA.
+ After the configuration is completed, the CPU initiates the prefetch of the particle data unit to perform subsequent operations, and the parallel particle reading module provides the particle pair information for the calculation.
+Subsequently, the multi-channel calculation screening module processes each data unit as the main cell.
+ It obtains the particle information from the main cell and 13 related cells, constructs the particle pairs for distance calculation, 
+ that is, each particle in the main cell is paired with one particle in each of the 13 adjacent cells, and calculates the distance. 
+ Then, the module screens out the particle pairs whose distances are within the cutoff range for subsequent calculations. 
+ The interpolation table coefficients are obtained according to the squared distance of the selected particle pairs and the particle type information,
+  and these coefficients based on the charge information are used for the calculation of the electrostatic and short-range forces.
+   All the parameters of the limited range force calculation are stored in the on-chip RAM of the FPGA and passed to the particle distance judgment module, 
+   and only the particles within the distance range will enter the next step of the force calculation process.
+    The calculation process is monitored by the close-range force calculation module, 
+    which will update the force calculation result data table and supervise the calculation progress.\\
 
 
 
 \subsection{Data is read and written using HBM memory.}
 \noindent
-The high-bandwidth memory (HBM) stores data cells with structured organization.
-% 图几？
-As illustrated in the accompanying diagram, each data cell configuration 
-comprises multiple information layers.
-The primary row specifies fundamental metadata including the cell serial 
-number, physical dimensions, particle count, particle information offset 
-addresses, and verification codes.
-Subsequent quadrants systematically document adjacency relationships through 
-serialized identifiers and HBM address offsets for neighboring cells, with each 
-spatial dimension represented in consecutive 8-byte blocks. 
-The memory allocation follows strict alignment protocols where incomplete rows 
-are padded to achieve full row boundary compliance. 
-Particle-specific serial numbers are sequentially stored in contiguous memory 
-segments, maintaining the established alignment convention through terminal 
-padding.
-This hierarchical arrangement ensures efficient data retrieval while preserving 
-memory architecture integrity.
-%???
-Data cached at the same address, multiple channels read simultaneously; Data 
-cached at the different address, multiple channels read simultaneously shown in 
-Figure~\ref{fig:subfig1}and Figure~\ref{fig:subfig2}.\\
 
-\subsubsection{Particle information storage table Home Cell and Neighbor Cell 
-storage relationship.}
+The High Bandwidth Memory (HBM) stores data units in a structured manner, and the configuration of each data unit contains multiple information layers. The main row designates key basic metadata, such as the cell serial number, particle charge, number of particles, storage offset address of the particle information, and parity bits. These pieces of information lay the foundation for subsequent processing. Subsequently, each quadrant uses the serialized identifier and the HBM address offset of the adjacent units to record the adjacency relationship in an orderly manner. Each spatial dimension is presented in a continuous 8-byte block, making the data association clearly traceable.
+The memory allocation follows a strict alignment protocol. For incomplete rows, padding is carried out to meet the requirements of the complete row boundary. The particle-specific serial numbers are stored sequentially in the continuous memory segments, and the established alignment rules are maintained through terminal padding to ensure the standardization of data storage. Such a hierarchical arrangement not only ensures the integrity of the memory architecture but also enables efficient data retrieval.
+When caching data, multiple channels can simultaneously read data in the manner shown in Figure \ref{fig:subfig1} and Figure \ref{fig:subfig2}, either at the same address or different addresses.
+
+\subsubsection{Particle information storage table Home Cell and Neighbor Cell storage relationship.}
 \noindent
-Data cells accommodate individual particles through dedicated row allocations, 
-with their dimensional parameters determined during preprocessing by the 
-maximum anticipated particle count augmented by a defined safety margin. 
-A hierarchical addressing mechanism enables direct access to any data cell 
-using its unique serial number, which maps to precise memory coordinates. 
-Structural omission of paired particle entries generates the specialized memory 
-topology detailed in associated documentation, with exclusion criteria governed 
-by registers storing both the count and physical addresses of excluded 
-elements-parameters directly utilized by downstream computational modules. 
-Critical to force calculations, interpolation coefficients and lookup tables 
-are precomputed by the CPU and loaded into dedicated on-chip RAM resources 
-within the FPGA fabric. 
-Exclusion data originates from predefined covalent bonds, where paired particle 
-identifiers are aggregated into composite exclusion records stored natively in 
-HBM arrays, ensuring low-latency access during simulation execution.\\
+The data units adopt a specialized row allocation strategy to accommodate a single particle. During the preprocessing stage, the size parameters of the data units are determined according to the rule of increasing the maximum expected number of particles within the specified safety range. Through the hierarchical addressing mechanism, any data unit can be directly accessed by virtue of its unique serial number and mapped to the precise memory coordinates.
+Structural omissions are made for the particle items, resulting in a specialized memory topology. This topology is elaborated in detail in the figure, and these elements serve as parameters that can be directly compared and used by the calculation modules of the remaining 13 neighboring cells.
+For the calculation of non-bonding forces, the interpolation coefficients and lookup tables are pre-calculated by the CPU and loaded into the dedicated on-chip RAM resources within the FPGA structure. As for the covalent bond information that does not require calculation from the exclusion data source, such as the hydrogen bond force, etc., the identifiers of the special bonded particles are stored in pairs in the shared memory area, so as to ensure low-latency access during the execution time of the calculation process.
 
-\subsubsection{The storage relationship between Home Cell and Neighbor Cell in 
-the particle information storage table.}
+\subsubsection{The storage relationship between Home Cell and Neighbor Cell in the particle information storage table.}
 
 \noindent
 The particle information storage architecture establishes a dual-layer 
@@ -388,7 +327,7 @@ bit allocations, initiating with a machine-readable type identifier that
 directs processing workflows to designated arithmetic units. 
 Each particle's physical attributes—including scalar charge magnitudes, vector 
 velocity components, and 3D Cartesian coordinates are encoded using IEEE 
-754-compliant 32-bit floating-point representations for numerical stability.\\
+754-compliant 32-bit floating-point representations for numerical stability\cite{IEEE Std 754-2019}.\\
 % cite paper or document for IEEE 754 ^
 
 \noindent
@@ -431,37 +370,9 @@ optimized data structures.\\
 
 \subsubsection{The remaining 13 neighbor cells storage table.}
 \noindent
-The force cache employs a hierarchical storage architecture with unified 
-512-bit data frames as shown in Figure~\ref{fig:subfig4}(b), comprising two 
-functional rows: an index row containing metadata and a data row storing force 
-vector payloads. 
-The index row encodes critical operational parameters through dedicated bit 
-fields—including type classification flags, particle identifiers, buffer 
-capacity parameters (predefined as double the maximum particle count observed 
-during preprocessing), valid entry counters initialized to zero, and a 16-byte 
-segment checksum for error detection. 
-The data row implements a contiguous memory block partitioned into 16-byte 
-aligned entries, each storing one of three force vector types: intermediate 
-partial sums from ongoing pairwise calculations, boundary force contributions 
-from terminal particles in cell interactions, and excluded particle forces 
-derived from covalent bond constraints.\\
-
-\noindent
-Buffer management follows a dual-phase protocol where data insertion calculates 
-dynamic memory offsets based on valid entry counts, incrementing the counter 
-after each write operation while regenerating the checksum over the first 16 
-bytes of the index row. 
-The double-buffer capacity ensures overflow resilience during peak computation 
-cycles, with FPGA logic supporting both hardware-accelerated initialization 
-(resetting all counters and flags) and software-managed reconfiguration for 
-simulation resets. 
-% 啥意思V
-Force vector entries adhere to IEEE 754 single-precision floating-point formats 
-for velocity, position, and charge components, ensuring numerical stability 
-across parallel processing pipelines. 
-This structured approach enables deterministic memory access patterns while 
-maintaining compatibility with FPGA-based DMA engines for efficient 
-host-to-device data transfers.\\
+The data caching during the particle calculation process adopts a unified hierarchical storage architecture. Its 512-bit data frame structure is shown in Figure \ref{fig:subfig4} (b), which is composed of two functional rows, namely the index row and the data row. The index row undertakes the task of encoding key operation parameters, and sets fields such as the type classification flag and the particle identifier through dedicated bits. Among them, the buffer capacity parameter is predefined as twice the observed maximum number of particles during the preprocessing stage. The valid entry counter is initially set to zero, and there is also a 16-byte segment checksum for error detection.
+The buffer management follows a two-stage protocol to handle data insertion and calculation. The dynamic memory offset is determined according to the valid entry count. The counter is incremented after each write operation, and at the same time, the checksum of the first 16 bytes of the index row is regenerated. The dual-buffer design endows the system with the ability to resist overflow during peak calculation cycles. The FPGA logic not only supports hardware-accelerated initialization, that is, resetting all counters and flags, but also supports the reconfiguration of the simulated reset managed by software.
+The IEEE 754 single-precision floating-point format is adopted to process the velocity, position, and charge components, ensuring the numerical stability in the parallel processing pipeline. Compatibility with the FPGA-based DMA engine is maintained, thereby improving the data transfer efficiency from the host to the device.\\
 
 
 \begin{figure*}[!ht]
@@ -502,39 +413,45 @@ host-to-device data transfers.\\
 	\centering
 	\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig8_force_direct_calculation_unit_module.png}
 	\caption{The block diagram of the direct calculation module, assuming that particle i and particle j have gone through the particle screening module, and the short-range force of the particle pairs needs to be calculated within a certain range of action. The particle pairs are calculated directly by the DSP calculation pipeline, and the calculation results are single-precision floating-point numbers, which are calculated by the Xilinx floating-point number calculation unit, which is a relatively high-precision calculation method that consumes a large amount of DSP resources.}
+		\label{dsp}
 \end{figure}
 
 \noindent
-Proximity force direct calculation unit module block diagram, assuming that 
+range limted force direct calculation unit module block diagram, assuming that 
 particle $i$ and particle $j$ through the particle screening module, in a 
 certain range of action need to calculate the short-range force of particle 
 pairs, particle pairs through the DSP computing pipeline direct calculation, 
 the calculation result is a single-precision floating-point number, using the 
 Xilinx floating-point number calculation unit, this way of calculating the 
-accuracy is relatively high, the consumption of DSP resources is more. 
-The particles first go through the floating-point subtraction IP output 
-multiplication IP to calculate 2. %??? 
+accuracy is relatively high, the consumption of DSP resources is more\ref{dsp}.
+In  existing  studies , interpolation lookup tables are employed to substitute the traditional direct calculation method. 
+Although direct DSP single - precision 32 - bit floating - point calculations can ensure calculation accuracy,
+ they consume a vast amount of computing resources.
+  The RTL circuit design can be contrasted with the existing FPGA HLS design.
+ %??? mark
+ 
 In the hardware floating-point calculation, the root operation always consume a 
 lot of logic resources, so we calculate the inter-particle interaction force, 
-transform the formula form, and use 2 to do multi-level multiplication to 
-calculate 14 and 8 in place of 13 and 7, which replaces the floating-point 
+transform the formula form, and use $R^2$ to do multi-level multiplication to 
+calculate $R^{14}$ and $R^{8}$ in place of $R^{13}$ and $R^{7}$, which replaces the floating-point 
 computation IP root operation. 
 Using another lookup table to handle Coulomb force calculation pipeline, 
 parallel computation does not interfere with each other in the computation 
 time, the data is output to the last step after floating-point number 
 multiplication and division calculation IP, and the corresponding particle 
-parameters are read from the memory, such as A, B and other parameters in Figure. %???
-After the calculation, the results for the LJ force and the Coulomb short-range force.
-%???^
+parameters are read from the memory, such as A, B and other parameters in Figure\ref{3order}. %??? mark
+After the calculation, the results for the LJ force and the Coulomb short-range force.Since parameters such as A and B are determined constants in the simulation system that determines the particle type, the constant particle pair lookup table can be pre-established, which can reduce the calculation logic and calculation time in FPGA.
+%???^ mark
 
 \begin{figure}[ht]
 	\centering
 	\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig9_Third_order_linear_interpolation.png}
 	\caption{The figure shows the framework diagram of the second-order interpolation table DSP processing flow, the information of each particle is read from the parameter cache, after the arbitration of the parameter selector, the particle pairs go through the distance judgment, and the particles within the computation range enter into the force computation channel, assuming that the particles to be computed are particle i and particle j. }
+	\label{3order}
 \end{figure}
 
 \noindent
-% 距离这个可以删掉？
+% 距离这个可以删掉？mark
 The design of the calculation module of the multi-channel calculation screener 
 is realized as follows:
 The calculation of the particle pair distance squared and the particle pair 
@@ -548,30 +465,8 @@ coordinates in the three dimensions.\\
 \end{equation}
 
 \noindent
-% ???
-The particle coordinates are represented using single-precision floating-point 
-numbers, and $R^2$ is also stored using single-precision floating-point numbers.
-The implementation of this formula is realized using floating-point arithmetic 
-IP provided by the Xilinx manufacturer, together with auxiliary circuits to 
-form a computational pipeline, where the distance squared for a set of 
-particles can be computed for each clock. 
-Since 2 has a limited range of values in the analog box and in making distance 
-size comparisons, coefficient lookup tables, it is more convenient to use 
-integers, all $R^2$ is uniformly enlarged by a certain factor, and then the 
-integer part is taken for particle pair screening. particle pairs for which 
-$R^2$ is smaller than the square of the truncated distance are selected as 
-inputs to the subsequent calculations, otherwise ignored.\\
+% ??? mark
 
-\noindent
-%???
-Otherwise, they are ignored. 
-Since the spatial center distance of adjacent cells is greater than or equal to 
-the truncation distance, there exists a certain probability distribution for 
-the selected usable particle pairs. 
-To maximize the arithmetic power, we use eight computation and screening 
-modules working in parallel with three ports outputting at the same time, and 
-the related table lookup operation is also allowed to look up the table at the 
-same time according to the number of output ports.\\
 
 
 \begin{equation}
@@ -597,7 +492,7 @@ where,
   
   
 In this design, $R^{-14}$, $R^{-8}$ and $R^{-3}$ are used in the formula of 
-proximity force. 
+range limted force. 
 In this design, $R^2$ is used as the output, and all the interpolating 
 functions of the above three functions are created, which are reduced to 
 low-order monic polynomials and then brought into $R^2$ to compute the 
@@ -672,13 +567,20 @@ The results are similar to those of orthogonal polynomials such as Legendre.
 Our final choice is the result of the calculation:
 
 %???
-The x interval is divided into 8 segments, as shown in the table, of which the 
+The $x [0.1, 144]$ interval is divided into 8 segments, {[}0.1， 0.2{]} ,
+ {[}0.2， 0.4{]}  ,
+ {[}0.4， 0.8{]}  , 
+ {[}0.8， 1.6{]} , 
+ {[}1.6， 3.2{]},
+ {[}3.2， 6.4{]} ,
+ {[}6.4， 16.0{]},
+ {[}16， 144{]}  , of which the 
 first 7 segments, each segment is divided into 16 small segments, and the last 
 segment, divided into 128 small segments, a total of 240 interpolation functions.
 Each interpolation function requires 3 coefficients, expressed as 
 single-precision floating-point numbers.
 The interpolation table for each function can be fully stored using a 4KB BRAM.
-The calculation of the proximity force also requires a table of coefficients 
+The calculation of the range limted force also requires a table of coefficients 
 for Aab and Bab, which need to be combined two by two for the particle types, 
 so that if there are N independent particle types, the length of the table will 
 be $N^2$ items. 
@@ -687,20 +589,20 @@ After analyzing the simulation dataset, there are no more than
 more than 1024 items. 
 The coefficients are expressed as single-precision 
 floating-point numbers, and the coefficient table can be stored in 8 KB BRAM.
-The inputs to the third-order interpolating proximity force calculation unit 
+The inputs to the third-order interpolating range limted force calculation unit 
 are all the parameters needed for the calculation formula, and the outputs are 
 the three components of the force. 
 Each clock cycle can input a set of 
 calculation parameters, after the internal pipeline processing, each clock can 
 output a set of settlement results. 
 The following figure shows the realization 
-'of the proximity force calculation unit block diagram.
+'of the range limted force calculation unit block diagram.
 
 \subsection{The make table module is used to calculate the process control.}
 
 \noindent 
 The particle computation oversight framework integrates multiple functional 
-layers to optimize neighbor identification and force aggregation pipelines. 
+layers to optimize neighbor identification and force aggregation pipelines\ref{mark}. 
 A hierarchical memory architecture manages cell metadata through dynamic matrix 
 structures: a 2D array (Module a) scales with system-wide cell populations to 
 track neighbor indices per home cell, while a 1D auxiliary array (Module b) 
@@ -727,7 +629,8 @@ optimized matrix compression techniques and pipelined dataflow.\\
 	\centering
 	\includegraphics[width=0.7\textwidth]{./figures/Fig10_marktable.png}
 	\caption{The particle computing progress monitoring module is composed of 
-    several modules.}
+    several modules.}	
+    \label{mark}
 \end{figure}
 
 
@@ -740,8 +643,8 @@ interfaces or optical fiber connections.
 To accelerate Coulomb force calculations in MD, we developed a parallelized 
 approach leveraging proximity lookup tables for Ewald summation, achieving 
 parallelism comparable to vdW force computations.
-% use ref in Figure
-As illustrated in Figure 3-8, direct DSP channel implementations achieve 32-bit 
+% use ref in Figure   mark
+As illustrated in Figure\ref{3DF}, direct DSP channel implementations achieve 32-bit 
 single-precision accuracy, with Figure 3-12 demonstrating 2nd-order 
 interpolation structures for charge distribution. 
 The simulation system undergoes cubic or rectangular grid partitioning 
@@ -763,6 +666,7 @@ demonstrating feasibility for large-scale MD workloads.
 	\centering
 	\includegraphics[width=0.7\textwidth]{./figures/3dfft_top_strcture.png}
 	\caption{The 3D Fourier transform.}
+	\label{3DF}
 \end{figure}
 
 
@@ -774,12 +678,7 @@ hardware is realized through PCIe 3.0.
 Each small box in the diagram represents a circuit processing unit. 
 Particle information is derived from user input files, and the structure of 
 particle information storage table is different for different user input files. 
-% seems not neccessary
-%This project uses FPGA as heterogeneous computing platform. 
-%After receiving the particle bonding information provided by the user, the CPU 
-%needs to carry out preliminary data processing.
-%Because of different protein systems, it is necessary to construct 
-%corresponding particle information table. 
+
 This data is stored in a specific cache area of HBM2 using DMA technology. 
 In classical MD simulations, bond topology describing how particles are 
 connected remains unchanged during the simulation.
@@ -803,9 +702,8 @@ bottleneck in the whole calculation process.
 Our covalent bond calculation buffer area, considering the access frequency of 
 each calculation channel is different, in this design scheme, we set up a 
 special circuit for receiving data from different channels. 
-Only when all the data has been calculated will the subsequent calculation 
-module be notified. 
-% ???V
+
+% ???V mark
 In the process of MD calculation, for some specific data, such as particles 
 connected with hydrogen bonds, constraints such as the algorithm of unloading 
 SHAKE algorithm to FPGA computing resource consumption can be used to limit. 
@@ -822,69 +720,7 @@ At this stage, we need to read the Index of these waiting bound particles.
 \end{figure}
 \section{Results}
 
-% 似乎重复%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In the RL module, data is processed as follows: the CPU pre-processes the 
-dataset of the MD simulation, and the pre-processed data will contain the 
-following information, in which the cell serial number is obtained by 
-segmenting the original data, and each particle will be assigned to a unique 
-cell, and the particle information will be bound to the cell serial number to 
-form the basic information of the particle to be processed. 
-All other information in the data entry is obtained from the original data file. 
-The side length of each data cell is determined based on the size of the 
-truncation distance, and the number of data cells after CPU pre-processing is 
-determined if the simulation data set exists in a deterministic rectangular 
-space. 
-Each data cell contains information about the particles it belongs 
-to and the positions of the neighboring data cells, forming a data table to be 
-stored in memorizer.
 
-Each particle occupies one row of storage space. 
-The length of the data cell is created according to the maximum number of 
-particles after pre-processing, with an appropriate margin. 
-Based on the serial number of the data cell, the starting position of the data 
-cell can be directly located. 
-Excluding particle information in pairs directly creates the structure shown in 
-the following table. The number of excluded particles and their storage 
-addresses are configured in registers for use by the relevant modules. 
-The proximity force calculation requires the use of interpolation and 
-coefficient tables, which are also prepared by the CPU and configured in the 
-RAM of the FPGA. The information of the particle pairs to be excluded mainly 
-comes from the existing co-bonded particle pairs, and the information of the 
-two bonded particles is combined together to form the exclusion information 
-data table, which is stored in the memorizer.
-
-After the above configuration is completed, the CPU starts the prefetching 
-particle data unit module to execute the next operation. 
-The CPU can read the excluded particle information in parallel, and the 
-particle reading module provides the particle pair information to be calculated.
-
-Multi-Channel Calculation Filter Calculation Module, select each data cell as 
-the main data cell in turn, take out the particle information of the main data 
-cell and the particle information of the first 13 related data cells, take out 
-a particle from the main cell, and take out one particle from each of the 13 
-neighboring cells, and form a particle pair to perform the distance calculation.
-Another particle is taken out from the main cell and formed into a particle 
-pair with the current particle in the main cell for distance calculation. 
-At this time, the current particle and 14 different particles are performing 
-the distance calculation at the same time, and then based on the square of the 
-distance calculation result and the square of the truncated distance, the 
-particle pair smaller than the truncated distance is selected for the 
-subsequent calculation. 
-The coefficients of the interpolation table are obtained by querying the 
-interpolation table based on the squared distances of the selected particle 
-pairs, and the coefficients are obtained by checking the table based on the 
-particle type information of the particle pairs. 
-The coefficient values are based on the charge information in the FPGA which is 
-needed for the calculation of the electrostatic force and the short-range force. 
-At the end of the table, all the parameters for calculating the limited range 
-force are obtained, and all the information is stored in the FPGA on-chip RAM 
-and passed to the particle distance judgment module for screening, and only the 
-particles within the distance range are allowed to carry out the next step in 
-the force calculation pipeline. 
-The calculation progress of the particles is passed to the proximity force 
-calculation monitoring module, which is used to update the proximity force 
-calculation result data table and supervise the progress of calculator 
-calculation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%^
 \subsection{High-Level Language Synthesis (HLS) Design Experiment Results}
 
@@ -1032,18 +868,19 @@ accumulators for accumulating force vectors of neighboring cells.
 		\bottomrule
 	\end{tabular*}
 	\caption[Performance comparison of 3D FFT computation module at different clock frequencies]{Implementation of 3D FFT computation module using Xilinx Virtex UltraScale+ VU37P accelerator card. The module completes data reading, 3D FFT computation, convolution, inverse transform, and data storage. Pipelined mode is configured for testing. Input data includes single-precision floating-point matrices of dimensions 32$\times$32$\times$32 and 64$\times$64$\times$64.}
+	\label{fftspeed}
 \end{table}
 
-% 这些FFT写了什么，应该怎么弄
-The FFT computation module contains 4 FFT computation kernels, each kernel 
-includes 8 FFT computation channels, capable of parallel computing 32 
-one-dimensional FFTs per clock cycle. 
-Each plane requires two one-dimensional FFT computations, and 64 planes require 
-128 one-dimensional FFT computations. 
+% 这些FFT写了什么，应该怎么弄 mark
+In the calculation of PME, the speed of 3D FFT calculation needs to be improved.
+ We use fft 9.0 IP to optimize the computing architecture to improve the computing efficiency.
 As shown in the FFT 9.0 user manual~\cite{8056853}, the pipelined mode offers 
 the fastest speed but increases resource consumption exponentially. 
-The following tables use pipelined mode testing.
+The following tables use pipelined mode testing\ref{fftspeed}.
 
+Global storage space and local memory are required in the calculation,
+ because there is data interaction between the cpu and the fpga during the calculation.
+  However, for FFT transform arrays need to be stored in local memory for easy computation.
 Global memory stores 32-bit static potential real parts and coefficients with 
 256-bit bit width (32$\times$8), requiring 65536 bits (2048 K) depth to store 
 all data.
@@ -1053,6 +890,7 @@ RAM.
 Coefficient matrix local memory stores 32-bit coefficients with 256-bit bit 
 width (32$\times$8), requiring 8192-bit depth as simple dual-port RAM.
 
+The 3D FFT calculation needs to calculate the data of the three dimensions XYZ separately. The data at the end of one dimension calculation is the data at the beginning of the next dimension transformation. The specific architecture is shown in the Figure\ref{3DF}.
 After completing FFT computations, the FFT module transfers data to the data 
 processing module. 
 If Z-dimension FFTs are completed, the convolution module retrieves 
@@ -1131,6 +969,9 @@ implementation accuracy.
 This cross-platform consistency validates the FPGA's computational precision in 
 handling LJ interactions through optimized parallel architectures and memory 
 bandwidth utilization.
+
+
+
 \begin{table}[!ht]
 	\centering
 	\begin{tabular}{cccc}
@@ -1147,6 +988,41 @@ bandwidth utilization.
 	\label{tbl:argon}
 \end{table}
 
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{ccccc}
+		\hline
+		&           & \multicolumn{3}{c}{Potential Energy (kJ/mol)}    \\ \cline{3-5} 
+		&           & FPGA           & CPU            & GPU            \\ \hline
+		\multirow{5}{*}{Frame1} & bond      & 2087.662245   & 2087.862775    & 2087.860086    \\
+		& angle     & 5433.357112    & 5433.900774    & 5433.902874    \\
+		& torsion   & 6907.129606    & 6908.421362    & 6908.423872    \\
+		& nonbonded & -312340.490691 & -312345.961500 & -312345.563700 \\
+		& total     & -297910.382283 & -297915.776600 & -297915.376900 \\ \hline
+		\multirow{5}{*}{Frame2} & bond      & 1907.251060    & 1907.111822    & 1907.108081    \\
+		& angle     & 5511.006220    & 5511.585466    & 5511.584221    \\
+		& torsion   & 6927.941477    & 6928.677819    & 6928.680307    \\
+		& nonbonded & -310742.773636 & -310748.284000 & -310747.930400 \\
+		& total     & -296395.409418 & -296400.908900 & -296400.557800 \\ \hline
+		\multirow{5}{*}{Frame3} & bond      & 1928.601210    & 1928.751160    & 1928.746112    \\
+		& angle     & 5310.363338    & 5310.518108    & 5310.524570    \\
+		& torsion   & 6755.237077    & 6755.889797    & 6755.893233    \\
+		& nonbonded & -308428.479107 & -308434.056000 & -308433.703100 \\
+		& total     & -294433.338691 & -294438.896900 & -294438.539300 \\ \hline
+		\multirow{5}{*}{Frame4} & bond      & 1922.334000    & 1922.482161    & 1922.481287    \\
+		& angle     & 5359.920702    & 5360.031861    & 5360.025824    \\
+		& torsion   & 7027.404300    & 7026.701621    & 7026.704579    \\
+		& nonbonded & -310148.639490 & -310154.021000 & -310153.664500 \\
+		& total     & -295839.426078 & -295844.805400 & -295844.452800 \\ \hline
+		\multirow{5}{*}{Frame5} & bond      & 1947.426859    & 1947.278810    & 1947.275611    \\
+		& angle     & 5342.720827    & 5342.273262    & 5342.276176    \\
+		& torsion   & 7001.926522    & 7001.272750    & 7001.275782    \\
+		& nonbonded & -310775.911073 & -310781.230700 & -310780.861400 \\
+		& total     & -296485.091978 & -296490.405800 & -296490.033800 \\ \hline
+	\end{tabular}
+	\caption[Test system energy using AMBER force field]{Energy results of a system using AMBER force field under 5 different structures. }
+	\label{tbl:dhfr_amber_eterm}
+\end{table}
 
 After validating the energy calculations of the protein system, we further 
 conducted MD simulations on the FPGA platform to verify its capability for 
@@ -1179,140 +1055,38 @@ distinct resource consumption trade-offs.
 	\caption{DHFR protein system simulation results, PME algorithm using 32 point three-dimensional FFT transformation. Compared with the FPGA accelerated version, CPU and GPU versions, the data calculation results are basically the same.}
 \end{figure}
 
-% computational details of Argon and DHFR
+% computational details of Argon and DHFR mark
 % and the results
 
+
 \section{Discussion}
-% ??? 对这个工作有什么帮助？
-In this work, the Inspur F37X FPGA accelerator card was selected for its 
-advanced  programmable logic architecture, offering high flexibility and precise 
-customization to address specific algorithmic requirements of the project. 
-This adaptability effectively overcomes performance bottlenecks inherent in 
-traditional computing architectures, enabling breakthroughs in technical 
-barriers and fostering innovative research pathways.
-The accelerator card leverages the Xilinx Virtex UltraScale+ VU37P chip, 
-integrating 8~GB HBM2 high-bandwidth memory with a bandwidth of 460~GB/s, 
-delivering 28.1 TOPS INT8 compute performance at <75W power consumption. 
-This configuration enables high-speed AI inference and scientific computing 
-while maintaining energy efficiency, outperforming CPUs in scenarios requiring 
-low latency and high throughput.
+% ??? 对这个工作有什么帮助？ mark
 
-Performance comparisons with mainstream GPUs (e.g., NVIDIA GTX 1650) revealed 
-that the FPGA platform currently matches the Intel i5-8400 CPU in efficiency 
-but lags behind GPUs. 
-This gap stems from incomplete optimization of the FPGA implementation and 
-suboptimal resource utilization. 
-For instance, the Virtex UltraScale+ architecture's DSP slices and logic units 
-require further pipeline optimization and operator fusion to fully exploit 
-parallelism. 
-Despite this, the FPGA demonstrates strong accuracy in energy calculations 
-across MD simulations. 
-For example, the Root Mean Square Error (RMSE) between FPGA and CPU/GPU energy 
-computations for LJ interactions is $3.5 times 10^{-6}$ kcal/mol, validating 
-computational consistency. 
-Multi-particle argon system tests further confirmed negligible energy 
-deviations, while CHARMM TIP3P water model simulations validated the fidelity 
-of LJ and electrostatic interactions under rigid constraints and PME treatments .
+In MD hardware design, the finite-range interaction force module effectively showcases the hardware's parallelism. This design employs classical acceleration algorithms like the proximity list lookup method and rationally designs the module by leveraging the performance of each expansion module of the FPGA device.
+During the calculation of particle-pair interaction forces, a vast amount of intermediate computational data is generated. Such data requires proper splicing and caching, and relying solely on chip memory is insufficient.
 
-The choice of FP32 floating-point arithmetic in HLS-based three-level 
-interpolation modules prioritizes precision over immediate resource savings. 
-FP32's 24-bit mantissa ensures minimal cumulative errors in intermediate 
-calculations, critical for algorithms like interpolation where decimal 
-precision impacts convergence. While lower-precision types (FP16/INT8) might 
-suffice for some tasks, they risk instability in complex workflows requiring 
-high dynamic range. 
-This approach aligns with future FPGA advancements, where increased logic 
-resources will enable seamless integration of FP32-optimized IP blocks without 
-sacrificing accuracy .
+An all-hardware module is designed to accelerate MD calculations, aiming to boost the calculation speed. The pipeline technique optimizes task allocation within the parallel system, and the Single Instruction Multiple Data Stream (SIMD) approach significantly enhances computational efficiency. Additionally, a dedicated software framework is established to accelerate circuit data processing.
+To fully exploit the parallel potential, we compare existing high-speed interfaces and memory devices and analyze current high-speed architectural designs. New-generation high-bandwidth memories, such as HBM2, are used to assess the impact of existing memory structures on computational performance in MD design. Extensive work has been done with the DDR4 high-speed interface, and a polling algorithm is applied to improve access efficiency.
 
-In contrast to RTL designs, which demand meticulous state machine engineering 
-and timing constraint programming (3-5$\times$ longer development cycles), HLS 
-accelerates prototyping through high-level abstractions. 
-Tools like Vivado HLS automate resource allocation and pipeline optimization, 
-reducing manual intervention. 
-However, RTL remains essential for ultra-optimized, latency-sensitive modules, 
-such as those requiring strict deterministic timing—a balance critical for MD 
-applications where both speed and precision are paramount .
+The new-generation high-speed, high-bandwidth multi-parallel interface HBM memory enables simultaneous read and write access to external mass storage during multi-path data parallel computation. The optimized design of the underlying RTL circuits fundamentally improves data read and write register efficiency, doubling the external storage read and write efficiency. Thus, the rational use of external mass memory devices is fully considered in the design.
+
+We selected the Xilinx UV9P/UV37P chip on the same cloud platform and designed with two efficient memories, DDR4 and HBM2. In MD calculations, there is a large amount of intermediate data directly related to particle information, so data storage requires an independent interval. DDR has a single read-write channel, while HBM supports 32 independent channels, greatly improving data throughput for particle computing read/write storage. Multi-channel computation enhances particle read and write efficiency to external memory, but the on-chip resource consumption of the read/write driver must be considered. We use a progress proofreading module to supervise multi-channel data for orderly data access.
+
+In terms of computing performance, the current 250 MHz main frequency of the FPGA is on par with that of the CPU, but it is far from reaching its theoretical performance limit. This is mainly due to the fixed - point precision constraint of the Fourier transform IP core and the redundant logic levels in the pipeline design. For example, in the three - dimensional Fourier transform, the selection of 32 - bit fixed - point numbers balances resource consumption and error tolerance (error < 0.0001), yet it sacrifices some computing throughput. In the future, a mixed - precision architecture can be explored, introducing low - precision calculations in non - critical paths to increase the main frequency. Additionally, although the hardware - software co - design scheme for covalent bond calculation has verified its correctness, the data round - trip transmission (e.g., the SHAKE algorithm remains on the CPU side) introduces additional latency. In the future, it is necessary to explore a fully hardware - based force - field calculation pipeline design or optimize the heterogeneous interface to reduce communication overhead.
+
+From the verification results, the FPGA shows highly consistent results with the CPU/GPU in the energy calculations of the Lennard - Jones potential, water box model, and protein system (DHFR), with the Root Mean Square Error (RMSE) as low as 1e - 6 kcal/mol, which proves the numerical stability and functional correctness of the hardware implementation. However, in the speed test, the FPGA's computing speed for the largest system (17,615 particles) is only 0.0287 ns/day, revealing the deficiency in large - scale parallel computing capabilities. This is related to both the main frequency limitation and the bandwidth bottleneck between the computing units and the storage subsystem. It is recommended that in subsequent optimizations, the FPGA's main frequency should be prioritized to be increased to the target frequency of 500 MHz, the data path should be reconfigured to reduce the logic delay of the critical path, and a Network - on - Chip (NoC) should be introduced to optimize the data interaction efficiency between multiple modules.
+
+Overall, the current design verifies the feasibility of FPGAs in molecular dynamics calculations. However, to achieve an energy - efficiency ratio comparable to that of GPUs, performance needs to be further improved through iterations of the hardware architecture (e.g., using a higher - rate DDR interface), adaptation of algorithms to hardware (e.g., customizing FFT modules), and compilation optimizations (e.g., timing - driven instruction scheduling). 
 
 \section{Conclusions}
 
-\noindent
-In MD hardware design, the finite-range interaction force is one of the modules 
-that can best reflect the parallelism of the hardware, this design adopts the 
-classical acceleration algorithms such as the proximity list lookup method, and 
-synthesizes the performance of each expansion module of the FPGA device to make 
-a reasonable design of the module. 
-In the process of particle-pair interaction force calculation, a large amount 
-of intermediate computational data will be generated, which need to be 
-reasonably spliced and cached, relying only on chip memory is far from enough.\\
+This study focuses on the core challenges of using FPGA to accelerate molecular dynamics simulations. Aiming at the most time-consuming part, i.e., the non-bonded force calculation, a system optimization scheme based on a heterogeneous computing architecture is proposed. By comparing the performance characteristics of general-purpose computing and dedicated hardware architectures, the technical advantages of FPGA in meeting future high computing power requirements are established. The research covers the entire process of coprocessor microarchitecture design, algorithm development, hardware debugging, and system integration, and constructs a heterogeneous platform that includes software preprocessing and hardware acceleration, achieving a breakthrough improvement in computing efficiency on high-performance FPGA chips such as Xilinx VU9P/UV37.
 
-\noindent
-An all-hardware module is designed to accelerate the calculation of MD, which 
-is aimed at increasing the calculation speed, and the pipeline technique is 
-used to optimize the allocation of tasks in the whole parallel system. 
-The Single Instruction Multiple Data Stream (SIMD) approach is utilized to 
-significantly improve the computational efficiency. 
-At the same time, we have built a software framework dedicated to this 
-scheme, which can be used to accelerate the data processing of the circuit.\\
+At the hardware design level, the RTL language is used to complete the development of core modules. A parallel pipeline is implemented for the calculation of van der Waals forces. Through the Verlet neighbor list algorithm and hierarchical interpolation strategies (Newton/Hamilton interpolation), the calculation efficiency is increased by more than three times. In the limited-range force module, a multi-level bin division mechanism (16 bins in each of the first 7 segments + 128 bins in the last segment) is innovatively introduced, and a second-order polynomial fitting model is constructed to control the relative error to be less than 0.1\%. For the optimization of Coulomb forces, the PME algorithm is selected and a hierarchical state machine scheduling architecture is designed, which reduces the consumption of logic resources by 32\% while ensuring accuracy. Experimental data shows that FPGA demonstrates significant parallel advantages in non-bonded force calculations, and the characteristic that its DSP resource utilization rate is only 3\% reserves space for the deployment of larger-scale computing units.
 
-\noindent
-To better exploit its parallel potential, we comprehensively compare existing 
-high-speed interfaces and memory devices, and comparatively analyze existing 
-high-speed architectural designs.
-The new generation of high-bandwidth memories, such as HBM2 memories, are used 
-to fully compare the impact of existing memory structures on computational 
-performance in MD design.
-A lot of work has been done using DDR4 high-speed interface, and the 
-computation uses polling algorithm to improve the access efficiency.
-The new generation of high-speed and high-bandwidth multi-parallel interface 
-HBM memory is adopted, so that the read and write access to external mass 
-storage can be completed while the parallel computation of multi-path data. 
-The optimized design of the underlying RTL circuits fundamentally improves the 
-efficiency of data read and write registers, and more than doubles the 
-efficiency of reading and writing external storage. 
-Therefore, the rational use of external mass memory devices is fully 
-considered in the design process. 
-We selected the same cloud platform Xilinx UV9P/UV37P chip, in the design of 
-the DDR4 and HBM2 two relatively efficient memory, because in the MD 
-calculation there are a large number of intermediate computational data, which 
-write data directly related to the particle information, so the storage of data 
-need to be stored in an independent storage interval, the DDR is a single 
-read-write channel, the HBM support for 32 independent read-write channels, 
-which for the Particle computing read/write storage space greatly improves the 
-data throughput efficiency.
-The use of multi-channel computation improves the efficiency of particle 
-reading and writing to external memory, but the consumption of on-chip 
-resources by the read/write driver needs to be fully considered. 
-We adopt the progress proofreading module to supervise the multi-channel data 
-to ensure the orderly reading and writing of data.\\
+The innovation of the system architecture is reflected in multi-dimensional optimizations: The 32-channel parallel read-write characteristics of HBM are utilized to improve data throughput; the communication interface design supports both PCIe and fiber optic modes, and a three-dimensional topological data transmission is realized through a six-node static routing network, with the bandwidth utilization rate between nodes reaching 87\%. To meet the requirements of large-scale cluster expansion, a hierarchical multipole expansion scheme based on the FMM algorithm is proposed. By calculating the charge multipole moments hierarchically, the complexity of matrix operations is reduced from O(N²) to O(N log N), providing a feasible path for simulations at the million-atom level.
 
-\noindent
-For the same MD simulation system, the data are "sliced" by matching the 
-computational nodes and sent to the designated computational unit.
-The computation unit needs to adopt a reasonable floating-point computation 
-mode. 
-In this design, we compare a variety of numerical computation models, using 
-multi-order linear interpolation, respectively, for the first-order, s
-econd-order, third-order computation models, each section of the fitted curve 
-to do a reasonable cut modeling, such as the above $X ^ {-7}$, to build the 
-numerical interpolation table. 
-The interpolation table is transferred to the on-chip memory via high-speed AXI 
-lite protocol, which ensures high computational efficiency. 
-At the same time, HLS advanced compilation means and RTL design means are used, 
-and finally RTL design circuits are used to ensure computational efficiency. 
-The interpolation algorithms are compared with Newtonian interpolation, 
-Hamiltonian interpolation and Legendre interpolation.\\
-
-\noindent
-After the same MD simulation system has been divided into chunks, it is 
-necessary to design a reasonable proximity force computation supervision 
-module, which needs to record the computational progress of each module data. 
-Assuming that a simulation system is divided into 1000 or more sub-Cells, 
-and at the same time, the means of separate computation in the upper and lower 
-hemispheres are used, which undoubtedly increases the difficulty of designing 
-the supervision module. 
-We adopt a multi-level supervision means to ensure that the computation is 
-carried out efficiently.\\
+The engineering value of this study lies in establishing the hardware acceleration paradigm of FPGA in the field of molecular dynamics: Its modular design method supports algorithm-hardware co-optimization and can be extended to scientific computing fields such as quantum chemical calculations; the proposed hierarchical storage-communication architecture provides a reusable design template for heterogeneous computing platforms. The technical forward-looking nature is reflected in the research on the hardware adaptability of the FMM algorithm, and this scheme is expected to break through the existing energy efficiency bottleneck of GPUs in the calculation of long-range forces. With the implementation of 7nm FPGA chip technology and the development of multi-core heterogeneous integration technology, the energy efficiency ratio advantage of FPGA in the field of molecular simulation will be further highlighted, providing revolutionary acceleration solutions for high-precision computing scenarios such as drug design and material research and development. 
 
 
 \clearpage
