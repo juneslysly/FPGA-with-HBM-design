@@ -50,8 +50,7 @@ Due to its ability to provide detailed mechanistic insights into various physica
 However, the functionally-relevant processes are mostly driven by the motions of aggregated ensemble of molecules, which feature large spatial scales that are computationally demanding to model comprehensively.
 Consider the many body systems interacting through classical pairwise potentials, the computational demand for integrating the equation of motions quickly escalates with the number of interacting particles in the simulation.
 Moreover, most of the biophysical activated processes that are of mechanistic interests are known to feature heterogeneous timescales.\cite{Weinan}.
-For example, essential cellular activities fundamental to life, such as active solute transports.\cite{PRXLife.2.043001}
-, could take place at the sub-seconds scale, while the vibrational motions of the molecules is characterized on feco-to-picoseconds. 
+For example, essential cellular activities fundamental to life, such as active solute transports.\cite{PRXLife.2.043001}, could take place at the sub-seconds scale, while the vibrational motions of the molecules is characterized on feco-to-picoseconds. 
 The multi-scale nature of the simulated system limits the length of time steps to be sufficiently short (typically 0.5 to 2 fecoseconds) for the dynamical integration, rendering the computational modeling of long time collective behaviors of the molecules highly intensive.
 Aiming to extend the accessible simulation scales subjected to modern computation hardware, contemporary mainstream MD implementations have incorporated multi-CPUs parallel strategies and GPU-based codes. ~\cite{charmm_at_c45,amber_gpu2,namd_gpu,omm7,gmx}.
 However, even with GPU acceleration, the reported trajectory lengths in present MD studies merely exceed several microseconds, and numerically solving the molecular trajectories by MD could cost months of fully loaded computational power for model systems containing a million particles.\\
@@ -66,8 +65,8 @@ On the other hand, the Novo-G reconfigurable computing design combines tradition
 \noindent
 Compared to the alternative computing hardware, FPGAs offer greater design flexibility and higher environmental friendlies with competitive computational efficiency.\cite{ref3}. 
 FPGAs incorporate a variety of unique production techniques, such as the flash process and the reverse fusion process, which allow them to support multiple reconfigurations and debugs in the commercial sector, accommodating different experimental design requirements.\cite{ref22}. 
-In the chip design phase, FPGA design is considered the core of prototyping, indicating that FPGA circuit design has significant potential for practical application in the later stages of conversion into an ASIC process. \cite{ref18}. 
-With their high parallel computing capability, reconfigurability, and excellent energy efficiency ratio, FPGAs (Field Programmable Gate Arrays) exhibit unique advantages in molecular dynamics simulations. They can significantly accelerate intensive floating point computations by processing particle interaction forces, such as van der Waals forces and Coulomb forces, in parallel through thousands of configurable logic units. The hardware pipeline design of FPGAs enables efficient coordination of adjacent list generation, force calculation, and integration processes. Moreover, FPGAs can flexibly adapt to different potential functions, such as the Lennard-Jones and AMBER force fields, as well as various numerical integration methods, like the Verlet algorithm, thereby meeting the diverse requirements of both rigid body and coarse-grained models.\cite{2019arXiv190505359Y}.\\
+In the chip design phase, FPGA design is considered the core of prototyping, indicating that FPGA circuit design has significant potential for practical application in the later stages of conversion into an ASIC process.\cite{ref18}. 
+With their high parallel computing capability, reconfigurability, and excellent energy efficiency ratio, FPGAs (Field Programmable Gate Arrays) exhibit unique advantages in molecular dynamics simulations. They can significantly accelerate intensive floating point computations by processing particle interaction forces, such as van der Waals forces and Coulomb forces, in parallel through thousands of configurable logic units. The hardware pipeline design of FPGAs enables efficient coordination of adjacent list generation, force calculation, and integration processes. Moreover, FPGAs can flexibly adapt to different potential functions, such as the Lennard-Jones and CHARMM force fields, as well as various numerical integration methods, like the Verlet algorithm, thereby meeting the diverse requirements of both rigid body and coarse-grained models.\cite{2019arXiv190505359Y}.\\
 
 \noindent
 In this study, we report the co-design of both hardware and software facilities based on a hybrid CPU/FPGA architecture specially purposed for MD simulations with the classical CHARMM36 force field.\cite{CHARMM36m}. 
@@ -273,11 +272,11 @@ Subsequently, the multi-channel calculation screening module processes each data
  that is, each particle in the main cell is paired with one particle in each of the 13 adjacent cells, and calculates the distance. 
  Then, the module screens out the particle pairs whose distances are within the cutoff range for subsequent calculations. 
  The interpolation table coefficients are obtained according to the squared distance of the selected particle pairs and the particle type information,
-  and these coefficients based on the charge information are used for the calculation of the electrostatic and short-range forces.
-   All the parameters of the limited range force calculation are stored in the on-chip RAM of the FPGA and passed to the particle distance judgment module, 
-   and only the particles within the distance range will enter the next step of the force calculation process.
-    The calculation process is monitored by the close-range force calculation module, 
-    which will update the force calculation result data table and supervise the calculation progress.\\
+ and these coefficients based on the charge information are used for the calculation of the electrostatic and short-range forces.
+ All the parameters of the limited range force calculation are stored in the on-chip RAM of the FPGA and passed to the particle distance judgment module, 
+ and only the particles within the distance range will enter the next step of the force calculation process.
+ The calculation process is monitored by the close-range force calculation module, 
+ which will update the force calculation result data table and supervise the calculation progress.\\
 
 
 
@@ -394,9 +393,9 @@ The IEEE 754 single-precision floating-point format is adopted to process the ve
 	\centering
 	\includegraphics[angle=0,width=0.9\textwidth]{./figures/Fig6_Upper_half_of_data_structures.png}
 	\caption{
-	     (a),Storage Relationship between Home Cell and Neighbor Cells in Particle Information Storage Table
+	    (a),Storage Relationship between Home Cell and Neighbor Cells in Particle Information Storage Table
        	(b), Storage Relationship of Home and Neighbor Cells in Particle Table: 512 - bit Data Composed of Six Parts
-		 (c), Data Structure of Home Cell in Particle Information Storage Table: 512 - bit Width with Zeroed Non - data for Addressing
+		(c), Data Structure of Home Cell in Particle Information Storage Table: 512 - bit Width with Zeroed Non - data for Addressing
 	  	(d),Particle Pair Computational Information Cache: 256 - bit Data Width with Pre - computed Home - Neighbor Cell Data }
 	\label{fig:subfig3}
 \end{sidewaysfigure*}
@@ -404,8 +403,8 @@ The IEEE 754 single-precision floating-point format is adopted to process the ve
 \begin{figure*}[!ht]
 	\centering
 	\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig7_lower_half_of_data_structures.png}
-	\caption{(a), the Home Cell and the remaining 13 neighbor cells accumulate the results, and the data needs to be filtered a lot before the particles in the corresponding cell can   calculate the final short-range force.
-		 (b), the block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, and the storage length of each particle information is 512 bits.Block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, the storage length of each particle information is 256bits, and the calculation result of each step is stored in a specific storage space, which is carried by the CPU for the remaining calculation processing.}
+	\caption{(a), the Home Cell and the remaining 13 neighbor cells accumulate the results, and the data needs to be filtered a lot before the particles in the corresponding cell can calculate the final short-range force.
+		     (b), the block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, and the storage length of each particle information is 512 bits.Block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, the storage length of each particle information is 256bits, and the calculation result of each step is stored in a specific storage space, which is carried by the CPU for the remaining calculation processing.}
 	\label{fig:subfig4}
 \end{figure*}
 
@@ -482,10 +481,8 @@ consumption of DSP resources.
 The generation of the interpolating function should not only reduce the 
 computational complexity, but also ensure that the accuracy of the computation 
 meets the design requirements.
-
 The $R^{-14}$, $R^{-8}$ and $R^{-3}$ can be fitted using a multi-order 
 interpolation function of the form:
-
 
 \begin{equation}
 \begin{array}{c}
@@ -693,7 +690,6 @@ At this stage, we need to read the Index of these waiting bound particles.
 The HLS compilation tool optimizes DSP resources, and we focus on testing the 
 performance optimization effect of particle-to-computation units, using the 
 HLS synthesis tool for first-order linear interpolation.As shown in Figure~\ref{HLS}.
-
 Using Xilinx's HLS for the multiply-add implementation of second-order 
 polynomials, the synthesis results in the use of four floating-point IPs 
 (two multipliers and two adders) for a total of 10 DSP48 modules. 
@@ -709,7 +705,6 @@ IP is ultimately used, the performance and resource usage can be expected to
 be comparable.
 The calculation of the $r_{ij}$ consumes approximately 19 DPS48 modules and 
 takes 25 clock cycles.
-
 Each RL module uses approximately one $R^2$ computational unit for particle 
 pair screening, three computational units for interpolating polynomials and one 
 force merger accumulator for force vector computation, and a number of 
@@ -1033,7 +1028,7 @@ In terms of computing performance, the current 250 MHz main frequency of the FPG
 
 From the verification results, the FPGA shows highly consistent results with the CPU/GPU in the energy calculations of the Lennard - Jones potential, water box model, and protein system (DHFR), with the Root Mean Square Error (RMSE) as low as $1e ^ 6 kcal/mol$, which proves the numerical stability and functional correctness of the hardware implementation. However, in the speed test, the FPGA's computing speed for the largest system (17,615 particles) is only 0.0287 ns/day, revealing the deficiency in large - scale parallel computing capabilities. This is related to both the main frequency limitation and the bandwidth bottleneck between the computing units and the storage subsystem. It is recommended that in subsequent optimizations, the FPGA's main frequency should be prioritized to be increased to the target frequency of 500 MHz, the data path should be reconfigured to reduce the logic delay of the critical path, and a Network - on - Chip (NoC) should be introduced to optimize the data interaction efficiency between multiple modules.
 
-Overall, the current design verifies the feasibility of FPGAs in molecular dynamics calculations. However, to achieve an energy efficiency ratio comparable to that of GPUs, performance needs to be further improved through iterations of the hardware architecture (e.g., using a higher rate DDR interface), adaptation of algorithms to hardware (e.g., customizing FFT modules), and compilation optimizations (e.g., timing - driven instruction scheduling). 
+Overall, the current design verifies the feasibility of FPGAs in molecular dynamics calculations. However, to achieve an energy efficiency ratio comparable to that of GPUs, performance needs to be further improved through iterations of the hardware architecture, adaptation of algorithms to hardware, and compilation optimizations. 
 
 
 
