@@ -55,7 +55,6 @@ year="2022",
 publisher="Springer Nature Singapore",
 address="Singapore",
 pages="1--19",
-abstract="The invention of novel functional materials and their investigation at the molecular level are vital in today's nanotechnology era. Atomistic modelling approaches are cost-effective and time-consuming alternatives to expensive and time-consuming experimental methods, and they are precise enough to predict the mechanical characteristics of materials. The current chapter goes through the many steps involved in a molecular dynamic's investigation. The various types of interatomic potentials and their applicability to various materials have been thoroughly examined. Following that, the integration algorithm for solving a set of Newton's equations, as well as the radius cut-off distance and temperature control, was addressed. Afterwards, many types of ensembles and boundary conditions were addressed, which helped in simulating real-world experimental settings. The approaches for minimizing energy have also been briefly explored. Finally, the limitations of molecular dynamics have been examined, as well as their applicability.",
 isbn="978-981-19-3092-8",
 }
 
@@ -147,8 +146,11 @@ address = {New York, NY, USA},
 volume = {51},
 number = {7},
 issn = {0001-0782},
-month = {jul},
-pages = {91-97},
+url = {https://doi.org/10.1145/1364782.1364802},
+doi = {10.1145/1364782.1364802},
+journal = {Commun. ACM},
+month = jul,
+pages = {91--97},
 numpages = {7}
 }
 
@@ -159,7 +161,6 @@ year = {2023},
 isbn = {9781450398053},
 publisher = {Association for Computing Machinery},
 address = {New York, NY, USA},
-abstract = {FPGA clusters have yet to be a mainstream of HPC, even for accelerators, and several challenges exist in their architecture and system organization. This work presents ESSPER, a flexible and scalable FPGA cluster prototype system for reconfigurable HPC to meet the concept of customizability, scalability, and interoperability with existing HPC systems. Based on our classification of FPGA cluster architectures, we propose a new category of FPGA clusters with a host-FPGA bridging network using software-bridged APIs for the use of remote FPGAs. We have designed, implemented, verified, and demonstrated a proof-of-concept system of ESSPER, as a functional extension of the supercomputer Fugaku.},
 booktitle = {Proceedings of the International Conference on High Performance Computing in Asia-Pacific Region},
 pages = {140-150},
 numpages = {11},
@@ -178,7 +179,6 @@ address = {New York, NY, USA},
 volume = {15},
 number = {3},
 issn = {1936-7406},
-abstract = {In this article, we survey existing academic and commercial efforts to provide Field-Programmable Gate Array (FPGA) acceleration in datacenters and the cloud. The goal is a critical review of existing systems and a discussion of their evolution from single workstations with PCI-attached FPGAs in the early days of reconfigurable computing to the integration of FPGA farms in large-scale computing infrastructures. From the lessons learned, we discuss the future of FPGAs in datacenters and the cloud and assess the challenges likely to be encountered along the way. The article explores current architectures and discusses scalability and abstractions supported by operating systems, middleware, and virtualization. Hardware and software security becomes critical when infrastructure is shared among tenants with disparate backgrounds. We review the vulnerabilities of current systems and possible attack scenarios and discuss mitigation strategies, some of which impact FPGA architecture and technology. The viability of these architectures for popular applications is reviewed, with a particular focus on deep learning and scientific computing. This work draws from workshop discussions, panel sessions including the participation of experts in the reconfigurable computing field, and private discussions among these experts. These interactions have harmonized the terminology, taxonomy, and the important topics covered in this manuscript.},
 journal = {ACM Trans. Reconfigurable Technol. Syst.},
 month = {feb},
 articleno = {34},
@@ -216,7 +216,6 @@ year = {2021},
 isbn = {9781450384421},
 publisher = {Association for Computing Machinery},
 address = {New York, NY, USA},
-abstract = {Anton 3 is the newest member in a family of supercomputers specially designed for atomic-level simulation of molecules relevant to biology (e.g., DNA, proteins, and drug molecules). Anton 3 achieves order-of-magnitude improvements in time-to-solution over its predecessor, Anton 2 (the current state of the art), and is over 100-fold faster than any other currently available supercomputer, thereby enabling broad new avenues of research on critical questions in biology and drug discovery. This speedup means that a 512-node Anton 3 simulates a million atoms at over 100 microseconds per day. Furthermore, Anton 3 attains this performance while consuming an order of magnitude less energy per simulated microsecond than any other machine. Like its predecessors, Anton 3 was designed from the ground up around a new custom chip to best exploit the capabilities offered by new technologies. We present here the main architectural and algorithmic developments that were necessary to achieve such significant advances.},
 booktitle = {Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis},
 articleno = {1},
 numpages = {11},
@@ -288,7 +287,6 @@ pages = {325-348},
 year = {1987},
 issn = {0021-9991},
 author = {L Greengard and V Rokhlin},
-abstract = {An algorithm is presented for the rapid evaluation of the potential and force fields in systems involving large numbers of particles whose interactions are Coulombic or gravitational in nature. For a system of N particles, an amount of work of the order O(N2) has traditionally been required to evaluate all pairwise interactions, unless some approximation or truncation method is used. The algorithm of the present paper requires an amount of work proportional to N to evaluate all interactions to within roundoff error, making it considerably more practical for large-scale problems encountered in plasma physics, fluid dynamics, molecular dynamics, and celestial mechanics.}
 }
 
 
@@ -390,7 +388,14 @@ isbn="978-981-15-5530-5",
 }
 
 @article{CHARMMGUI10,
-place = {Country unknown/Code not available}, title = {CHARMM‐GUI 10 years for biomolecular modeling and simulation},abstractNote = {CHARMM‐GUI,http://www.charmm-gui.org, is a web‐based graphical user interface that prepares complex biomolecular systems for molecular simulations. CHARMM‐GUI creates input files for a number of programs including CHARMM, NAMD, GROMACS, AMBER, GENESIS, LAMMPS, Desmond, OpenMM, and CHARMM/OpenMM. Since its original development in 2006, CHARMM‐GUI has been widely adopted for various purposes and now contains a number of different modules designed to set up a broad range of simulations: (1)PDB Reader & Manipulator,Glycan Reader, andLigand Reader & Modelerfor reading and modifying molecules; (2)Quick MD Simulator,Membrane Builder,Nanodisc Builder,HMMM Builder,Monolayer Builder,Micelle Builder, andHex Phase Builderfor building all‐atom simulation systems in various environments; (3)PACE CG BuilderandMartini Makerfor building coarse‐grained simulation systems; (4)DEER FacilitatorandMDFF/xMDFF Utilizerfor experimentally guided simulations; (5)Implicit Solvent Modeler,PBEQ‐Solver, andGCMC/BD Ion Simulatorfor implicit solvent related calculations; (6)Ligand Binderfor ligand solvation and binding free energy simulations; and (7)Drude Prepperfor preparation of simulations with the CHARMM Drude polarizable force field. Recently, new modules have been integrated into CHARMM‐GUI, such asGlycolipid Modelerfor generation of various glycolipid structures, andLPS Modelerfor generation of lipopolysaccharide structures from various Gram‐negative bacteria. These new features together with existing modules are expected to facilitate advanced molecular modeling and simulation thereby leading to an improved understanding of the structure and dynamics of complex biomolecular systems. Here, we briefly review these capabilities and discuss potential future directions in the CHARMM‐GUI development project. © 2016 Wiley Periodicals, Inc.}, journal = {Journal of Computational Chemistry}, volume = {38}, number = {15}, publisher = {Wiley Blackwell (John Wiley & Sons)}, author = {Jo, Sunhwan and Cheng, Xi and Lee, Jumin and Kim, Seonghoon and Park, Sang‐Jun and Patel, Dhilon S. and Beaven, Andrew H. and Lee, Kyu Il and Rui, Huan and Park, Soohyung and Lee, Hui Sun and Roux, Benoît and MacKerell, Jr, Alexander D. and Klauda, Jeffrey B. and Qi, Yifei and Im, Wonpil} }
+place = {Country unknown/Code not available}, 
+title = {CHARMM-GUI 10 years for biomolecular modeling and simulation},
+journal = {Journal of Computational Chemistry}, 
+volume = {38}, 
+number = {15}, 
+publisher = {Wiley Blackwell (John Wiley & Sons)}, 
+author = {Jo, Sunhwan and Cheng, Xi and Lee, Jumin and Kim, Seonghoon and Park, Sang-Jun and Patel, Dhilon S. and Beaven, Andrew H. and Lee, Kyu Il and Rui, Huan and Park, Soohyung and Lee, Hui Sun and Roux, Benoît and MacKerell, Jr, Alexander D. and Klauda, Jeffrey B. and Qi, Yifei and Im, Wonpil} 
+}
 
 
 @article{OpenMM8,
@@ -427,7 +432,6 @@ number = {16},
 pages = {1668-1688},
 keywords = {Amber, biomolecular simulation programs},
 eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/jcc.20290},
-abstract = {Abstract We describe the development, current features, and some directions for future development of the Amber package of computer programs. This package evolved from a program that was constructed in the late 1970s to do Assisted Model Building with Energy Refinement, and now contains a group of programs embodying a number of powerful tools of modern computational chemistry, focused on molecular dynamics and free energy calculations of proteins, nucleic acids, and carbohydrates. © 2005 Wiley Periodicals, Inc. J Comput Chem 26: 1668-1688, 2005},
 year = {2005}
 }
 
@@ -911,7 +915,6 @@ year="2022",
 publisher="Springer Nature Singapore",
 address="Singapore",
 pages="1--19",
-abstract="The invention of novel functional materials and their investigation at the molecular level are vital in today's nanotechnology era. Atomistic modelling approaches are cost-effective and time-consuming alternatives to expensive and time-consuming experimental methods, and they are precise enough to predict the mechanical characteristics of materials. The current chapter goes through the many steps involved in a molecular dynamic's investigation. The various types of interatomic potentials and their applicability to various materials have been thoroughly examined. Following that, the integration algorithm for solving a set of Newton's equations, as well as the radius cut-off distance and temperature control, was addressed. Afterwards, many types of ensembles and boundary conditions were addressed, which helped in simulating real-world experimental settings. The approaches for minimizing energy have also been briefly explored. Finally, the limitations of molecular dynamics have been examined, as well as their applicability.",
 isbn="978-981-19-3092-8",
 doi="10.1007/978-981-19-3092-8_1",
 url="https://doi.org/10.1007/978-981-19-3092-8_1"
