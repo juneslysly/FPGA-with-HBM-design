@@ -60,13 +60,12 @@ Additionally, the MD-GRAPE series, which dates back to the late 1980s, uses Micr
 This design is combined with a specialized fiber-optic transmission network to form a large-scale computational cluster. 
 The MD-GRAPE series has been developed through four generations, and its hardware devices are constantly updated and iterated, but the design cost remains very high. 
 Furthermore, the Novo-G series, which uses commercial FPGA accelerator cards from the Intel series, optimizes MD computational efficiency from both hardware and software perspectives~\cite{Novo-G,Novo-G2,3dfft,bondforce}.\\
-% add comment for the Novo-G
-Novo-G, an influential supercomputing project in the field of Reconfigurable Computing, is being developed by a research team at the University of Florida. It is considered one of the pioneers in the field of scalable, reconfigurable supercomputing and aims to break through energy efficiency and performance bottlenecks by combining traditional CPUs with programmable hardware such as FPGAs.
+Novo-G, an influential supercomputing project in the field of Reconfigurable Computing, is being developed by a research team at the University of Florida\cite{Novo-G,Novo-G2}. It is considered one of the pioneers in the field of scalable, reconfigurable supercomputing and aims to break through energy efficiency and performance bottlenecks by combining traditional CPUs with programmable hardware such as FPGAs.
 % add comment for the Novo-G
 
 \noindent
 Although FPGAs are less dense and slower than ASICs, they offer greater design flexibility, are more cost-effective, and consume less power compared to other devices \cite{ref3}. 
-FPGAs incorporate a variety of unique production techniques, such as the FLASH process and the reverse fusion process, which allow them to support multiple reconfigurations and debugs in the commercial sector, accommodating different experimental design needs \cite{ref22}. 
+FPGAs incorporate a variety of unique production techniques, such as the flash process and the reverse fusion process, which allow them to support multiple reconfigurations and debugs in the commercial sector, accommodating different experimental design needs \cite{ref22}. 
 In the chip design phase, FPGA design is considered the core of prototyping, indicating that FPGA circuit design has significant potential for practical application in the later stages of conversion into an ASIC process \cite{ref3,ref18}. 
 Therefore, using FPGAs to accelerate MD simulations remains a promising approach.\\
 
@@ -452,6 +451,7 @@ After the calculation, the results for the LJ force and the Coulomb short-range 
 
 \noindent
 % 距离这个可以删掉？mark
+
 The design of the calculation module of the multi-channel calculation screener 
 is realized as follows:
 The calculation of the particle pair distance squared and the particle pair 
@@ -554,17 +554,7 @@ the coefficient table.
 In addition, the higher the order of the interpolation function, the stronger 
 the ability to track the function curve changes, the higher the accuracy, the 
 more computing and storage resources consumed.
-Therefore, we need to make a compromise according to the actual situation.
-We use Python to compare and analyze the order of the interpolation function 
-and the number and distribution of the interpolation points, and choose the 
-second-order polynomial interface to meet the design requirements if the 
-relative error is better than one-thousandth of a degree, and the polynomial 
-library of Numpy provides the coefficients of polynomials fitting functions, 
-which can be directly specified to the required order, and the results are 
-comparable to those of the orthogonal polynomials such as Legendre's.
-The results are similar to those of the orthogonal polynomials. 
-The results are similar to those of orthogonal polynomials such as Legendre. 
-Our final choice is the result of the calculation:
+
 
 %???
 The $x [0.1, 144]$ interval is divided into 8 segments, {[}0.1， 0.2{]} ,
@@ -587,16 +577,7 @@ be $N^2$ items.
 After analyzing the simulation dataset, there are no more than 
 32 independent particle types, and the depth of the coefficient table is no 
 more than 1024 items. 
-The coefficients are expressed as single-precision 
-floating-point numbers, and the coefficient table can be stored in 8 KB BRAM.
-The inputs to the third-order interpolating range limted force calculation unit 
-are all the parameters needed for the calculation formula, and the outputs are 
-the three components of the force. 
-Each clock cycle can input a set of 
-calculation parameters, after the internal pipeline processing, each clock can 
-output a set of settlement results. 
-The following figure shows the realization 
-'of the range limted force calculation unit block diagram.
+
 
 \subsection{The make table module is used to calculate the process control.}
 
@@ -642,11 +623,9 @@ Data exchange between the CPU and FPGA is facilitated through high-speed PCIe
 interfaces or optical fiber connections.
 To accelerate Coulomb force calculations in MD, we developed a parallelized 
 approach leveraging proximity lookup tables for Ewald summation, achieving 
-parallelism comparable to vdW force computations.
+parallelism comparable to van der Waals(vdW) force computations.
 % use ref in Figure   mark
-As illustrated in Figure\ref{3DF}, direct DSP channel implementations achieve 32-bit 
-single-precision accuracy, with Figure 3-12 demonstrating 2nd-order 
-interpolation structures for charge distribution. 
+
 The simulation system undergoes cubic or rectangular grid partitioning 
 along X/Y/Z axes, with grid dimensions determined by system boundaries to 
 optimize hardware-accelerated data alignment. 
@@ -1027,7 +1006,7 @@ bandwidth utilization.
 After validating the energy calculations of the protein system, we further 
 conducted MD simulations on the FPGA platform to verify its capability for 
 authentic simulation tasks. 
-As illustrated in Figures 5-15 and 5-16, the test system employed the 
+As illustrated in Figures\ref{Dhfr}, the test system employed the 
 dihydrofolate reductase (DHFR) model, a benchmark protein consisting of 159 
 amino acid residues and 2489 atoms commonly used in computational studies. 
 The FPGA accelerator utilized the Xilinx Virtex UltraScale+ VU37P chip for 
@@ -1053,6 +1032,7 @@ distinct resource consumption trade-offs.
 	\centering
 	\includegraphics[angle=0,width=1.0\textwidth]{./figures/fpga_fft_32.png}
 	\caption{DHFR protein system simulation results, PME algorithm using 32 point three-dimensional FFT transformation. Compared with the FPGA accelerated version, CPU and GPU versions, the data calculation results are basically the same.}
+	\label{Dhfr}
 \end{figure}
 
 % computational details of Argon and DHFR mark
@@ -1062,13 +1042,6 @@ distinct resource consumption trade-offs.
 \section{Discussion}
 % ??? 对这个工作有什么帮助？ mark
 
-In MD hardware design, the finite-range interaction force module effectively showcases the hardware's parallelism. This design employs classical acceleration algorithms like the proximity list lookup method and rationally designs the module by leveraging the performance of each expansion module of the FPGA device.
-During the calculation of particle-pair interaction forces, a vast amount of intermediate computational data is generated. Such data requires proper splicing and caching, and relying solely on chip memory is insufficient.
-
-An all-hardware module is designed to accelerate MD calculations, aiming to boost the calculation speed. The pipeline technique optimizes task allocation within the parallel system, and the Single Instruction Multiple Data Stream (SIMD) approach significantly enhances computational efficiency. Additionally, a dedicated software framework is established to accelerate circuit data processing.
-To fully exploit the parallel potential, we compare existing high-speed interfaces and memory devices and analyze current high-speed architectural designs. New-generation high-bandwidth memories, such as HBM2, are used to assess the impact of existing memory structures on computational performance in MD design. Extensive work has been done with the DDR4 high-speed interface, and a polling algorithm is applied to improve access efficiency.
-
-The new-generation high-speed, high-bandwidth multi-parallel interface HBM memory enables simultaneous read and write access to external mass storage during multi-path data parallel computation. The optimized design of the underlying RTL circuits fundamentally improves data read and write register efficiency, doubling the external storage read and write efficiency. Thus, the rational use of external mass memory devices is fully considered in the design.
 
 We selected the Xilinx UV9P/UV37P chip on the same cloud platform and designed with two efficient memories, DDR4 and HBM2. In MD calculations, there is a large amount of intermediate data directly related to particle information, so data storage requires an independent interval. DDR has a single read-write channel, while HBM supports 32 independent channels, greatly improving data throughput for particle computing read/write storage. Multi-channel computation enhances particle read and write efficiency to external memory, but the on-chip resource consumption of the read/write driver must be considered. We use a progress proofreading module to supervise multi-channel data for orderly data access.
 
@@ -1081,8 +1054,6 @@ Overall, the current design verifies the feasibility of FPGAs in molecular dynam
 \section{Conclusions}
 
 This study focuses on the core challenges of using FPGA to accelerate molecular dynamics simulations. Aiming at the most time-consuming part, i.e., the non-bonded force calculation, a system optimization scheme based on a heterogeneous computing architecture is proposed. By comparing the performance characteristics of general-purpose computing and dedicated hardware architectures, the technical advantages of FPGA in meeting future high computing power requirements are established. The research covers the entire process of coprocessor microarchitecture design, algorithm development, hardware debugging, and system integration, and constructs a heterogeneous platform that includes software preprocessing and hardware acceleration, achieving a breakthrough improvement in computing efficiency on high-performance FPGA chips such as Xilinx VU9P/UV37.
-
-At the hardware design level, the RTL language is used to complete the development of core modules. A parallel pipeline is implemented for the calculation of van der Waals forces. Through the Verlet neighbor list algorithm and hierarchical interpolation strategies (Newton/Hamilton interpolation), the calculation efficiency is increased by more than three times. In the limited-range force module, a multi-level bin division mechanism (16 bins in each of the first 7 segments + 128 bins in the last segment) is innovatively introduced, and a second-order polynomial fitting model is constructed to control the relative error to be less than 0.1\%. For the optimization of Coulomb forces, the PME algorithm is selected and a hierarchical state machine scheduling architecture is designed, which reduces the consumption of logic resources by 32\% while ensuring accuracy. Experimental data shows that FPGA demonstrates significant parallel advantages in non-bonded force calculations, and the characteristic that its DSP resource utilization rate is only 3\% reserves space for the deployment of larger-scale computing units.
 
 The innovation of the system architecture is reflected in multi-dimensional optimizations: The 32-channel parallel read-write characteristics of HBM are utilized to improve data throughput; the communication interface design supports both PCIe and fiber optic modes, and a three-dimensional topological data transmission is realized through a six-node static routing network, with the bandwidth utilization rate between nodes reaching 87\%. To meet the requirements of large-scale cluster expansion, a hierarchical multipole expansion scheme based on the FMM algorithm is proposed. By calculating the charge multipole moments hierarchically, the complexity of matrix operations is reduced from O(N²) to O(N log N), providing a feasible path for simulations at the million-atom level.
 
