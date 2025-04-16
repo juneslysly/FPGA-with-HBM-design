@@ -81,7 +81,7 @@ feco-to-picoseconds.
 The multi-scale nature of the simulated system limits the length of time steps 
 to be sufficiently short (typically 0.5 to 2 fecoseconds) for the dynamical 
 integration, rendering the computational modeling of long time collective 
-behaviors of the molecules highly intensive.
+behaviors of the molecules highly intensive.~\cite{Kumar2022}.
 Aiming to extend the accessible simulation scales subjected to modern 
 computation hardware, contemporary mainstream MD implementations have 
 incorporated multi-CPUs parallel strategies and GPU-based 
@@ -89,7 +89,7 @@ codes.~\cite{charmm_at_c45,amber_gpu2,namd_gpu,omm7,gmx}.
 However, even with GPU acceleration, the reported trajectory lengths in 
 present MD studies merely exceed several microseconds, and numerically solving 
 the molecular trajectories by MD could cost months of fully loaded 
-computational power for model systems containing a million particles.\\
+computational power for model systems containing a million particles.~\cite{doi:10.1021/acs.jctc.1c01214}.\\
 
 \noindent
 In addition to CPU and GPU based approaches, several research groups have 
@@ -112,14 +112,14 @@ potential for MD simulations.~\cite{Novo-G,Novo-G2}.\\
 \noindent
 Compared to the alternative computing hardware, FPGAs offer greater design 
 flexibility and higher environmental friendlies with competitive computational 
-efficiency.~\cite{ref3}. 
+efficiency.~\cite{ref3,10.5555/1296098,7550743,9444063}. 
 FPGAs incorporate a variety of unique production techniques, such as the flash 
 process and the reverse fusion process, which allow them to support multiple 
 reconfigurations and debugs in the commercial sector, accommodating different 
 experimental design requirements.\cite{ref22}. 
 In the chip design phase, FPGA design is considered the core of prototyping, 
 indicating that FPGA circuit design has significant potential for practical 
-application in the later stages of conversion into an ASIC process.\cite{ref18}. 
+application in the later stages of conversion into an ASIC process.\cite{ref18,410733}. 
 With their high parallel computing capability, reconfigurability, and 
 excellent energy efficiency ratio, FPGAs exhibit unique advantages in MD simulations. 
 They can significantly accelerate intensive floating point computations by 
@@ -427,7 +427,7 @@ force calculation result data table and overseeing the calculation progress.\\
 \noindent
 
 The HBM2 stores data units in a structured manner, and the configuration of 
-each data unit contains multiple information layers. 
+each data unit contains multiple information layers.~\cite{ref20,9556096} .
 The main row designates key basic metadata, such as the cell serial number, 
 particle charge, number of particles, storage offset address of the particle 
 information, and parity bits. 
@@ -622,11 +622,10 @@ particle $j$ have already undergone the particle pair screening module.
 only particle pairs that meet certain criteria (e.g., within a cutoff distance) are 
 processed through the DSP direct calculation pipeline for efficient force computation.
 This approach ensures higher numerical accuracy compared to fixed-point or lower-precision alternatives. However, 
-since FP32 arithmetic consumes more DSP resources than integer or reduced-precision operations,
+since FP32 arithmetic consumes more DSP resources than integer or reduced-precision operations,~\cite{fpga11}.
  it imposes a trade-off between precision and computational efficiency.\\
-
 In existing studies, interpolation lookup tables are utilized to replace the 
-traditional direct calculation method, thereby conserving resources.~\cite{2019arXiv190505359Y}. % 加引用
+traditional direct calculation method, thereby conserving resources.~\cite{2019arXiv190505359Y,fpga1,MD_RL}. % 加引用
 
 \begin{figure}[ht]
 	\centering
@@ -764,12 +763,12 @@ optimized matrix compression techniques and pipelined dataflow.\\
 \subsection{Three-dimensional Fast Fourier transform.}
 In this work, the computationally intensive three-dimensional(3D) Fast Fourier 
 Transform (FFT) module on an FPGA platform was implemented, while delegating 
-remaining computational tasks to CPUs. 
+remaining computational tasks to CPUs.~\cite{Darden1993ParticleME,Duan2000AnES,9444063}
 Data exchange between the CPU and FPGA is facilitated through high speed PCIe 
-interfaces or optical fiber connections.
+interfaces or optical fiber connections.~\cite{fpga23}.
 In order to accelerate 3D FFT transform in Coulomb force calculations in MD, we 
 developed a parallelized approach leveraging proximity lookup tables for Ewald 
-summation, achieving parallelism comparable to vdW force computations.
+summation, achieving parallelism comparable to vdW force computations.~\cite{Aatish2013ThreeDF}.
 The simulation system undergoes cubic or rectangular grid partitioning 
 along X/Y/Z axes, with grid dimensions determined by system boundaries to 
 optimize hardware accelerated data alignment. 
@@ -787,7 +786,7 @@ demonstrating feasibility for large scale MD workloads.
 
 \begin{figure}[htp]
 	\centering
-	\includegraphics[width=0.7\textwidth]{./figures/3dfft_top_strcture.png}
+	\includegraphics[width=0.5\textwidth]{./figures/3dfft_top_strcture.png}
 	\caption{The 3D Fourier transform.}
 	\label{3DF}
 \end{figure}
@@ -798,7 +797,7 @@ demonstrating feasibility for large scale MD workloads.
 \noindent
 Figure~\ref{fig:bond} shows the cooperation mode between CPU and FPGA in 
 calculating the bonded force, and the data transmission between software and 
-hardware is realized through PCIe 3.0. 
+hardware is realized through PCIe.~\cite{fpga3}. 
 Each small box in the diagram represents a circuit processing unit. 
 Particle information is derived from user input files, and the structure of the 
 particle information storage table varies according to the different inputs. 
@@ -847,7 +846,7 @@ HLS synthesis tool for first-order linear interpolation.
 As shown in Figure~\ref{HLS}, using Xilinx's HLS for the multiply-add 
 implementation of second-order 
 polynomials, the synthesis results in the use of 4 floating-point IPs 
-(2 multipliers and 2 adders) for a total of 10 DSP48 modules. 
+(2 multipliers and 2 adders) for a total of 10 DSP48 modules.~\cite{fpga18}. 
 With a clock constraint of 300~MHz, the pipeline optimization requires 22 clock 
 cycles to complete the implementation.
 If the clock constraint is 200~MHz, it takes 18 clock cycles for pipeline to 
@@ -857,7 +856,7 @@ the coefficient table, it is not worthwhile to convert the fixed-point
 realization.
 Regardless of the implementation method, if Xilinx's floating-point computing 
 IP is ultimately used, the performance and resource usage can be expected to 
-be comparable.
+be comparable.~\cite{fpga29}.
 The calculation of the $r_{ij}$ consumes approximately 19 DPS48 modules and 
 takes 25 clock cycles.
 Each RL module uses approximately one $R^2$ computational unit for particle 
@@ -899,12 +898,12 @@ future high computing power requirements are established.
 % hardware acceleration, achieving a breakthrough improvement in computing 
 % efficiency on high-performance FPGA chips such as Xilinx VU9P/UV37.`'
 The following table presents the resource consumption of the limited range 
-force module and that of the double limited range force module.
+force module and that of the double limited range force modules.
 As shown in Table~\ref{RL}, in the future computing platform, these components 
 are to be assembled into a large scale computing matrix.
 Regarding the Coulomb force, it shows the resource consumption of the 
 long - range force calculation module, which makes use of the Xilinx FFT 9.0 c
-alculation IP.
+alculation IP.~\cite{fpga23}.
 As shown in Table~\ref{fft32} and Table~\ref{fft64} .
 Also included is the resource consumption of the bonded force module.
 As shown in Table~\ref{bond}.
@@ -1055,7 +1054,7 @@ distance of 15~\AA. Energies and forces were computed for inter-particle
 distances ranging from 2 to 28~\AA. 
 For hardware, we used an Intel CPU i5-8400 (2.80~GHz base frequency) 
 with OpenMM version 6.0.0, chosen due to its readable 3D Fourier transform 
-implementation in early versions. 
+implementation in early versions.~\cite{OpenMM7,OpenMM8}. 
 Tests confirmed consistent results between OpenMM 6.0 and the current 8.0 
 version. 
 Compilation was performed using GNU C/C++ compiler version 13.3.0.
