@@ -616,7 +616,6 @@ the device.\\
 \end{figure}
 
 \noindent
-% 这段话有问题，需要重新写
 As shown in Figure~\ref{dsp}, the range-limited force calculation assumes that particle $i$ and 
 particle $j$ have already undergone the particle pair screening module. 
 only particle pairs that meet certain criteria (e.g., within a cutoff distance) are 
@@ -634,12 +633,14 @@ traditional direct calculation method, thereby conserving resources.~\cite{2019a
 	\label{3order}
 \end{figure}
 
-\noindent
-% ??? mark
+
 \begin{equation}
-    F^{RL}/r_{ij} = A_{ab} r_{ij}^{-14} 
-                  + B_{ab} r_{ij}^{-8} 
-                  + Q_{ab}r_{ij}^{-3}
+	\begin{aligned}
+    F^\mathrm{RL} &= A_{ab} r_{ij}^{-13} + B_{ab} r_{ij}^{-7} 
+                  + Q_{ab}r_{ij}^{-2} \\
+				  &= r_{ij} \cdot \left( A_{ab} r_{ij}^{-14} + B_{ab} r_{ij}^{-8} 
+                  + Q_{ab}r_{ij}^{-3} \right)
+	\end{aligned}
 \end{equation}
  
 where, 
@@ -658,17 +659,17 @@ where,
 \end{equation}
   
   
-In this design, $R^{-14}$, $R^{-8}$ and $R^{-3}$ are used in the formula of 
+In this design, $r_{ij}^{-14}$, $r_{ij}^{-8}$ and $r_{ij}^{-3}$ are used in the formula of 
 range limted force. 
-In this design, $R^2$ is used as the output, and all the interpolating 
+In this design, $r_{ij}^2$ is used as the output, and all the interpolating 
 functions of the above three functions are created, which are reduced to 
-low-order monic polynomials and then brought into $R^2$ to compute the 
+low-order monic polynomials and then brought into $r_{ij}^2$ to compute the 
 original values, thus simplifying the computation process and reducing the 
 consumption of DSP resources. 
 The generation of the interpolating function should not only reduce the 
 computational complexity, but also ensure that the accuracy of the computation 
 meets the design requirements.
-The $R^{-14}$, $R^{-8}$ and $R^{-3}$ can be approximated using a multi-order interpolation function.
+The $r_{ij}^{-14}$, $r_{ij}^{-8}$ and $r_{ij}^{-3}$ can be approximated using a multi-order interpolation function.
 The performance of first-order, second-order, and third-order interpolations was compared respectively.
 
 %\begin{equation}
@@ -709,8 +710,8 @@ After analyzing the simulation dataset, there are $\leq$ 32 independent
 particle types, and the depth of the coefficient table is $\leq$ 1024 items. 
  
 In the hardware floating point calculation, the root operation always consume a 
-lot of logic resources, so we use $R^2$ to do multi-level multiplication to 
-calculate $R^{14}$ and $R^{8}$ in place of $R^{13}$ and $R^{7}$, which replaces 
+lot of logic resources, so we use $r_{ij}^2$ to do multi-level multiplication to 
+calculate $r_{ij}^{14}$ and $r_{ij}^{8}$ in place of $r_{ij}^{13}$ and $r_{ij}^{7}$, which replaces 
 the floating point root operation. 
 Another lookup table was used to handle Coulomb force, parallel computation 
 does not interfere with each other in the computation time, the data is 
@@ -859,7 +860,7 @@ IP is ultimately used, the performance and resource usage can be expected to
 be comparable.~\cite{fpga29}.
 The calculation of the $r_{ij}$ consumes approximately 19 DPS48 modules and 
 takes 25 clock cycles.
-Each RL module uses approximately one $R^2$ computational unit for particle 
+Each RL module uses approximately one $r_{ij}^2$ computational unit for particle 
 pair screening, three computational units for interpolating polynomials and one 
 force merger accumulator for force vector computation, and a number of 
 accumulators for accumulating force vectors of neighboring cells.
@@ -1191,9 +1192,6 @@ distinct resource consumption trade-offs.
 
 \section{Discussions and Conclusion}
 
-
-We selected the Xilinx UV9P/UV37P chip on the same cloud platform and designed 
-with two efficient memories, DDR4 and HBM2. 
 In MD calculations, there is a large amount of intermediate data directly 
 related to particle information, so data storage requires an independent 
 interval. 
@@ -1206,11 +1204,45 @@ must be considered.
 We use a progress proofreading module to supervise multi-channel data for 
 orderly data access.
 
-In terms of computing performance, the current 250 MHz main frequency of the FPGA is on par with that of the CPU, but it is far from reaching its theoretical performance limit. This is mainly due to the fixed   point precision constraint of the Fourier transform IP core and the redundant logic levels in the pipeline design. For example, in the 3D Fourier transform, the selection of 32   bit fixed point numbers balances resource consumption and error tolerance (error $<$ 0.0001), yet it sacrifices some computing throughput. In the future, a mixed  precision architecture can be explored, introducing low   precision calculations in non  critical paths to increase the main frequency. Additionally, although the hardware/software co design scheme for covalent bond calculation has verified its correctness, the data round  trip transmission (e.g., the SHAKE algorithm remains on the CPU side) introduces additional latency. In the future, it is necessary to explore a fully hardware based force field calculation pipeline design or optimize the heterogeneous interface to reduce communication overhead.
+In terms of computing performance, the current 250 MHz main frequency of the 
+FPGA is on par with that of the CPU, but it is far from reaching its 
+theoretical performance limit. 
+This is mainly due to the fixed point precision constraint of the Fourier 
+transform IP core and the redundant logic levels in the pipeline design. 
+For example, in the 3D Fourier transform, the selection of 32 bit fixed point 
+numbers balances resource consumption and error tolerance (error $<$ 0.0001), 
+at cost of computing throughput. 
+In the future, a mixed  precision architecture can be explored, introducing low 
+precision calculations in non  critical paths to increase the main frequency. 
+Additionally, although the hardware/software co design scheme for covalent 
+bond calculation has verified its correctness, the data round trip transmission 
+(e.g., the SHAKE algorithm remains on the CPU side) introduces additional 
+latency. 
+In the future, it is necessary to explore a fully hardware based force field 
+calculation pipeline design or optimize the heterogeneous interface to reduce 
+communication overhead.
 
-From the verification results, the FPGA shows highly consistent results with the CPU/GPU in the energy calculations of the Lennard - Jones potential, water box model, and protein system (DHFR), with the RMSE as low as $1e ^ 6 kcal/mol$, which proves the numerical stability and functional correctness of the hardware implementation. However, in the speed test, the FPGA's computing speed for the largest system (17,615 particles) is only 0.0287 ns/day, revealing the deficiency in large - scale parallel computing capabilities. This is related to both the main frequency limitation and the bandwidth bottleneck between the computing units and the storage subsystem. It is recommended that in subsequent optimizations, the FPGA's main frequency should be prioritized to be increased to the target frequency of 500 MHz, the data path should be reconfigured to reduce the logic delay of the critical path, and a NoC should be introduced to optimize the data interaction efficiency between multiple modules.
+From the verification results, the FPGA shows highly consistent results with 
+the CPU/GPU in the energy calculations of the LJ potential, water box model, 
+and DHFR, with the RMSE as low as $10^{-6}$  kcal/mol, which proves the 
+numerical stability and functional correctness of the hardware implementation. 
+However, in the speed test, the FPGA's computing speed for the largest system 
+(17,615 particles) is only 0.0287 ns/day, revealing the deficiency in large 
+scale parallel computing capabilities. 
+This is related to both the main frequency limitation and the bandwidth 
+bottleneck between the computing units and the storage subsystem. 
+It is recommended that in subsequent optimizations, the FPGA's main frequency 
+should be prioritized to be increased to the target frequency of 500 MHz, the 
+data path should be reconfigured to reduce the logic delay of the critical 
+path, and a NoC should be introduced to optimize the data interaction 
+efficiency between multiple modules.
 
-Overall, the current design verifies the feasibility of FPGAs in MD calculations. However, to achieve an energy efficiency ratio comparable to that of GPUs, performance needs to be further improved through iterations of the hardware architecture, adaptation of algorithms to hardware, and compilation optimizations. 
+Overall, the current design verifies the feasibility of FPGAs in MD 
+calculations. 
+However, to achieve an energy efficiency ratio comparable to that of GPUs, 
+performance needs to be further improved through iterations of the hardware 
+architecture, adaptation of algorithms to hardware, and compilation 
+optimizations. 
 
 
 
