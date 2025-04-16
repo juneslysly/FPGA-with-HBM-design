@@ -617,16 +617,16 @@ the device.\\
 
 \noindent
 % 这段话有问题，需要重新写
-As shown in Figure~\ref{dsp}, range limted force calculation assuming that 
-particle $i$ and particle $j$ have gone through the particle screening module, 
-in a certain range of action need to calculate the short-range force of particle 
-pairs, particle pairs through the DSP computing pipeline direct calculation, 
-the calculation result is a single precision floating point number, using the 
-Xilinx floating point number calculation unit, this way of calculating the 
-accuracy is relatively high, the consumption of DSP resources is more .\\
+As shown in Figure~\ref{dsp}, the range-limited force calculation assumes that particle $i$ and 
+particle $j$ have already undergone the particle pair screening module. 
+only particle pairs that meet certain criteria (e.g., within a cutoff distance) are 
+processed through the DSP direct calculation pipeline for efficient force computation.
+This approach ensures higher numerical accuracy compared to fixed-point or lower-precision alternatives. However, 
+since FP32 arithmetic consumes more DSP resources than integer or reduced-precision operations,
+ it imposes a trade-off between precision and computational efficiency.\\
 
 In existing studies, interpolation lookup tables are utilized to replace the 
-traditional direct calculation method, thereby conserving resources. % 加引用
+traditional direct calculation method, thereby conserving resources.~\cite{2019arXiv190505359Y}. % 加引用
 
 \begin{figure}[ht]
 	\centering
@@ -669,57 +669,26 @@ consumption of DSP resources.
 The generation of the interpolating function should not only reduce the 
 computational complexity, but also ensure that the accuracy of the computation 
 meets the design requirements.
-The $R^{-14}$, $R^{-8}$ and $R^{-3}$ can be fitted using a multi-order 
-interpolation function of the form:
+The $R^{-14}$, $R^{-8}$ and $R^{-3}$ can be approximated using a multi-order interpolation function.
+The performance of first-order, second-order, and third-order interpolations was compared respectively.
 
-\begin{equation}
-\begin{array}{c}
- f(x) = C_{0}+C_{1}(x-a)+C_{2}(x-a)^2 +C_{3}(x-a)^3 + \cdots \\ 
- + C_{p}(x-a)^p +o(x^p)
-\end{array}
-\end{equation}
-
-
-After simplification, the accuracy requirement can be met by using 2nd- or 3rd-
-order function fitting. 
-The following equation shows the 3rd-order interpolation function form:
-  
-
-\begin{equation}
-  F(x) = C_{0}+C_{1}x+C_{2}x^2 +C_{3}x^3
-\end{equation}
+%\begin{equation}
+%\begin{array}{c}
+% f(x) = C_{0}+C_{1}(x-a)+C_{2}(x-a)^2 +C_{3}(x-a)^3 + \cdots \\ 
+% + C_{p}(x-a)^p +o(x^p)
+%\end{array}
+%\end{equation}
+%\begin{equation}
+% F(x) = C_{0}+C_{1}x+C_{2}x^2 +C_{3}x^3
+%\end{equation}
 
 
-Establish a reasonable interval, the interval sampling points of the formula 
-erivative solution, you can get the corresponding interval of the fitting 
-function. 
+By establishing a reasonable sampling interval, the derivative of the target function can be numerically 
+approximated at discrete points within the interval.
+ This allows the derivation of a fitting function valid over the selected range.
 The following formula is a set of equations for the 2nd-order interpolation 
-function to find the value of the interval $[x_{0}, x_{1}]$, for example, can 
-be calculated to find the values of the 3 coefficients $a$, $b$ and $c$:
+function to find the value of the interval $[x_{0}, x_{1}]$. 
 
-\begin{equation}
-\begin{array}{c}
-f(x_{0}) = cx_{0}^2 +bx_{0}+a\\
-f^{'} (x_{0}) = 2cx_{0}  +b \\
-f(x_{1}) = cx_{1}^2 +bx_{1}+a\\
-f^{'} (x_{1}) = 2cx_{1}  +b \\
-\end{array}
-\end{equation}
-
-%???
-Assuming a fit to $R^{-14}$ with $R^{2}$ as the variable, the form of the 
-equation can be simplified to $y( x ) = x^{-7}$.
-The $y( x )$ function is monotonically decreasing in the range where x is 
-greater than zero and very steep in the interval x( 0, 1]. 
-The design requires values of $y( x )$ in the range $x [0.1, 144]$.
-The greater the number of interpolation points and the smaller the intervals, 
-the higher the computational accuracy, but the greater the number of segmented 
-functions formed between the interpolation points, the larger the capacity of 
-the coefficient table.
-In addition, the higher the order of the interpolation function, the stronger 
-the ability to track the function curve changes, the higher the accuracy, the 
-more computing and storage resources consumed.
-%???
 The $x [0.1, 144]$ interval is divided into 8 segments, {[}0.1, 0.2{]} ,
  {[}0.2, 0.4{]}  ,
  {[}0.4, 0.8{]}  , 
@@ -750,10 +719,7 @@ output to the last step after floating point number multiplication and
 division, and the corresponding particle parameters are read from the memory, 
 such as $A_{ab}$, $B_{ab}$ and other parameters, as shown in 
 Figure~\ref{3order}. 
-% 这句话是破碎的
-After the calculation, the results for the LJ force and the Coulomb short-range 
-force. 
-Because parameters such as $A$ and $B$ are determined constants in the 
+Because parameters such as $A_{ab}$ and $B_{ab}$ are determined constants in the 
 simulation system, the constant particle pair lookup table can be 
 pre-established, which can reduce the calculation logic and calculation time in 
 FPGA.
@@ -859,11 +825,6 @@ into account the varying access frequencies of each calculation channel,
 incorporates a specialized circuit designed to receive data from different 
 channels.\\
 
-% ???V 没懂
-In the process of MD calculation, for some specific data, such as particles 
-connected with hydrogen bonds, constraints such as the algorithm of unloading 
-SHAKE algorithm to FPGA computing resource consumption can be used to limit. 
-At this stage, we need to read the Index of these waiting bound particles.
 
 \begin{figure}[htp]
 	\centering
@@ -1059,9 +1020,7 @@ If Z-dimension FFTs are completed, the convolution module retrieves
 coefficients from the coefficient matrix local memory for convolution; 
 other dimensions skip convolution. 
 Processed data is then sent to the data conversion module. 
-% 这句话有问题
-In specific scale FFT computations, mid to low end FPGAs demonstrate 
-performance potential surpassing contemporary GPUs.
+
 
 \begin{table}[!ht]
 	\centering
