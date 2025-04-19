@@ -71,7 +71,7 @@
 
 %%%  Insert title below; leave date empty.
 
-\title{A FPGA High-Bandwidth Memory(HBM2) Based Molecular Dynamics Simulations }
+\title{	Molecular Dynamics Simulations on FPGA with High-Bandwidth Memory  }
 \date{}
 
 %%%  Author first and last names should be spelled 
@@ -141,7 +141,7 @@
 % The summary (abstract) should consist of a single paragraph of 150 words or fewer.
 Molecular dynamics (MD) simulation is a powerful tool that models the behavior 
 of particles over a given time interval, complementing biological and chemical 
-experimental methods.
+experimental methods, particularly in materials science and drug discovery.
 The speed of MD simulations is one of the key challenges that prevent their 
 applications. 
 To address this, a full hardware module based on field programmable gate 
@@ -153,11 +153,10 @@ We have also explored the impact of high-bandwidth memory (HBM2) on
 computational performance, comparing it with existing memory structures.
 The optimized design of the underlying register transfer level (RTL) circuitry 
 for a single node has fundamentally enhanced the efficiency of data read and 
-write operations to and from registers, with external storage read and write 
-efficiency improved by more than 2.0 times.We present the co-design of 
+write operations to and from registers.We present the co-design of 
 hardware-software co-optimized infrastructure leveraging a hybrid 
 CPU/FPGA architecture specifically engineered to accelerate 
-MD simulations.
+MD simulations using the classical CHARMM36 force field.
 The implementation of our work was demonstrated by comparing the simulation 
 results of noble gas argon and dihydrofolate reductase (DHFR) .
 Additionally, potential strategies for continuing to improve the efficiency of 
@@ -175,7 +174,6 @@ Molecular Dynamics, FPGA, PME, accelerate,
 \section*{INTRODUCTION}
 
 % No subheadings, please. Use of abbreviations should be kept to a minimum, and nonstandard abbreviations should be defined when first used in the text.
-\noindent
 Due to its ability to provide detailed mechanistic insights into various 
 physical interactions at atomic level, MD simulations have 
 shown paramount importance for driving the rational discovery of therapeutic 
@@ -188,53 +186,52 @@ Consider the many body systems interacting through classical pairwise
 potentials, the computational demand for integrating the equation of motions 
 quickly escalates with the number of interacting particles in the simulation.
 Moreover, most of the biophysical activated processes that are of mechanistic 
-interests are known to feature heterogeneous timescales.~\cite{Weinan}
+interests are known to feature heterogeneous timescales.~\cite{Weinan}.
 For example, essential cellular activities fundamental to life, such as active 
 solute transports~\cite{PRXLife.2.043001}, could take place at the sub-seconds 
 scale, while the vibrational motions of the molecules is characterized on 
-feco-to-picoseconds. 
+febo-to-picoseconds. 
 The multi-scale nature of the simulated system limits the length of time steps 
-to be sufficiently short (typically 0.5 to 2 fecoseconds) for the dynamical 
+to be sufficiently short (typically 0.5 to 2 fecoseconds) for stable dynamical 
 integration, rendering the computational modeling of long time collective 
-behaviors of the molecules highly intensive.~\cite{Kumar2022}
+behaviors of the molecules highly intensive.~\cite{Kumar2022}.
 Aiming to extend the accessible simulation scales subjected to modern 
 computation hardware, contemporary mainstream MD implementations have 
 incorporated multi-CPUs parallel strategies and GPU-based 
-codes.~\cite{charmm_at_c45,amber_gpu2,namd_gpu,omm7,gmx}
+codes.~\cite{charmm_at_c45,amber_gpu2,namd_gpu,omm7,gmx}.
 However, even with GPU acceleration, the reported trajectory lengths in 
 present MD studies merely exceed several microseconds, and numerically solving 
 the molecular trajectories by MD could cost months of fully loaded 
-computational power for model systems containing a million particles.~\cite{doi:10.1021/acs.jctc.1c01214}\\
+computational power for systems containing a few million particles.~\cite{doi:10.1021/acs.jctc.1c01214}.\\
 
 \noindent
-In addition to CPU and GPU based approaches, several research groups have 
-reported the developments of novel hardware architectures dedicated to MD 
-simulations. 
-Tetsu el al integrated multiple Microcontrollers (MCUs), Complex Programmable 
-Logic Devices (CPLDs), FPGAs through a specialized fiber-optic network to form 
-the MD-GRAPE computational cluster for MD 
-simulations.~\cite{MD-GRAPE-3,MDGRAPE-4A}
+Beyond conventional CPU/GPU-based solutions, heterogeneous computing architectures
+have emerged as a promising paradigm for MD simulations.  Recent implementations 
+integrate microcontroller units (MCUs), field-programmable gate arrays (FPGAs), 
+and complex programmable logic devices (CPLDs) through dedicated photonic
+interconnects, exemplified by the MD-GRAPE cluster architecture that achieves
+sub-microsecond communication latency between processing nodes.~\cite{MD-GRAPE-3,MDGRAPE-4A}.
 The commercial ANTON supercomputer series utilized the Application Specific 
-Integrated Circuit (ASIC) process and have up to 512 nodes in a specifically 
-designed cluster.~\cite{anton1,anton2,anton3}
+Integrated Circuit (ASIC) process to construct a specifically 
+designed cluster with 64 or 512 nodes.~\cite{anton1,anton2,anton3}.
 However, these architectures are commercially expensive to implement, which 
 limits their applicability for routine computations.
 On the other hand, the Novo-G reconfigurable computing design combines 
 traditional CPUs with programmable hardware (such as FPGAs) to tackle the 
 energy efficiency and performance bottlenecks, and have shown prominent 
-potential for MD simulations.~\cite{Novo-G,Novo-G2}\\
+potential for MD simulations.~\cite{Novo-G,Novo-G2}.\\
 
 \noindent
 Compared to the alternative computing hardware, FPGAs offer greater design 
 flexibility and higher environmental friendlies with competitive computational 
-efficiency.~\cite{ref3,10.5555/1296098,7550743,9444063}
+efficiency.~\cite{ref3,10.5555/1296098,7550743,9444063}. 
 FPGAs incorporate a variety of unique production techniques, such as the flash 
 process and the reverse fusion process, which allow them to support multiple 
 reconfigurations and debugs in the commercial sector, accommodating different 
-experimental design requirements.\cite{ref22}
+experimental design requirements.~\cite{ref22}. 
 In the chip design phase, FPGA design is considered the core of prototyping, 
 indicating that FPGA circuit design has significant potential for practical 
-application in the later stages of conversion into an ASIC process.\cite{ref18,410733}
+application in the later stages of conversion into an ASIC process.~\cite{ref18,410733}. 
 With their high parallel computing capability, reconfigurability, and 
 excellent energy efficiency ratio, FPGAs exhibit unique advantages in MD simulations. 
 They can significantly accelerate intensive floating point computations by 
@@ -242,38 +239,13 @@ processing particle interaction forces, such as van der Waals forces and
 Coulomb forces, in parallel through thousands of configurable logic units. 
 The hardware pipeline design of FPGAs enables efficient coordination of 
 adjacent list generation, force calculation, and integration processes. 
-Moreover, FPGAs can flexibly adapt to different potential functions, such as 
-the Lennard-Jones and CHARMM force fields, as well as various numerical 
-integration methods, like the Verlet algorithm, thereby meeting the diverse 
-requirements of both rigid body and coarse-grained 
-models.~\cite{2019arXiv190505359Y}\\
+Moreover, FPGAs can flexibly adapt to different potential functions in MD simulation and various numerical 
+integration methods thereby meeting the diverse 
+requirements from rigid body to coarse-grained 
+models.~\cite{2019arXiv190505359Y}.
+FPGA device fabrication technology has been undergoing rapid advancements, particularly with process nodes advancing to 7nm and below, enabling unprecedented performance improvements in high-performance computing applications.
+The emergence of ​​HBM2 memory​​ (2.5D TSV-stacked HBM2e achieves 5.3 TB/s bandwidth with 8.5× lower latency than DDR5) addresses the critical data-bandwidth bottleneck in molecular dynamics (MD) simulations~\cite{9556096,10217517}, where ​​nanosecond-scale force calculations require >100 GB/s sustained memory throughput​​ to sustain simulation accuracy.  Despite these advancements, ​​no existing FPGA-based MD implementations​​ have yet leveraged HBM2's unique combination of bandwidth-density and near-memory compute capabilities, leaving a ​​critical technology-to-physics gap​​ in scaling MD simulations beyond 10-million-atom systems.
 
-\noindent
-In this study, we report the co-design of both hardware and software 
-facilities based on a hybrid CPU/FPGA architecture specially purposed for MD 
-simulations with the classical CHARMM36 force field.~\cite{CHARMM36m}
-Oriented towards optimal computation load scheduling, our design retains the 
-calculations of bonded interactions on the CPU and dispatches the heavy-weight 
-evaluations of nonbonded interactions to the FPGA.
-We demonstrate the practical implementations of the long range FPGA computing 
-units specifically designed for the scalable computation of the electrostatic 
-interactions based on the particle-mesh Ewald (PME) algorithm centered on the 
-3-dimensional fast Fourier transform kernels.
-Moreover, we report the development of a Single Instruction, Multiple Data 
-(SIMD) software framework to enhance the data processing capabilities of the 
-circuit.
-The rest of the paper is organized as follows.
-In section 2, we introduce the FPGA model used in our design and review the 
-algorithms encountered in MD simulations and the implications for optimal 
-computing performance in practical implementations.
-In section 3, we detail the algorithmic implementation on the FPGA hardware 
-for massive parallel computation of nonbonded interactions based on the 
-Network-on-Chip (NoC) architecture, as well as a high-bandwidth memory (HBM) 
-design for efficient data dispatching with optimal memory consumption.
-In section 4, we validate our hybrid hardware implementation for MD simulations 
-on two model systems under periodic boundary: the noble gas (Ar) particles and 
-the DHFR protein in explicit solvent.
-Finally, discussions and concluding remarks are provided in section 5.\\
 \section*{RESULTS}
 
 \subsection{Experimental Results of the Particle Pair Computing Module Designed via HLS}
@@ -1045,7 +1017,7 @@ During the preparation of this work, the author(s) used [NAME OF TOOL OR SERVICE
 
 \subsection*{Hardware}
 
-In this work, the Inspur F37X FPGA accelerator card was selected for its 
+In this work, the Inspur F37X FPGA accelerator card wsed in this work was selected for its 
 advanced  programmable logic architecture, offering high flexibility and precise 
 customization to address specific algorithmic requirements of the project.
 This adaptability effectively overcomes performance bottlenecks inherent in 
@@ -1054,28 +1026,28 @@ barriers and fostering innovative research pathways.
 The accelerator card leverages the Xilinx Virtex UltraScale+ VU37P chip, 
 integrating 8~GB HBM2 high-bandwidth memory with a bandwidth of 460~GB/s, 
 delivering 28.1 TOPS INT8 compute performance at $<75$ W power 
-consumption.~\cite{InspurF37XConferencePaper}
+consumption.~\cite{InspurF37X}.  
 This configuration enables high-speed scientific computing 
 while maintaining energy efficiency, outperforming CPUs in scenarios requiring 
 low latency and high throughput.
 
 
 
+
 \subsection*{Basic algorithms of classical MD and force field}
+
 
 \noindent
 In this work, we divide a classical MD program into four parts~\cite{ref1}:
 \begin{enumerate}
-\item Parse the specified simulation conditions, such as initial temperature, particle number, and time step.
-\item Initialize positions and velocities of the particles.
-\item Compute the forces acting on all particles.
-\item Integrate Newton's equations to update velocities, and positions of all particles.
+	\item Parse the specified simulation conditions, such as initial temperature, particle number, and time step.
+	\item Initialize positions and velocities of the particles.
+	\item Compute the forces acting on all particles.
+	\item Integrate Newton's equations to update the velocities and positions of all particles.
 \end{enumerate}
 Repeat steps 3 and 4 until the user specified simulation step is met. 
 In classical MD simulations, the force acting on each atom is often calculated 
 using force fields which will be discuss in the next two subsection.
-Then integration of Newton's equations over the time step is achieved by 
-algorithms named integrator which is discuss in the 3rd subsection.
 
 
 \subsection*{Bonded force}
@@ -1096,7 +1068,7 @@ Most force fields model interactions between particles using bonded and nonbonde
 
 \noindent
 Most bonded terms are modeled by harmornic potentials, except the dihedrals are 
-modeled using a summation of cosine functions.
+modeled using a summation of cosine functions.~\cite{CHARMM36m}.
 Because the bonded terms are only calculated when bonds exists between atoms, 
 their computational cost can be regards as $\mathcal{O}(N)$.\\
 
@@ -1130,7 +1102,7 @@ Assuming that the unit cell is square, the Coulomb potential on atom $i$ can be
 expressed as Eq~\ref{eqn:coulomb}. 
 The algorithm utilizes spherical Gaussian positive and negative charges with 
 the same distribution to partition $E^\mathrm{Coulomb}$ into two parts in the 
-real and the inverse spaces. 
+real and the reciprocal spaces. 
 The electrostatic potential energy of the simulated system under PBC is 
 expressed as:
 
@@ -1145,7 +1117,7 @@ The simulation lattice extends indefinitely in the control according to the PBC,
 
 \begin{center}
 	\begin{equation}
-		E =E_\mathrm{dir} +E_\mathrm{rec}+E_\mathrm{corr}
+			E^\mathrm{Coulomb} =E_\mathrm{dir} +E_\mathrm{rec}+E_\mathrm{corr}
 	\end{equation}
 \end{center}
 
@@ -1177,7 +1149,7 @@ The $\erf$ is the Gaussian error function.\\
 
 
 \noindent
-To improve computational efficiency, the finite range force in the direct space 
+To improve computational efficiency, the finite range force in the direct space sometimes
 uses a proximity list lookup method which obtains the spatial relationships 
 between particles using their coordinates and distances, and stores this data 
 in a neighborhood list. 
@@ -1188,7 +1160,7 @@ neighbors, and their coordinates are updated to reconstruct interrelationships
 in a new step. 
 The neighbor list is constructed based on each particle's position within a 
 specific region, assuming that the interaction force between particles is 
-truncated at a radius $r_cut$.Each particle contains a list of potential 
+truncated at a radius $r_{cut}$.Each particle contains a list of potential 
 neighboring particles, which serves as input for the next computational cell.
 In addition, for periodical system, each simulation cell has 26 adjacent cells 
 in the whole space. 
@@ -1231,13 +1203,13 @@ moment and the position of the previous moment need to be stored.\\
 
 
 \begin{figure*}[ht]
-\centering
-\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig1_Neighboursegment.png}
-\caption{ The protein structure of DHFR,(a) and cuboid simulated water box, 
-(c) were cut into Cells of equal size by Verlet algorithm (d).
-	Among them, Home Cell and the surrounding 26 Neighbor cells (e), 
-    of which the upper and lower two are divided into "upper hemisphere"(f) and "lower hemisphere"(g).
-	(h)According to the Verlet algorithm, the center particle and the surrounding particles can be divided into equal sized squares according to the values of $R_m$ parameter and $R_{cut}$ off}
+	\centering
+	\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig1_Neighboursegment.png}
+	\caption{(a)  The protein structure of DHFR . (c) A cubic simulated water box. (d) A cubic simulation box.
+		(e) Home Cell and the surrounding 26 Neighbor cells  
+		of which the upper and lower two are divided into  "upper hemisphere" and  "lower hemisphere".
+		(f) Upper hemisphere. (g)  lower hemisphere .
+		(h) According to the Verlet algorithm, the center particle and the surrounding particles can be divided into equal sized squares according to the values of $R_m$ parameter and $R_{cut}$ off}
 	\label{Fig1_Neighboursegment}
 \end{figure*}
 
@@ -1248,7 +1220,7 @@ moment and the position of the previous moment need to be stored.\\
 \begin{figure*}[ht]
 	\centering
 	\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig2_top_module_a_b.png}
-	\caption{Block diagram of the implementation of the finite range force calculation module. Module (b), for a single FPGA acceleration card, the user logic resources MD hardware computation is mainly divided into range limited force force, long range force force and covalent bonding force three kinds of processing units. Module (a),The whole RL module is composed in each sub-module of the frame.}
+	\caption{Block diagram of the implementation range Limited force calculation module.  (b) A single FPGA acceleration card, the user logic resources MD hardware computation is mainly divided into range limited force , long range force  and covalent bonding force three kinds of processing units.  (a) The whole RL module is composed in each sub-module of the frame.}
 	\label{fgr:implementation}
 \end{figure*}
 
@@ -1305,7 +1277,7 @@ force calculation result data table and overseeing the calculation progress.\\
 
 
 
-\subsection*{Data is read and written using HBM memory.}
+\subsection*{Data is read and written using HBM memory}
 
 \noindent
 The HBM2 stores data units in a structured manner, and the configuration of 

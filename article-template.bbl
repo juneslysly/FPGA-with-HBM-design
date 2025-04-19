@@ -1,0 +1,634 @@
+\begin{thebibliography}{47}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\href}[2]{#2}
+\providecommand{\path}[1]{#1}
+\providecommand{\DOIprefix}{doi: }
+\providecommand{\ArXivprefix}{arXiv: }
+\providecommand{\URLprefix}{URL: }
+\providecommand{\Pubmedprefix}{pmid: }
+\providecommand{\doi}[1]{\href{http://dx.doi.org/#1}{\path{#1}}}
+\providecommand{\Pubmed}[1]{\href{pmid:#1}{\path{#1}}}
+\providecommand{\BIBand}{and}
+\providecommand{\bibinfo}[2]{#2}
+\ifx\xfnm\undefined \def\xfnm[#1]{\unskip,\space#1}\fi
+\makeatletter\def\@biblabel#1{#1.}\makeatother
+%Type = Article
+\bibitem[{Qian et~al.(2024)Qian, Xue, Xu and Huang}]{fep_runtong}
+\bibinfo{author}{Qian, R.}, \bibinfo{author}{Xue, J.}, \bibinfo{author}{Xu,
+  Y.}, and \bibinfo{author}{Huang, J.} (\bibinfo{year}{2024}).
+  \bibinfo{title}{Alchemical transformations and beyond: Recent advances and
+  real-world applications of free energy calculations in drug discovery}.
+\newblock \bibinfo{journal}{Journal of Chemical Information and Modeling}
+  \emph{\bibinfo{volume}{64}}, \bibinfo{pages}{7214--7237}. \URLprefix
+  \url{https://doi.org/10.1021/acs.jcim.4c01024}.
+  \DOIprefix\doi{10.1021/acs.jcim.4c01024}.
+  \href{http://arxiv.org/abs/https://doi.org/10.1021/acs.jcim.4c01024}{\tt
+  arXiv:https://doi.org/10.1021/acs.jcim.4c01024}.
+\newblock \bibinfo{note}{PMID: 39360948}.
+%Type = Article
+\bibitem[{York(2023)}]{fep_york}
+\bibinfo{author}{York, D.M.} (\bibinfo{year}{2023}). \bibinfo{title}{Modern
+  alchemical free energy methods for drug discovery explained}.
+\newblock \bibinfo{journal}{ACS Physical Chemistry Au}
+  \emph{\bibinfo{volume}{3}}, \bibinfo{pages}{478--491}. \URLprefix
+  \url{https://doi.org/10.1021/acsphyschemau.3c00033}.
+  \DOIprefix\doi{10.1021/acsphyschemau.3c00033}.
+  \href{http://arxiv.org/abs/https://doi.org/10.1021/acsphyschemau.3c00033}{\tt
+  arXiv:https://doi.org/10.1021/acsphyschemau.3c00033}.
+%Type = Article
+\bibitem[{De~Vivo et~al.(2016)De~Vivo, Masetti, Bottegoni and
+  Cavalli}]{md_in_dd_jmc2016}
+\bibinfo{author}{De~Vivo, M.}, \bibinfo{author}{Masetti, M.},
+  \bibinfo{author}{Bottegoni, G.}, and \bibinfo{author}{Cavalli, A.}
+  (\bibinfo{year}{2016}). \bibinfo{title}{Role of molecular dynamics and
+  related methods in drug discovery}.
+\newblock \bibinfo{journal}{Journal of Medicinal Chemistry}
+  \emph{\bibinfo{volume}{59}}, \bibinfo{pages}{4035--4061}. \URLprefix
+  \url{https://doi.org/10.1021/acs.jmedchem.5b01684}.
+  \DOIprefix\doi{10.1021/acs.jmedchem.5b01684}.
+  \href{http://arxiv.org/abs/https://doi.org/10.1021/acs.jmedchem.5b01684}{\tt
+  arXiv:https://doi.org/10.1021/acs.jmedchem.5b01684}.
+\newblock \bibinfo{note}{PMID: 26807648}.
+%Type = Article
+\bibitem[{Donaldson(2013)}]{md_in_material1}
+\bibinfo{author}{Donaldson, L.} (\bibinfo{year}{2013}). \bibinfo{title}{Tying
+  crystals in knots}.
+\newblock \bibinfo{journal}{Materials Today} \emph{\bibinfo{volume}{16}},
+  \bibinfo{pages}{360}. \URLprefix
+  \url{https://www.sciencedirect.com/science/article/pii/S1369702113003064}.
+  \DOIprefix\doi{https://doi.org/10.1016/j.mattod.2013.09.009}.
+%Type = Article
+\bibitem[{E and Vanden-Eijnden(2010)}]{Weinan}
+\bibinfo{author}{E, W.}, and \bibinfo{author}{Vanden-Eijnden, E.}
+  (\bibinfo{year}{2010}). \bibinfo{title}{Transition-path theory and
+  path-finding algorithms for the study of rare events}.
+\newblock \bibinfo{journal}{Annual Review of Physical Chemistry}
+  \emph{\bibinfo{volume}{61}}, \bibinfo{pages}{391--420}.
+%Type = Article
+\bibitem[{Xie et~al.(2024)Xie, Song and Huang}]{PRXLife.2.043001}
+\bibinfo{author}{Xie, T.}, \bibinfo{author}{Song, Z.}, and
+  \bibinfo{author}{Huang, J.} (\bibinfo{year}{2024}).
+  \bibinfo{title}{Conditioned protein structure prediction}.
+\newblock \bibinfo{journal}{PRX Life} \emph{\bibinfo{volume}{2}},
+  \bibinfo{pages}{043001}. \URLprefix
+  \url{https://link.aps.org/doi/10.1103/PRXLife.2.043001}.
+  \DOIprefix\doi{10.1103/PRXLife.2.043001}.
+%Type = Inbook
+\bibitem[{Kumar and Mishra(2022)}]{Kumar2022}
+\bibinfo{author}{Kumar, G.}, and \bibinfo{author}{Mishra, A., Radha
+  Ramanand~Verma} (\bibinfo{year}{2022}). \bibinfo{title}{Introduction to
+  molecular dynamics simulations}.
+\newblock In \bibinfo{editor}{ A.{ }Verma}, \bibinfo{editor}{ S.{
+  }Mavinkere~Rangappa}, \bibinfo{editor}{ S.{ }Ogata}, and \bibinfo{editor}{
+  S.{ }Siengchin}, eds. \bibinfo{booktitle}{Forcefields for Atomistic-Scale
+  Simulations: Materials and Applications}. \bibinfo{address}{Singapore}:
+  \bibinfo{publisher}{Springer Nature Singapore}.
+\newblock ISBN \bibinfo{isbn}{978-981-19-3092-8} pp. \bibinfo{pages}{1--19}.
+%Type = Article
+\bibitem[{Hwang et~al.(2024)Hwang, Austin, Blondel, Boittier, Boresch, Buck,
+  Buckner, Caflisch, Chang, Cheng, Choi, Chu, Crowley, Cui, Damjanovic, Deng,
+  Devereux, Ding, Feig, Gao, Glowacki, Gonzales, Hamaneh, Harder, Hayes, Huang,
+  Huang, Hudson, Im, Islam, Jiang, Jones, Käser, Kearns, Kern, Klauda,
+  Lazaridis, Lee, Lemkul, Liu, Luo, MacKerell, Major, Meuwly, Nam, Nilsson,
+  Ovchinnikov, Paci, Park, Pastor, Pittman, Post, Prasad, Pu, Qi, Rathinavelan,
+  Roe, Roux, Rowley, Shen, Simmonett, Sodt, T{\"o}pfer, Upadhyay, van~der
+  Vaart, Vazquez-Salazar, Venable, Warrensford, Woodcock, Wu, Brooks, Brooks
+  and Karplus}]{charmm_at_c45}
+\bibinfo{author}{Hwang, W.}, \bibinfo{author}{Austin, S.L.},
+  \bibinfo{author}{Blondel, A.}, \bibinfo{author}{Boittier, E.D.},
+  \bibinfo{author}{Boresch, S.}, \bibinfo{author}{Buck, M.},
+  \bibinfo{author}{Buckner, J.}, \bibinfo{author}{Caflisch, A.},
+  \bibinfo{author}{Chang, H.T.}, \bibinfo{author}{Cheng, X.},
+  \bibinfo{author}{Choi, Y.K.}, \bibinfo{author}{Chu, J.W.},
+  \bibinfo{author}{Crowley, M.F.}, \bibinfo{author}{Cui, Q.},
+  \bibinfo{author}{Damjanovic, A.}, \bibinfo{author}{Deng, Y.},
+  \bibinfo{author}{Devereux, M.}, \bibinfo{author}{Ding, X.},
+  \bibinfo{author}{Feig, M.F.}, \bibinfo{author}{Gao, J.},
+  \bibinfo{author}{Glowacki, D.R.}, \bibinfo{author}{Gonzales, J.E.I.},
+  \bibinfo{author}{Hamaneh, M.B.}, \bibinfo{author}{Harder, E.D.},
+  \bibinfo{author}{Hayes, R.L.}, \bibinfo{author}{Huang, J.},
+  \bibinfo{author}{Huang, Y.}, \bibinfo{author}{Hudson, P.S.},
+  \bibinfo{author}{Im, W.}, \bibinfo{author}{Islam, S.M.},
+  \bibinfo{author}{Jiang, W.}, \bibinfo{author}{Jones, M.R.},
+  \bibinfo{author}{Käser, S.}, \bibinfo{author}{Kearns, F.L.},
+  \bibinfo{author}{Kern, N.R.}, \bibinfo{author}{Klauda, J.B.},
+  \bibinfo{author}{Lazaridis, T.}, \bibinfo{author}{Lee, J.},
+  \bibinfo{author}{Lemkul, J.A.}, \bibinfo{author}{Liu, X.},
+  \bibinfo{author}{Luo, Y.}, \bibinfo{author}{MacKerell, A.D.J.},
+  \bibinfo{author}{Major, D.T.}, \bibinfo{author}{Meuwly, M.},
+  \bibinfo{author}{Nam, K.}, \bibinfo{author}{Nilsson, L.},
+  \bibinfo{author}{Ovchinnikov, V.}, \bibinfo{author}{Paci, E.},
+  \bibinfo{author}{Park, S.}, \bibinfo{author}{Pastor, R.W.},
+  \bibinfo{author}{Pittman, A.R.}, \bibinfo{author}{Post, C.B.},
+  \bibinfo{author}{Prasad, S.}, \bibinfo{author}{Pu, J.}, \bibinfo{author}{Qi,
+  Y.}, \bibinfo{author}{Rathinavelan, T.}, \bibinfo{author}{Roe, D.R.},
+  \bibinfo{author}{Roux, B.}, \bibinfo{author}{Rowley, C.N.},
+  \bibinfo{author}{Shen, J.}, \bibinfo{author}{Simmonett, A.C.},
+  \bibinfo{author}{Sodt, A.J.}, \bibinfo{author}{T{\"o}pfer, K.},
+  \bibinfo{author}{Upadhyay, M.}, \bibinfo{author}{van~der Vaart, A.},
+  \bibinfo{author}{Vazquez-Salazar, L.I.}, \bibinfo{author}{Venable, R.M.},
+  \bibinfo{author}{Warrensford, L.C.}, \bibinfo{author}{Woodcock, H.L.},
+  \bibinfo{author}{Wu, Y.}, \bibinfo{author}{Brooks, C.L.I.},
+  \bibinfo{author}{Brooks, B.R.}, and \bibinfo{author}{Karplus, M.}
+  (\bibinfo{year}{2024}). \bibinfo{title}{Charmm at 45: Enhancements in
+  accessibility, functionality, and speed}.
+\newblock \bibinfo{journal}{The Journal of Physical Chemistry B}
+  \emph{\bibinfo{volume}{128}}, \bibinfo{pages}{9976--10042}. \URLprefix
+  \url{https://doi.org/10.1021/acs.jpcb.4c04100}.
+  \DOIprefix\doi{10.1021/acs.jpcb.4c04100}.
+  \href{http://arxiv.org/abs/https://doi.org/10.1021/acs.jpcb.4c04100}{\tt
+  arXiv:https://doi.org/10.1021/acs.jpcb.4c04100}.
+\newblock \bibinfo{note}{PMID: 39303207}.
+%Type = Article
+\bibitem[{Salomon-Ferrer et~al.(2013)Salomon-Ferrer, G{\"o}tz, Poole, Le~Grand
+  and Walker}]{amber_gpu2}
+\bibinfo{author}{Salomon-Ferrer, R.}, \bibinfo{author}{G{\"o}tz, A.W.},
+  \bibinfo{author}{Poole, D.}, \bibinfo{author}{Le~Grand, S.}, and
+  \bibinfo{author}{Walker, R.C.} (\bibinfo{year}{2013}).
+  \bibinfo{title}{Routine microsecond molecular dynamics simulations with amber
+  on gpus. 2. explicit solvent particle mesh ewald}.
+\newblock \bibinfo{journal}{Journal of Chemical Theory and Computation}
+  \emph{\bibinfo{volume}{9}}, \bibinfo{pages}{3878--3888}. \URLprefix
+  \url{https://doi.org/10.1021/ct400314y}. \DOIprefix\doi{10.1021/ct400314y}.
+  \href{http://arxiv.org/abs/https://doi.org/10.1021/ct400314y}{\tt
+  arXiv:https://doi.org/10.1021/ct400314y}.
+\newblock \bibinfo{note}{PMID: 26592383}.
+%Type = Article
+\bibitem[{Phillips et~al.(2020)Phillips, Hardy, Maia, Stone, Ribeiro, Bernardi,
+  Buch, Fiorin, Hénin, Jiang, McGreevy, Melo, Radak, Skeel, Singharoy, Wang,
+  Roux, Aksimentiev, Luthey-Schulten, Kalé, Schulten, Chipot and
+  Tajkhorshid}]{namd_gpu}
+\bibinfo{author}{Phillips, J.C.}, \bibinfo{author}{Hardy, D.J.},
+  \bibinfo{author}{Maia, J.D.C.}, \bibinfo{author}{Stone, J.E.},
+  \bibinfo{author}{Ribeiro, J.V.}, \bibinfo{author}{Bernardi, R.C.},
+  \bibinfo{author}{Buch, R.}, \bibinfo{author}{Fiorin, G.},
+  \bibinfo{author}{Hénin, J.}, \bibinfo{author}{Jiang, W.},
+  \bibinfo{author}{McGreevy, R.}, \bibinfo{author}{Melo, M.C.R.},
+  \bibinfo{author}{Radak, B.K.}, \bibinfo{author}{Skeel, R.D.},
+  \bibinfo{author}{Singharoy, A.}, \bibinfo{author}{Wang, Y.},
+  \bibinfo{author}{Roux, B.}, \bibinfo{author}{Aksimentiev, A.},
+  \bibinfo{author}{Luthey-Schulten, Z.}, \bibinfo{author}{Kalé, L.V.},
+  \bibinfo{author}{Schulten, K.}, \bibinfo{author}{Chipot, C.}, and
+  \bibinfo{author}{Tajkhorshid, E.} (\bibinfo{year}{2020}).
+  \bibinfo{title}{Scalable molecular dynamics on cpu and gpu architectures with
+  namd}.
+\newblock \bibinfo{journal}{The Journal of Chemical Physics}
+  \emph{\bibinfo{volume}{153}}, \bibinfo{pages}{044130}. \URLprefix
+  \url{https://doi.org/10.1063/5.0014475}. \DOIprefix\doi{10.1063/5.0014475}.
+%Type = Article
+\bibitem[{Eastman et~al.(2017{\natexlab{a}})Eastman, Swails, Chodera, McGibbon,
+  Zhao, Beauchamp, Wang, Simmonett, Harrigan, Stern, Wiewiora, Brooks and
+  Pande}]{omm7}
+\bibinfo{author}{Eastman, P.}, \bibinfo{author}{Swails, J.},
+  \bibinfo{author}{Chodera, J.D.}, \bibinfo{author}{McGibbon, R.T.},
+  \bibinfo{author}{Zhao, Y.}, \bibinfo{author}{Beauchamp, K.A.},
+  \bibinfo{author}{Wang, L.P.}, \bibinfo{author}{Simmonett, A.C.},
+  \bibinfo{author}{Harrigan, M.P.}, \bibinfo{author}{Stern, C.D.},
+  \bibinfo{author}{Wiewiora, R.P.}, \bibinfo{author}{Brooks, B.R.}, and
+  \bibinfo{author}{Pande, V.S.} (\bibinfo{year}{2017}{\natexlab{a}}).
+  \bibinfo{title}{Openmm 7: Rapid development of high performance algorithms
+  for molecular dynamics}.
+\newblock \bibinfo{journal}{PLOS Computational Biology}
+  \emph{\bibinfo{volume}{13}}, \bibinfo{pages}{1--17}. \URLprefix
+  \url{https://doi.org/10.1371/journal.pcbi.1005659}.
+  \DOIprefix\doi{10.1371/journal.pcbi.1005659}.
+%Type = Article
+\bibitem[{Abraham et~al.(2015)Abraham, Murtola, Schulz, Páll, Smith, Hess and
+  Lindahl}]{gmx}
+\bibinfo{author}{Abraham, M.J.}, \bibinfo{author}{Murtola, T.},
+  \bibinfo{author}{Schulz, R.}, \bibinfo{author}{Páll, S.},
+  \bibinfo{author}{Smith, J.C.}, \bibinfo{author}{Hess, B.}, and
+  \bibinfo{author}{Lindahl, E.} (\bibinfo{year}{2015}).
+  \bibinfo{title}{Gromacs: High performance molecular simulations through
+  multi-level parallelism from laptops to supercomputers}.
+\newblock \bibinfo{journal}{SoftwareX} \emph{\bibinfo{volume}{1-2}},
+  \bibinfo{pages}{19--25}. \URLprefix
+  \url{https://www.sciencedirect.com/science/article/pii/S2352711015000059}.
+  \DOIprefix\doi{https://doi.org/10.1016/j.softx.2015.06.001}.
+%Type = Article
+\bibitem[{Jones et~al.(2022)Jones, Allen, Yang, Drew~Bennett, Gokhale, Moshiri
+  and Rosing}]{doi:10.1021/acs.jctc.1c01214}
+\bibinfo{author}{Jones, D.}, \bibinfo{author}{Allen, J.E.},
+  \bibinfo{author}{Yang, Y.}, \bibinfo{author}{Drew~Bennett, W.F.},
+  \bibinfo{author}{Gokhale, M.}, \bibinfo{author}{Moshiri, N.}, and
+  \bibinfo{author}{Rosing, T.S.} (\bibinfo{year}{2022}).
+  \bibinfo{title}{Accelerators for classical molecular dynamics simulations of
+  biomolecules}.
+\newblock \bibinfo{journal}{Journal of Chemical Theory and Computation}
+  \emph{\bibinfo{volume}{18}}, \bibinfo{pages}{4047--4069}.
+%Type = Article
+\bibitem[{Narumi et~al.(2011)Narumi, Yasuoka, Taiji, Zerbetto and
+  Höfinger}]{MD-GRAPE-3}
+\bibinfo{author}{Narumi, T.}, \bibinfo{author}{Yasuoka, K.},
+  \bibinfo{author}{Taiji, M.}, \bibinfo{author}{Zerbetto, F.}, and
+  \bibinfo{author}{Höfinger, S.} (\bibinfo{year}{2011}). \bibinfo{title}{Fast
+  calculation of electrostatic potentials on the gpu or the asic md-grape-3}.
+\newblock \bibinfo{journal}{The Computer Journal} \emph{\bibinfo{volume}{54}},
+  \bibinfo{pages}{1181--1187}.
+%Type = Inproceedings
+\bibitem[{Morimoto et~al.(2021)Morimoto, Koyama, Zhang, Komatsu, Ohno, Nishida,
+  Ohmura, Koyama and Taijit}]{MDGRAPE-4A}
+\bibinfo{author}{Morimoto, G.}, \bibinfo{author}{Koyama, Y.M.},
+  \bibinfo{author}{Zhang, H.}, \bibinfo{author}{Komatsu, T.S.},
+  \bibinfo{author}{Ohno, Y.}, \bibinfo{author}{Nishida, K.},
+  \bibinfo{author}{Ohmura, I.}, \bibinfo{author}{Koyama, H.}, and
+  \bibinfo{author}{Taijit, M.} (\bibinfo{year}{2021}). \bibinfo{title}{Hardware
+  acceleration of tensor-structured multilevel ewald summation method on
+  mdgrape-4a, a special-purpose computer system for molecular dynamics
+  simulations}.
+\newblock In \bibinfo{booktitle}{SC21: International Conference for High
+  Performance Computing, Networking, Storage and Analysis}. pp.
+  \bibinfo{pages}{1--15}.
+\newblock \DOIprefix\doi{10.1145/3458817.3476190}.
+%Type = Article
+\bibitem[{Shaw et~al.(2008)Shaw, Deneroff, Dror, Kuskin, Larson, Salmon, Young,
+  Batson, Bowers, Chao, Eastwood, Gagliardo, Grossman, Ho, Ierardi,
+  Kolossv\'{a}ry, Klepeis, Layman, McLeavey, Moraes, Mueller, Priest, Shan,
+  Spengler, Theobald, Towles and Wang}]{anton1}
+\bibinfo{author}{Shaw, D.E.}, \bibinfo{author}{Deneroff, M.M.},
+  \bibinfo{author}{Dror, R.O.}, \bibinfo{author}{Kuskin, J.S.},
+  \bibinfo{author}{Larson, R.H.}, \bibinfo{author}{Salmon, J.K.},
+  \bibinfo{author}{Young, C.}, \bibinfo{author}{Batson, B.},
+  \bibinfo{author}{Bowers, K.J.}, \bibinfo{author}{Chao, J.C.},
+  \bibinfo{author}{Eastwood, M.P.}, \bibinfo{author}{Gagliardo, J.},
+  \bibinfo{author}{Grossman, J.P.}, \bibinfo{author}{Ho, C.R.},
+  \bibinfo{author}{Ierardi, D.J.}, \bibinfo{author}{Kolossv\'{a}ry, I.},
+  \bibinfo{author}{Klepeis, J.L.}, \bibinfo{author}{Layman, T.},
+  \bibinfo{author}{McLeavey, C.}, \bibinfo{author}{Moraes, M.A.},
+  \bibinfo{author}{Mueller, R.}, \bibinfo{author}{Priest, E.C.},
+  \bibinfo{author}{Shan, Y.}, \bibinfo{author}{Spengler, J.},
+  \bibinfo{author}{Theobald, M.}, \bibinfo{author}{Towles, B.}, and
+  \bibinfo{author}{Wang, S.C.} (\bibinfo{year}{2008}). \bibinfo{title}{Anton, a
+  special-purpose machine for molecular dynamics simulation}.
+\newblock \bibinfo{journal}{Commun. ACM} \emph{\bibinfo{volume}{51}},
+  \bibinfo{pages}{91--97}. \URLprefix
+  \url{https://doi.org/10.1145/1364782.1364802}.
+  \DOIprefix\doi{10.1145/1364782.1364802}.
+%Type = Inproceedings
+\bibitem[{Shaw et~al.(2014)Shaw, Grossman, Bank, Batson, Butts, Chao, Deneroff,
+  Dror, Even, Fenton, Forte, Gagliardo, Gill, Greskamp, Ho, Ierardi, Iserovich,
+  Kuskin, Larson, Layman, Lee, Lerer, Li, Killebrew, Mackenzie, Mok, Moraes,
+  Mueller, Nociolo, Peticolas, Quan, Ramot, Salmon, Scarpazza, Schafer,
+  Siddique, Snyder, Spengler, Tang, Theobald, Toma, Towles, Vitale, Wang and
+  Young}]{anton2}
+\bibinfo{author}{Shaw, D.E.}, \bibinfo{author}{Grossman, J.},
+  \bibinfo{author}{Bank, J.A.}, \bibinfo{author}{Batson, B.},
+  \bibinfo{author}{Butts, J.A.}, \bibinfo{author}{Chao, J.C.},
+  \bibinfo{author}{Deneroff, M.M.}, \bibinfo{author}{Dror, R.O.},
+  \bibinfo{author}{Even, A.}, \bibinfo{author}{Fenton, C.H.},
+  \bibinfo{author}{Forte, A.}, \bibinfo{author}{Gagliardo, J.},
+  \bibinfo{author}{Gill, G.}, \bibinfo{author}{Greskamp, B.},
+  \bibinfo{author}{Ho, C.R.}, \bibinfo{author}{Ierardi, D.J.},
+  \bibinfo{author}{Iserovich, L.}, \bibinfo{author}{Kuskin, J.S.},
+  \bibinfo{author}{Larson, R.H.}, \bibinfo{author}{Layman, T.},
+  \bibinfo{author}{Lee, L.S.}, \bibinfo{author}{Lerer, A.K.},
+  \bibinfo{author}{Li, C.}, \bibinfo{author}{Killebrew, D.},
+  \bibinfo{author}{Mackenzie, K.M.}, \bibinfo{author}{Mok, S.Y.H.},
+  \bibinfo{author}{Moraes, M.A.}, \bibinfo{author}{Mueller, R.},
+  \bibinfo{author}{Nociolo, L.J.}, \bibinfo{author}{Peticolas, J.L.},
+  \bibinfo{author}{Quan, T.}, \bibinfo{author}{Ramot, D.},
+  \bibinfo{author}{Salmon, J.K.}, \bibinfo{author}{Scarpazza, D.P.},
+  \bibinfo{author}{Schafer, U.B.}, \bibinfo{author}{Siddique, N.},
+  \bibinfo{author}{Snyder, C.W.}, \bibinfo{author}{Spengler, J.},
+  \bibinfo{author}{Tang, P.T.P.}, \bibinfo{author}{Theobald, M.},
+  \bibinfo{author}{Toma, H.}, \bibinfo{author}{Towles, B.},
+  \bibinfo{author}{Vitale, B.}, \bibinfo{author}{Wang, S.C.}, and
+  \bibinfo{author}{Young, C.} (\bibinfo{year}{2014}). \bibinfo{title}{Anton 2:
+  Raising the bar for performance and programmability in a special-purpose
+  molecular dynamics supercomputer}.
+\newblock In \bibinfo{booktitle}{SC '14: Proceedings of the International
+  Conference for High Performance Computing, Networking, Storage and Analysis}.
+  pp. \bibinfo{pages}{41--53}.
+\newblock \DOIprefix\doi{10.1109/SC.2014.9}.
+%Type = Inproceedings
+\bibitem[{Shaw et~al.(2021)Shaw, Adams, Azaria, Bank, Batson, Bell, Bergdorf,
+  Bhatt, Butts, Correia, Dirks, Dror, Eastwood, Edwards, Even, Feldmann, Fenn,
+  Fenton, Forte, Gagliardo, Gill, Gorlatova, Greskamp, Grossman, Gullingsrud,
+  Harper, Hasenplaugh, Heily, Heshmat, Hunt, Ierardi, Iserovich, Jackson,
+  Johnson, Kirk, Klepeis, Kuskin, Mackenzie, Mader, McGowen, McLaughlin,
+  Moraes, Nasr, Nociolo, O'Donnell, Parker, Peticolas, Pocina, Predescu, Quan,
+  Salmon, Schwink, Shim, Siddique, Spengler, Szalay, Tabladillo, Tartler,
+  Taube, Theobald, Towles, Vick, Wang, Wazlowski, Weingarten, Williams and
+  Yuh}]{anton3}
+\bibinfo{author}{Shaw, D.E.}, \bibinfo{author}{Adams, P.J.},
+  \bibinfo{author}{Azaria, A.}, \bibinfo{author}{Bank, J.A.},
+  \bibinfo{author}{Batson, B.}, \bibinfo{author}{Bell, A.},
+  \bibinfo{author}{Bergdorf, M.}, \bibinfo{author}{Bhatt, J.},
+  \bibinfo{author}{Butts, J.A.}, \bibinfo{author}{Correia, T.},
+  \bibinfo{author}{Dirks, R.M.}, \bibinfo{author}{Dror, R.O.},
+  \bibinfo{author}{Eastwood, M.P.}, \bibinfo{author}{Edwards, B.},
+  \bibinfo{author}{Even, A.}, \bibinfo{author}{Feldmann, P.},
+  \bibinfo{author}{Fenn, M.}, \bibinfo{author}{Fenton, C.H.},
+  \bibinfo{author}{Forte, A.}, \bibinfo{author}{Gagliardo, J.},
+  \bibinfo{author}{Gill, G.}, \bibinfo{author}{Gorlatova, M.},
+  \bibinfo{author}{Greskamp, B.}, \bibinfo{author}{Grossman, J.},
+  \bibinfo{author}{Gullingsrud, J.}, \bibinfo{author}{Harper, A.},
+  \bibinfo{author}{Hasenplaugh, W.}, \bibinfo{author}{Heily, M.},
+  \bibinfo{author}{Heshmat, B.C.}, \bibinfo{author}{Hunt, J.},
+  \bibinfo{author}{Ierardi, D.J.}, \bibinfo{author}{Iserovich, L.},
+  \bibinfo{author}{Jackson, B.L.}, \bibinfo{author}{Johnson, N.P.},
+  \bibinfo{author}{Kirk, M.M.}, \bibinfo{author}{Klepeis, J.L.},
+  \bibinfo{author}{Kuskin, J.S.}, \bibinfo{author}{Mackenzie, K.M.},
+  \bibinfo{author}{Mader, R.J.}, \bibinfo{author}{McGowen, R.},
+  \bibinfo{author}{McLaughlin, A.}, \bibinfo{author}{Moraes, M.A.},
+  \bibinfo{author}{Nasr, M.H.}, \bibinfo{author}{Nociolo, L.J.},
+  \bibinfo{author}{O'Donnell, L.}, \bibinfo{author}{Parker, A.},
+  \bibinfo{author}{Peticolas, J.L.}, \bibinfo{author}{Pocina, G.},
+  \bibinfo{author}{Predescu, C.}, \bibinfo{author}{Quan, T.},
+  \bibinfo{author}{Salmon, J.K.}, \bibinfo{author}{Schwink, C.},
+  \bibinfo{author}{Shim, K.S.}, \bibinfo{author}{Siddique, N.},
+  \bibinfo{author}{Spengler, J.}, \bibinfo{author}{Szalay, T.},
+  \bibinfo{author}{Tabladillo, R.}, \bibinfo{author}{Tartler, R.},
+  \bibinfo{author}{Taube, A.G.}, \bibinfo{author}{Theobald, M.},
+  \bibinfo{author}{Towles, B.}, \bibinfo{author}{Vick, W.},
+  \bibinfo{author}{Wang, S.C.}, \bibinfo{author}{Wazlowski, M.},
+  \bibinfo{author}{Weingarten, M.J.}, \bibinfo{author}{Williams, J.M.}, and
+  \bibinfo{author}{Yuh, K.A.} (\bibinfo{year}{2021}). \bibinfo{title}{Anton 3:
+  twenty microseconds of molecular dynamics simulation before lunch}.
+\newblock In \bibinfo{booktitle}{Proceedings of the International Conference
+  for High Performance Computing, Networking, Storage and Analysis}. SC '21.
+  \bibinfo{address}{New York, NY, USA}: \bibinfo{publisher}{Association for
+  Computing Machinery}.
+\newblock ISBN \bibinfo{isbn}{9781450384421}.
+%Type = Article
+\bibitem[{George et~al.(2011)George, Lam and Stitt}]{Novo-G}
+\bibinfo{author}{George, A.}, \bibinfo{author}{Lam, H.}, and
+  \bibinfo{author}{Stitt, G.} (\bibinfo{year}{2011}). \bibinfo{title}{Novo-g:
+  At the forefront of scalable reconfigurable supercomputing}.
+\newblock \bibinfo{journal}{Computing in Science Engineering}
+  \emph{\bibinfo{volume}{13}}, \bibinfo{pages}{82--86}.
+%Type = Inproceedings
+\bibitem[{George et~al.(2016)George, Herbordt, Lam, Lawande, Sheng and
+  Yang}]{Novo-G2}
+\bibinfo{author}{George, A.D.}, \bibinfo{author}{Herbordt, M.C.},
+  \bibinfo{author}{Lam, H.}, \bibinfo{author}{Lawande, A.G.},
+  \bibinfo{author}{Sheng, J.}, and \bibinfo{author}{Yang, C.}
+  (\bibinfo{year}{2016}). \bibinfo{title}{Novo-g : Large-scale reconfigurable
+  computing with direct and programmable interconnects}.
+\newblock In \bibinfo{booktitle}{2016 IEEE High Performance Extreme Computing
+  Conference (HPEC)}. pp. \bibinfo{pages}{1--7}.
+%Type = Inproceedings
+\bibitem[{Cabrera et~al.(2023)Cabrera, Yucesan, Liu, Blokland and
+  Vetter}]{ref3}
+\bibinfo{author}{Cabrera, A.M.}, \bibinfo{author}{Yucesan, Y.A.},
+  \bibinfo{author}{Liu, F.Y.}, \bibinfo{author}{Blokland, W.}, and
+  \bibinfo{author}{Vetter, J.S.} (\bibinfo{year}{2023}). \bibinfo{title}{Errant
+  beam detection using the amd versal acap and vitis ai}.
+\newblock In \bibinfo{booktitle}{2023 IEEE High Performance Extreme Computing
+  Conference (HPEC)}. pp. \bibinfo{pages}{1--6}.
+\newblock \DOIprefix\doi{10.1109/HPEC58863.2023.10363622}.
+%Type = Book
+\bibitem[{Kilts(2007)}]{10.5555/1296098}
+\bibinfo{author}{Kilts, S.} (\bibinfo{year}{2007}). \bibinfo{title}{Advanced
+  FPGA Design: Architecture, Implementation, and Optimization}.
+  \bibinfo{publisher}{Wiley-IEEE Press}.
+\newblock ISBN \bibinfo{isbn}{0470054379}.
+%Type = Inproceedings
+\bibitem[{Waidyasooriya et~al.(2016)Waidyasooriya, Hariyama and
+  Kasahara}]{7550743}
+\bibinfo{author}{Waidyasooriya, H.M.}, \bibinfo{author}{Hariyama, M.}, and
+  \bibinfo{author}{Kasahara, K.} (\bibinfo{year}{2016}).
+  \bibinfo{title}{Architecture of an fpga accelerator for molecular dynamics
+  simulation using opencl}.
+\newblock In \bibinfo{booktitle}{2016 IEEE/ACIS 15th International Conference
+  on Computer and Information Science (ICIS)}. pp. \bibinfo{pages}{1--5}.
+\newblock \DOIprefix\doi{10.1109/ICIS.2016.7550743}.
+%Type = Inproceedings
+\bibitem[{Stewart et~al.(2021)Stewart, Pascoe, Davis, Sherman, Herbordt and
+  Sachdeva}]{9444063}
+\bibinfo{author}{Stewart, L.C.}, \bibinfo{author}{Pascoe, C.},
+  \bibinfo{author}{Davis, E.}, \bibinfo{author}{Sherman, B.W.},
+  \bibinfo{author}{Herbordt, M.}, and \bibinfo{author}{Sachdeva, V.}
+  (\bibinfo{year}{2021}). \bibinfo{title}{Particle mesh ewald for molecular
+  dynamics in opencl on an fpga cluster}.
+\newblock In \bibinfo{booktitle}{2021 IEEE 29th Annual International Symposium
+  on Field-Programmable Custom Computing Machines (FCCM)}. pp.
+  \bibinfo{pages}{270--270}.
+%Type = Inproceedings
+\bibitem[{Yang et~al.(2023)Yang, Long, Kannan and Prasanna}]{ref22}
+\bibinfo{author}{Yang, Y.}, \bibinfo{author}{Long, W.},
+  \bibinfo{author}{Kannan, R.}, and \bibinfo{author}{Prasanna, V.K.}
+  (\bibinfo{year}{2023}). \bibinfo{title}{Fpga acceleration of rotation in
+  homomorphic encryption using dynamic data layout}.
+\newblock In \bibinfo{booktitle}{2023 33rd International Conference on
+  Field-Programmable Logic and Applications (FPL)}. pp.
+  \bibinfo{pages}{174--181}.
+\newblock \DOIprefix\doi{10.1109/FPL60245.2023.00032}.
+%Type = Inproceedings
+\bibitem[{Choi et~al.(2019)Choi, Xu and Moroz}]{ref18}
+\bibinfo{author}{Choi, M.}, \bibinfo{author}{Xu, X.}, and
+  \bibinfo{author}{Moroz, V.} (\bibinfo{year}{2019}). \bibinfo{title}{Modeling
+  performance and thermal induced reliability issues of a 3nm finfet logic chip
+  operation in a fan-out and a flip-chip packages}.
+\newblock In \bibinfo{booktitle}{2019 18th IEEE Intersociety Conference on
+  Thermal and Thermomechanical Phenomena in Electronic Systems (ITherm)}. pp.
+  \bibinfo{pages}{107--112}.
+\newblock \DOIprefix\doi{10.1109/ITHERM.2019.8757442}.
+%Type = Inproceedings
+\bibitem[{Khan et~al.(1993)Khan, Owen and Hughes}]{410733}
+\bibinfo{author}{Khan, U.}, \bibinfo{author}{Owen, H.}, and
+  \bibinfo{author}{Hughes, J.} (\bibinfo{year}{1993}). \bibinfo{title}{Fpga
+  architectures for asic hardware emulators}.
+\newblock In \bibinfo{booktitle}{Sixth Annual IEEE International ASIC
+  Conference and Exhibit}. pp. \bibinfo{pages}{336--340}.
+\newblock \DOIprefix\doi{10.1109/ASIC.1993.410733}.
+%Type = Article
+\bibitem[{{Yang} et~al.(2019){Yang}, {Geng}, {Wang}, {Patel}, {Xiong},
+  {Sanaullah}, {Sheng}, {Lin}, {Sachdeva}, {Sherman} and
+  {Herbordt}}]{2019arXiv190505359Y}
+\bibinfo{author}{{Yang}, C.}, \bibinfo{author}{{Geng}, T.},
+  \bibinfo{author}{{Wang}, T.}, \bibinfo{author}{{Patel}, R.},
+  \bibinfo{author}{{Xiong}, Q.}, \bibinfo{author}{{Sanaullah}, A.},
+  \bibinfo{author}{{Sheng}, J.}, \bibinfo{author}{{Lin}, C.},
+  \bibinfo{author}{{Sachdeva}, V.}, \bibinfo{author}{{Sherman}, W.}, and
+  \bibinfo{author}{{Herbordt}, M.C.} (\bibinfo{year}{2019}).
+  \bibinfo{title}{{Fully Integrated On-FPGA Molecular Dynamics Simulations}}.
+\newblock \bibinfo{journal}{arXiv e-prints} pp.
+  \bibinfo{pages}{arXiv:1905.05359}. \DOIprefix\doi{10.48550/arXiv.1905.05359}.
+  \href{http://arxiv.org/abs/1905.05359}{\tt arXiv:1905.05359}.
+%Type = Inproceedings
+\bibitem[{Fujita et~al.(2021)Fujita, Kobayashi, Yamaguchi and Boku}]{9556096}
+\bibinfo{author}{Fujita, N.}, \bibinfo{author}{Kobayashi, R.},
+  \bibinfo{author}{Yamaguchi, Y.}, and \bibinfo{author}{Boku, T.}
+  (\bibinfo{year}{2021}). \bibinfo{title}{Hbm2 memory system for hpc
+  applications on an fpga}.
+\newblock In \bibinfo{booktitle}{2021 IEEE International Conference on Cluster
+  Computing (CLUSTER)}. pp. \bibinfo{pages}{783--786}.
+\newblock \DOIprefix\doi{10.1109/Cluster48925.2021.00116}.
+%Type = Article
+\bibitem[{Choi et~al.(2020)Choi, Chi, Wang and Cong}]{fpga18}
+\bibinfo{author}{Choi, Y.K.}, \bibinfo{author}{Chi, Y.}, \bibinfo{author}{Wang,
+  J.}, and \bibinfo{author}{Cong, J.} (\bibinfo{year}{2020}).
+  \bibinfo{title}{Flash: Fast, parallel, and accurate simulator for hls}.
+\newblock \bibinfo{journal}{IEEE Transactions on Computer-Aided Design of
+  Integrated Circuits and Systems} \emph{\bibinfo{volume}{39}},
+  \bibinfo{pages}{4828--4841}. \DOIprefix\doi{10.1109/TCAD.2020.2970597}.
+%Type = Inproceedings
+\bibitem[{Curreri et~al.(2008)Curreri, Koehler, Holland and George}]{fpga29}
+\bibinfo{author}{Curreri, J.}, \bibinfo{author}{Koehler, S.},
+  \bibinfo{author}{Holland, B.}, and \bibinfo{author}{George, A.D.}
+  (\bibinfo{year}{2008}). \bibinfo{title}{Performance analysis with high-level
+  languages for high-performance reconfigurable computing}.
+\newblock In \bibinfo{booktitle}{2008 16th International Symposium on
+  Field-Programmable Custom Computing Machines}. pp. \bibinfo{pages}{23--30}.
+\newblock \DOIprefix\doi{10.1109/FCCM.2008.18}.
+%Type = Inproceedings
+\bibitem[{Varma et~al.(2013)Varma, Paul and Balakrishnan}]{fpga23}
+\bibinfo{author}{Varma, B.S.C.}, \bibinfo{author}{Paul, K.}, and
+  \bibinfo{author}{Balakrishnan, M.} (\bibinfo{year}{2013}).
+  \bibinfo{title}{Accelerating 3d-fft using hard embedded blocks in fpgas}.
+\newblock In \bibinfo{booktitle}{2013 26th International Conference on VLSI
+  Design and 2013 12th International Conference on Embedded Systems}. pp.
+  \bibinfo{pages}{92--97}.
+\newblock \DOIprefix\doi{10.1109/VLSID.2013.169}.
+%Type = Inproceedings
+\bibitem[{Sheng et~al.(2017)Sheng, Yang, Sanaullah, Papamichael, Caulfield and
+  Herbordt}]{8056853}
+\bibinfo{author}{Sheng, J.}, \bibinfo{author}{Yang, C.},
+  \bibinfo{author}{Sanaullah, A.}, \bibinfo{author}{Papamichael, M.},
+  \bibinfo{author}{Caulfield, A.}, and \bibinfo{author}{Herbordt, M.C.}
+  (\bibinfo{year}{2017}). \bibinfo{title}{Hpc on fpga clouds: 3d ffts and
+  implications for molecular dynamics}.
+\newblock In \bibinfo{booktitle}{2017 27th International Conference on Field
+  Programmable Logic and Applications (FPL)}. pp. \bibinfo{pages}{1--4}.
+%Type = Article
+\bibitem[{Eastman et~al.(2017{\natexlab{b}})Eastman, Swails, Chodera, McGibbon,
+  Zhao, Beauchamp, Wang, Simmonett, Harrigan, Stern, Wiewiora, Brooks and
+  Pande}]{OpenMM7}
+\bibinfo{author}{Eastman, P.}, \bibinfo{author}{Swails, J.},
+  \bibinfo{author}{Chodera, J.D.}, \bibinfo{author}{McGibbon, R.T.},
+  \bibinfo{author}{Zhao, Y.}, \bibinfo{author}{Beauchamp, K.A.},
+  \bibinfo{author}{Wang, L.P.}, \bibinfo{author}{Simmonett, A.C.},
+  \bibinfo{author}{Harrigan, M.P.}, \bibinfo{author}{Stern, C.D.},
+  \bibinfo{author}{Wiewiora, R.P.}, \bibinfo{author}{Brooks, B.R.}, and
+  \bibinfo{author}{Pande, V.S.} (\bibinfo{year}{2017}{\natexlab{b}}).
+  \bibinfo{title}{Openmm 7: Rapid development of high performance algorithms
+  for molecular dynamics}.
+\newblock \bibinfo{journal}{PLOS Computational Biology}
+  \emph{\bibinfo{volume}{13}}, \bibinfo{pages}{1--17}. \URLprefix
+  \url{https://doi.org/10.1371/journal.pcbi.1005659}.
+  \DOIprefix\doi{10.1371/journal.pcbi.1005659}.
+%Type = Article
+\bibitem[{Eastman et~al.(2024)Eastman, Galvelis, Peláez, Abreu, Farr,
+  Gallicchio, Gorenko, Henry, Hu, Huang, Krämer, Michel, Mitchell, Pande,
+  Rodrigues, Rodriguez-Guerra, Simmonett, Singh, Swails, Turner, Wang, Zhang,
+  Chodera, De~Fabritiis and Markland}]{OpenMM8}
+\bibinfo{author}{Eastman, P.}, \bibinfo{author}{Galvelis, R.},
+  \bibinfo{author}{Peláez, R.P.}, \bibinfo{author}{Abreu, C.R.A.},
+  \bibinfo{author}{Farr, S.E.}, \bibinfo{author}{Gallicchio, E.},
+  \bibinfo{author}{Gorenko, A.}, \bibinfo{author}{Henry, M.M.},
+  \bibinfo{author}{Hu, F.}, \bibinfo{author}{Huang, J.},
+  \bibinfo{author}{Krämer, A.}, \bibinfo{author}{Michel, J.},
+  \bibinfo{author}{Mitchell, J.A.}, \bibinfo{author}{Pande, V.S.},
+  \bibinfo{author}{Rodrigues, J.P.}, \bibinfo{author}{Rodriguez-Guerra, J.},
+  \bibinfo{author}{Simmonett, A.C.}, \bibinfo{author}{Singh, S.},
+  \bibinfo{author}{Swails, J.}, \bibinfo{author}{Turner, P.},
+  \bibinfo{author}{Wang, Y.}, \bibinfo{author}{Zhang, I.},
+  \bibinfo{author}{Chodera, J.D.}, \bibinfo{author}{De~Fabritiis, G.}, and
+  \bibinfo{author}{Markland, T.E.} (\bibinfo{year}{2024}).
+  \bibinfo{title}{Openmm 8: Molecular dynamics simulation with machine learning
+  potentials}.
+\newblock \bibinfo{journal}{The Journal of Physical Chemistry B}
+  \emph{\bibinfo{volume}{128}}, \bibinfo{pages}{109--116}.
+  \href{http://arxiv.org/abs/https://doi.org/10.1021/acs.jpcb.3c06662}{\tt
+  arXiv:https://doi.org/10.1021/acs.jpcb.3c06662}.
+\newblock \bibinfo{note}{PMID: 38154096}.
+%Type = Misc
+\bibitem[{Rizos(2023)}]{georgios_rizos_2023_10253149}
+\bibinfo{author}{Rizos, G.} (\bibinfo{year}{2023}).
+\newblock \bibinfo{title}{Code for the article ``{Propagating Variational Model
+  Uncertainty for Bioacoustic Call Label Smoothing}''}.
+  \bibinfo{publisher}{Zenodo}.
+\newblock
+  \bibinfo{note}{\href{https://doi.org/10.5281/zenodo.10253149}{https://doi.org/10.5281/zenodo.10253149}}.
+%Type = Book
+\bibitem[{Rapaport(2004)}]{ref1}
+\bibinfo{author}{Rapaport, D.C.} (\bibinfo{year}{2004}). \bibinfo{title}{The
+  Art of Molecular Dynamics Simulation}.
+\newblock \bibinfo{edition}{2} ed.. \bibinfo{publisher}{Cambridge University
+  Press}.
+%Type = Article
+\bibitem[{Vanommeslaeghe and MacKerell(2015)}]{CHARMM36m}
+\bibinfo{author}{Vanommeslaeghe, K.}, and \bibinfo{author}{MacKerell, A.}
+  (\bibinfo{year}{2015}). \bibinfo{title}{Charmm additive and polarizable force
+  fields for biophysics and computer-aided drug design}.
+\newblock \bibinfo{journal}{Biochimica et Biophysica Acta (BBA) - General
+  Subjects} \emph{\bibinfo{volume}{1850}}, \bibinfo{pages}{861--871}.
+  \URLprefix
+  \url{https://www.sciencedirect.com/science/article/pii/S0304416514002736}.
+  \DOIprefix\doi{https://doi.org/10.1016/j.bbagen.2014.08.004}.
+\newblock \bibinfo{note}{Recent developments of molecular dynamics}.
+%Type = Inproceedings
+\bibitem[{Jayaraman et~al.(2022)Jayaraman, Zhang and Prasanna}]{ref20}
+\bibinfo{author}{Jayaraman, S.}, \bibinfo{author}{Zhang, B.}, and
+  \bibinfo{author}{Prasanna, V.} (\bibinfo{year}{2022}).
+  \bibinfo{title}{Hypersort: High-performance parallel sorting on hbm-enabled
+  fpga}.
+\newblock In \bibinfo{booktitle}{2022 International Conference on
+  Field-Programmable Technology (ICFPT)}. pp. \bibinfo{pages}{1--11}.
+\newblock \DOIprefix\doi{10.1109/ICFPT56656.2022.9974209}.
+%Type = Article
+\bibitem[{IEE(2019)}]{IEEE_Std_754_2019}
+ (\bibinfo{year}{2019}). \bibinfo{title}{Ieee standard for floating-point
+  arithmetic}.
+\newblock \bibinfo{journal}{IEEE Std 754-2019 (Revision of IEEE 754-2008)} pp.
+  \bibinfo{pages}{1--84}. \DOIprefix\doi{10.1109/IEEESTD.2019.8766229}.
+%Type = Inproceedings
+\bibitem[{Overchick and Abramov(2014)}]{fpga11}
+\bibinfo{author}{Overchick, E.R.}, and \bibinfo{author}{Abramov, B.}
+  (\bibinfo{year}{2014}). \bibinfo{title}{Designing of single precision
+  floating point dsp co-processor}.
+\newblock In \bibinfo{booktitle}{2014 IEEE 28th Convention of Electrical \&
+  Electronics Engineers in Israel (IEEEI)}. pp. \bibinfo{pages}{1--5}.
+%Type = Inproceedings
+\bibitem[{Villarreal and Najjar(2008)}]{fpga1}
+\bibinfo{author}{Villarreal, J.}, and \bibinfo{author}{Najjar, W.A.}
+  (\bibinfo{year}{2008}). \bibinfo{title}{Compiled hardware acceleration of
+  molecular dynamics code}.
+\newblock In \bibinfo{booktitle}{2008 International Conference on Field
+  Programmable Logic and Applications}. pp. \bibinfo{pages}{667--670}.
+%Type = Inproceedings
+\bibitem[{Yang et~al.(2019)Yang, Geng, Wang, Lin, Sheng, Sachdeva, Sherman and
+  Herbordt}]{MD_RL}
+\bibinfo{author}{Yang, C.}, \bibinfo{author}{Geng, T.}, \bibinfo{author}{Wang,
+  T.}, \bibinfo{author}{Lin, C.}, \bibinfo{author}{Sheng, J.},
+  \bibinfo{author}{Sachdeva, V.}, \bibinfo{author}{Sherman, W.}, and
+  \bibinfo{author}{Herbordt, M.} (\bibinfo{year}{2019}).
+  \bibinfo{title}{Molecular dynamics range-limited force evaluation optimized
+  for fpgas}.
+\newblock In \bibinfo{booktitle}{2019 IEEE 30th International Conference on
+  Application-specific Systems, Architectures and Processors (ASAP)} vol.
+  \bibinfo{volume}{2160-052X}. pp. \bibinfo{pages}{263--271}.
+%Type = Article
+\bibitem[{Darden et~al.(1993)Darden, York and Pedersen}]{Darden1993ParticleME}
+\bibinfo{author}{Darden, T.A.}, \bibinfo{author}{York, D.M.}, and
+  \bibinfo{author}{Pedersen, L.G.} (\bibinfo{year}{1993}).
+  \bibinfo{title}{Particle mesh ewald: An $n \cdot \log{(N)}$ method for ewald
+  sums in large systems}.
+\newblock \bibinfo{journal}{Journal of Chemical Physics}
+  \emph{\bibinfo{volume}{98}}, \bibinfo{pages}{10089--10092}. \URLprefix
+  \url{https://api.semanticscholar.org/CorpusID:55356282}.
+%Type = Article
+\bibitem[{Duan and Krasny(2000)}]{Duan2000AnES}
+\bibinfo{author}{Duan, Z.H.}, and \bibinfo{author}{Krasny, R.}
+  (\bibinfo{year}{2000}). \bibinfo{title}{An ewald summation based multipole
+  method}.
+\newblock \bibinfo{journal}{Journal of Chemical Physics}
+  \emph{\bibinfo{volume}{113}}, \bibinfo{pages}{3492--3495}.
+%Type = Inproceedings
+\bibitem[{Aatish and Zhang(2013)}]{Aatish2013ThreeDF}
+\bibinfo{author}{Aatish, K.}, and \bibinfo{author}{Zhang, B.}
+  (\bibinfo{year}{2013}). \bibinfo{title}{Three dimensional fast fourier
+  transform cuda implementation}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:17582708}.
+%Type = Inproceedings
+\bibitem[{Gu et~al.(2005)Gu, VanCourt and Herbordt}]{fpga3}
+\bibinfo{author}{Gu, Y.}, \bibinfo{author}{VanCourt, T.}, and
+  \bibinfo{author}{Herbordt, M.} (\bibinfo{year}{2005}).
+  \bibinfo{title}{Accelerating molecular dynamics simulations with configurable
+  circuits}.
+\newblock In \bibinfo{booktitle}{International Conference on Field Programmable
+  Logic and Applications, 2005.} pp. \bibinfo{pages}{475--480}.
+
+\end{thebibliography}

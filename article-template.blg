@@ -1,0 +1,55 @@
+This is BibTeX, Version 0.99d (TeX Live 2024)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: article-template.aux
+The style file: numbered.bst
+Database file #1: references.bib
+Warning--I didn't find a database entry for "10217517"
+Warning--I didn't find a database entry for "InspurF37X"
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--empty pages in anton3
+Warning--empty author in IEEE_Std_754_2019
+Warning--empty booktitle in Aatish2013ThreeDF
+Warning--empty pages in Aatish2013ThreeDF
+You've used 47 entries,
+            3197 wiz_defined-function locations,
+            999 strings with 22209 characters,
+and the built_in function-call counts, 47478 in all, are:
+= -- 2807
+> -- 3033
+< -- 34
++ -- 2129
+- -- 866
+* -- 6194
+:= -- 6005
+add.period$ -- 170
+call.type$ -- 47
+change.case$ -- 281
+chr.to.int$ -- 46
+cite$ -- 53
+duplicate$ -- 3294
+empty$ -- 2894
+format.name$ -- 1009
+if$ -- 8849
+int.to.chr$ -- 2
+int.to.str$ -- 48
+missing$ -- 795
+newline$ -- 225
+num.names$ -- 140
+pop$ -- 1219
+preamble$ -- 1
+purify$ -- 235
+quote$ -- 0
+skip$ -- 1202
+stack$ -- 0
+substring$ -- 1478
+swap$ -- 3259
+text.length$ -- 22
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 276
+warning$ -- 4
+while$ -- 157
+width$ -- 0
+write$ -- 704
+(There were 6 warnings)
