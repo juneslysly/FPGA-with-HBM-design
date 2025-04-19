@@ -51,6 +51,10 @@
 \usepackage{subfigure}
 \usepackage{amsmath}
 \usepackage{rotating}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage[linesnumbered, ruled]{algorithm2e}
+\usepackage{rotfloat}
 
 \usepackage[super,comma,sort&compress]  
    {natbib}\bibliographystyle{numbered}
@@ -295,11 +299,11 @@ accumulators for accumulating force vectors of neighboring cells.
     \centering
     \caption[Performance and Resource Evaluation]{Performance and resource evaluation of multiplication and addition of first-order polynomials using Xilinx's HLS, totaling 10 DSP48 modules. With a clock constraint of 300~MHz, Pipeline requires 22 clock cycles to complete the functional implementation. The performance and resource evaluation of multiply-add second order polynomials using Xilinx's HLS is performed on a total of 16 DSP48 modules. Pipeline requires 34 clock cycles to complete the functional implementation; Xilinx's HLS is used to evaluate the performance and resources of the multiply-add operation for third-order polynomials, totaling 22 DSP48 modules. With a clock constraint of 300~MHz, Pipeline requires 45 clock cycles to complete the function}.
     \begin{tabular}{llllll}
-    \hline
-    Modules                           & Latency (cycles) & Latency (ns) & DSP & FF   & LUT  \\ \hline
-    First Order Linear Interpolation  & 22               & 73.304       & 10  & 1459 & 763  \\
-    Second Order Linear Interpolation & 34               & 113.288      & 16  & 1788 & 1063 \\
-    Third Order Linear Interpolation  & 45               & 148.514      & 22  & 2442 & 1452 \\ \hline
+    	\hline
+    	Modules                           & Latency (cycles) & Latency (ns) & DSP & FF   & LUT  \\ \hline
+    	First Order Linear Interpolation  & 22               & 73.304       & 10  & 1459 & 763  \\
+    	Second Order Linear Interpolation & 34               & 113.288      & 16  & 1788 & 1063 \\
+    	Third Order Linear Interpolation  & 45               & 148.514      & 22  & 2442 & 1452 \\ \hline
     \end{tabular}
     \label{HLS}
 \end{table}
@@ -324,34 +328,13 @@ long - range force calculation module, which makes use of the Xilinx FFT 9.0 c
 alculation IP.~\cite{fpga23}
 Also included is the resource consumption of the bonded force module.
 
-% \begin{table*}[!ht]
-% 	\centering
-% 		\caption {The FPGA platform was Xilinx Virtex UltraScale+ VU37P with Inspur F37X.Comparison of resources used by a single module and two RL modules in finite range.}
-% 	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
-% 		\toprule
-% 		Type &Module 2 utilization rate\%&Module 1 utilization rate\%  \\ 
-% 		\midrule
-% 		LUT &10 & 21 \\ 
-% 		LUTRAM & 3 & 6  \\ 
-% 		FF & 13.13&  26.4 \\ 
-% 		BRAM & 7 & 18.5 \\ 
-%          URAM & 0.63 & $\sim$\\ 
-% 		DSP &2& 4  \\ 
-% 		IO & 1  & 1 \\ 
-% 		GT & 17 & 34   \\ 
-% 		BUFG & 3  & 6 \\ 
-% 		MMCM & 8  & 16 \\ 
-% 		PLL & 17 & 34 \\  
-% 		\bottomrule
-% 	\end{tabular*}
-% \label{RL}
-% \end{table*}
+
 \begin{table}[!ht]
     \centering
-    \caption {Comparison of resources used by a single module and two RL modules in finite range. The FPGA platform was Xilinx Virtex UltraScale+ VU37P with Inspur F37X.}
+	\caption{Comparison of resource utilization between a single RL module and two RL modules in a finite range on Xilinx Virtex UltraScale+ VU37P with Inspur F37X}
     \begin{tabular}{ccc}
     \hline
-    Type   & Moldule 2 utilization rate \% & Moldule 2 utilization rate \% \\ \hline
+    Type   &  Single RL utilization rate \% & Double RL utilization rate \% \\ \hline
     LUT    & 10                            & 21                            \\
     LUTRAM & 3                             & 6                             \\
     FF     & 13.13                         & 26.4                          \\
@@ -368,98 +351,33 @@ Also included is the resource consumption of the bonded force module.
 \end{table}
 
 
-% \begin{table}[!ht]
-% 	\centering
-% 		\caption[64-bit sequence resource utilization based on BRAM bar chart]{Layout routing uses Xilinx Virtex UltraScale+ VU37P chip, FFT 64-bit sequence resource utilization based on BRAM bar chart.  }
-% 	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
-% 		\toprule
-% 		Resource Name & Utilization\%  \\
-% 		\midrule
-% 		LUT & 16  \\ 
-% 		LUTRAM & 4  \\ 
-% 		FF & 14 \\ 
-% 		BRAM & 58 \\ 
-% 		DSP & 7  \\ 
-% 		IO & 1  \\ 
-% 		GT & 17  \\ 
-% 		BUFG & 2  \\ 
-% 		MMCM & 8  \\ 
-% 		PCIe & 17  \\ 
-% 		\bottomrule
-% 	\end{tabular*}
-% \label{fft32}
-% \end{table}
 
 
-% \begin{table}[!ht]
-% 	\centering
-% 		\caption[64-bit sequence resource utilization based on URAM bar chart]{Layout routing uses Xilinx Virtex UltraScale+ VU37P chip, FFT 64-bit sequence resource utilization based on URAM bar chart.  }
-% 	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
-% 		\toprule
-% 		Resource Name & Utilization\%  \\ 
-% 		\midrule
-% 		LUT & 15  \\ 
-% 		LUTRAM & 4  \\ 
-% 		FF & 14 \\ 
-% 		BRAM & 24 \\ 
-% 		URAM & 13 \\ 
-% 		DSP & 7  \\ 
-% 		IO & 1  \\ 
-% 		GT & 17  \\ 
-% 		BUFG & 2  \\ 
-% 		MMCM & 8  \\ 
-% 		PCIe & 17  \\ 
-% 		\bottomrule
-% 	\end{tabular*}
-% \label{fft64}
-% \end{table}
 
-% \begin{table}[!ht]
-% 	\centering
-% 		\caption[Resource utilization of RTL covalent bond module]{Resource utilization rates for covalent bond module implemented on Xilinx Virtex UltraScale+ VU37P chip through layout routing.}
-% 	\begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}llllllll@{}}
-% 		\toprule
-% 		Resource Name & Utilization\% \\
-% 		\midrule
-% 		LUT & 15 \\
-% 		LUTRAM & 4 \\
-% 		FF & 14 \\
-% 		BRAM & 24 \\
-% 		URAM & 13 \\
-% 		DSP & 3 \\
-% 		IO & 1 \\
-% 		GT & 17 \\
-% 		BUFG & 2 \\
-% 		MMCM & 8 \\
-% 		PCIe & 17 \\
-% 		\bottomrule
-% 	\end{tabular*}
-% \label{bond}
-% \end{table}
 
 % Please add the following required packages to your document preamble:
 % \usepackage{multirow}
 \begin{table}[!ht]
     \centering
-    \caption[Resource utilization]{Layout routing uses Xilinx Virtex UltraScale+ VU37P chip, FFT 64-bit sequence resource utilization based on URAM/BRAM bar chart. Resource utilization rates for covalent bond module implemented on Xilinx Virtex UltraScale+ VU37P chip through layout routing.}
-    \begin{tabular}{cccc}
-    \hline
-    \multirow{2}{*}{Resource Name} & \multicolumn{3}{c}{Utilization \%} \\ \cline{2-4} 
-                                   & URAM       & BRAM      & BOND      \\ \hline
-    LUT                            & 15         & 16        & 15        \\
-    LUTRAM                         & 4          & 4         & 4         \\
-    FF                             & 14         & 14        & 14        \\
-    BRAM                           & 24         & 58        & 24        \\
-    URAM                           & 13         & -         & 13        \\
-    DSP                            & 7          & 7         & 3         \\
-    IO                             & 1          & 1         & 1         \\
-    GT                             & 17         & 17        & 17        \\
-    BUFG                           & 2          & 2         & 2         \\
-    MMCM                           & 8          & 8         & 8         \\
-    PCIe                           & 17         & 17        & 17        \\ \hline
-    \end{tabular}
-    \label{fft32_fft64_bond}
-\end{table}
+     \caption[Resource utilization]{Layout routing uses Xilinx Virtex UltraScale+ VU37P chip, FFT 64-bit sequence resource utilization based on URAM/BRAM bar chart. The utilization based on URAM uses resources more evenly compared to that based on BRAM.Resource utilization rates for  covalent bond module implemented on Xilinx Virtex UltraScale+ VU37P chip through layout routing.}
+     \begin{tabular}{cccc}
+     \hline
+     \multirow{2}{*}{Resource Name} & \multicolumn{3}{c}{Utilization \%} \\ \cline{2-4} 
+                                    & URAM       & BRAM      & BOND      \\ \hline
+     LUT                            & 15         & 16        & 15        \\
+     LUTRAM                         & 4          & 4         & 4         \\
+     FF                             & 14         & 14        & 14        \\
+     BRAM                           & 24         & 58        & 24        \\
+     URAM                           & 13         & -         & 13        \\
+     DSP                            & 7          & 7         & 3         \\
+     IO                             & 1          & 1         & 1         \\
+     GT                             & 17         & 17        & 17        \\
+     BUFG                           & 2          & 2         & 2         \\
+     MMCM                           & 8          & 8         & 8         \\
+     PCIe                           & 17         & 17        & 17        \\ \hline
+     \end{tabular}
+     \label{fft32_fft64_bond}
+ \end{table}
 
 \subsection{Experimental Results of the Fourier Transform Module}
 
@@ -1277,11 +1195,11 @@ force calculation result data table and overseeing the calculation progress.\\
 
 
 
-\subsection*{Data is read and written using HBM memory}
-
+\subsection*{Data is reading and writing using HBM memory}
 \noindent
+
 The HBM2 stores data units in a structured manner, and the configuration of 
-each data unit contains multiple information layers.~\cite{ref20,9556096}
+each data unit contains multiple information layers.~\cite{ref20,9556096} .
 The main row designates key basic metadata, such as the cell serial number, 
 particle charge, number of particles, storage offset address of the particle 
 information, and parity bits. 
@@ -1300,7 +1218,7 @@ data storage. Such a hierarchical arrangement not only ensures the integrity of
 the memory architecture but also enables efficient data retrieval.
 When caching data, multiple channels can simultaneously read data in the manner 
 shown in Figure ~\ref{fig:subfig1} and Figure ~\ref{fig:subfig2}, either at 
-the same address or different addresses.\\
+the same address or different addresses.
 
 \subsubsection*{Particle Table: Home Cell - Neighbor Cell Storage Relationship}
 \noindent
@@ -1324,7 +1242,7 @@ identifiers of the special bonded particles are stored in pairs in the shared
 memory area, so as to ensure low-latency access during the execution time of 
 the calculation process.
 
-\subsubsection*{The storage relationship between Home Cell and Neighbor Cell in the particle information storage table.}
+\subsubsection*{The storage relationship between Home Cell and Neighbor Cell in the particle information storage table}
 
 \noindent
 The particle information storage architecture establishes a dual-layer 
@@ -1348,7 +1266,7 @@ force calculation acceleration.
 This structured approach enables deterministic memory access latencies while 
 preserving compatibility with parallel processing architectures.\\
 
-\subsubsection*{Data Structure of the Home Cell in the Particle Information Storage Table}
+\subsubsection{Data Structure of the Home Cell in the Particle Information Storage Table}
 \noindent
 The particle information repository employs a fixed-length encoding scheme 
 within 512-bit HomeCell structures, adhering to memory alignment constraints 
@@ -1360,7 +1278,7 @@ directs processing workflows to designated arithmetic units.
 Each particle's physical attributes—including scalar charge magnitudes, vector 
 velocity components, and 3D Cartesian coordinates are encoded using IEEE 
 754-compliant 32-bit floating-point representations for numerical 
-stability~.\cite{IEEE_Std_754_2019}\\
+stability~.\cite{IEEE_Std_754_2019}.\\
 
 \noindent
 Parallel processing requirements necessitate dual-tier memory management: 
@@ -1375,7 +1293,7 @@ The hybrid storage methodology simultaneously satisfies deterministic timing
 constraints for core physics kernels while maintaining scalable data handling 
 capacity for large-scale particle systems.\\
 
-\subsubsection*{Result Accumulation: Home Cell with 13 Neighbor Cells}
+\subsubsection{Force Accumulation: Home Cell with 13 Neighbor Cells}
 \noindent
 The particle-to-force caching and partial summation module implements 
 latency-optimized data reuse by sequentially capturing force calculation 
@@ -1445,28 +1363,28 @@ the device.\\
 	\centering
 	\includegraphics[angle=0,width=0.9\textwidth]{./figures/Fig6_Upper_half_of_data_structures.png}
 	\caption{
-	    (a),Storage Relationship between Home Cell and Neighbor Cells in Particle Information Storage Table
-       	(b), Storage Relationship of Home and Neighbor Cells in Particle Table: 512 - bit Data Composed of Six Parts
-		(c), Data Structure of Home Cell in Particle Information Storage Table: 512 - bit Width with Zeroed Non - data for Addressing
-	  	(d),Particle Pair Computational Information Cache: 256 - bit Data Width with Pre - computed Home - Neighbor Cell Data }
+		(a) Storage Relationship between Home Cell and Neighbor Cells in Particle Information Storage Table.
+		(b) Storage Relationship of Home and Neighbor Cells in Particle Table: 512 - bit Data Composed of Six Parts.
+		(c) Data Structure of Home Cell in Particle Information Storage Table: 512 - bit Width with Zeroed Non - data for Addressing.
+		(d) Particle Pair Computational Information Cache: 256 - bit Data Width with Pre - computed Home - Neighbor Cell Data. }
 	\label{fig:subfig3}
 \end{sidewaysfigure*}
 
 \begin{figure*}[!ht]
 	\centering
 	\includegraphics[angle=0,width=1.0\textwidth]{./figures/Fig7_lower_half_of_data_structures.png}
-	\caption{(a), the Home Cell and the remaining 13 neighbor cells accumulate the results, and the data needs to be filtered a lot before the particles in the corresponding cell can calculate the final short-range force.
-		     (b), the block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, and the storage length of each particle information is 512 bits.Block diagram of the storage structure of the RL force result buffer, the output of the calculation result of the particle pair, the storage length of each particle information is 256bits, and the calculation result of each step is stored in a specific storage space, which is carried by the CPU for the remaining calculation processing.}
+	\caption{(a) the Home Cell and the remaining 13 neighbor cells accumulate the results, and the data needs to be filtered a lot before the particles in the corresponding cell can calculate the final short-range force.
+		(b) the block diagram of the storage structure of the RL force result buffer,  the calculation result of the particle pair, and the storage length of each particle's information is 512 bits.Block diagram of the storage structure of the RL force result buffer, the calculation result of the particle pair, the storage length of each particle's information is 256bits, and the calculation result of each step is stored in a specific storage space, which is carried by the CPU for the remaining calculation processing.}
 	\label{fig:subfig4}
 \end{figure*}
 
-\subsection*{Generation of Interpolation and Coefficient Tables.}
+\subsection*{Interpolation and Coefficient Tables}
 
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig8_force_direct_calculation_unit_module.png}
+	\includegraphics[angle=0,width=0.8\textwidth]{./figures/Fig8_force_direct_calculation_unit_module.png}
 	\caption{The block diagram of the direct calculation module, assuming that particle $i$ and particle $j$ have gone through the particle screening module, and the short-range force of the particle pairs needs to be calculated within a certain range of action. The particle pairs are calculated directly by the DSP calculation pipeline, and the calculation results are single-precision floating-point numbers, which are calculated by the Xilinx floating-point number calculation unit, which is a relatively high-precision calculation method that consumes a large amount of DSP resources.}
-		\label{dsp}
+	\label{dsp}
 \end{figure}
 
 \noindent
@@ -1477,15 +1395,12 @@ processed through the DSP direct calculation pipeline for efficient force comput
 This approach ensures higher numerical accuracy compared to fixed-point or lower-precision alternatives. However, 
 since FP32 arithmetic consumes more DSP resources than integer or reduced-precision operations,~\cite{fpga11}.
 it imposes a trade-off between precision and computational efficiency.\\
-
-\noindent
 In existing studies, interpolation lookup tables are utilized to replace the 
-traditional direct calculation method, thereby conserving resources.~\cite{2019arXiv190505359Y,fpga1,MD_RL}
-And forces are calculated by:
+traditional direct calculation method, thereby saving resources.~\cite{2019arXiv190505359Y,fpga1,MD_RL}. % 加引用
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[angle=0,width=0.5\textwidth]{./figures/Fig9_Third_order_linear_interpolation.png}
+	\includegraphics[angle=0,width=0.8\textwidth]{./figures/Fig9_Third_order_linear_interpolation.png}
 	\caption{The figure shows the framework diagram of the second-order interpolation table DSP processing flow, the information of each particle is read from the parameter cache, after the arbitration of the parameter selector, the particle pairs go through the distance judgment, and the particles within the computation range enter into the force computation channel, assuming that the particles to be computed are particle $i$ and particle $j$. }
 	\label{3order}
 \end{figure}
@@ -1493,18 +1408,29 @@ And forces are calculated by:
 
 \begin{equation}
 	\begin{aligned}
-    F^\mathrm{RL} &= \frac{A_{ab}}{r_{ij}^{13}} + \frac{B_{ab}}{ r_{ij}^{7}} 
-                  + \frac{Q_{ab}}{r_{ij}^{2}} \\
-				  &= r_{ij} \cdot \left( \frac{A_{ab}}{r_{ij}^{14}} + \frac{B_{ab}}{ r_{ij}^{8}} 
-                  + \frac{Q_{ab}}{r_{ij}^{3}} \right)
+		F^\mathrm{RL} &= A_{ab} r_{ij}^{-13} + B_{ab} r_{ij}^{-7} 
+		+ Q_{ab}r_{ij}^{-2} \\
+		&= r_{ij} \cdot \left( A_{ab} r_{ij}^{-14} + B_{ab} r_{ij}^{-8} 
+		+ Q_{ab}r_{ij}^{-3} \right)
 	\end{aligned}
 \end{equation}
 
-\noindent
-,where $A_{ab} = 48\varepsilon_{ab}\sigma_{ab}^{12}$, $B_{ab} =-12\varepsilon_{ab}\sigma_{ab}^6$, and $Q_{ab} = q^a q^b / 4 \pi \varepsilon$.\\
+where, 
+
+\begin{equation}
+	A_{ab} = 48\varepsilon_{ab}\sigma_{ab}^{12}
+\end{equation}
+
+\begin{equation}
+	B_{ab} =-12\varepsilon_{ab}\sigma_{ab}^6
+\end{equation}
 
 
-\noindent
+\begin{equation}
+	Q_{ab} = \frac{q^a q^b}{4 \pi \varepsilon}
+\end{equation}
+
+
 In this design, $r_{ij}^{-14}$, $r_{ij}^{-8}$ and $r_{ij}^{-3}$ are used in the formula of 
 range limted force. 
 In this design, $r_{ij}^2$ is used as the output, and all the interpolating 
@@ -1516,25 +1442,22 @@ The generation of the interpolating function should not only reduce the
 computational complexity, but also ensure that the accuracy of the computation 
 meets the design requirements.
 The $r_{ij}^{-14}$, $r_{ij}^{-8}$ and $r_{ij}^{-3}$ can be approximated using a multi-order interpolation function.
-The performance of first-order, second-order, and third-order interpolations was compared respectively.\\
+The performance of first-order, second-order, and third-order interpolations was compared respectively.
 
-\noindent
 By establishing a reasonable sampling interval, the derivative of the target function can be numerically 
 approximated at discrete points within the interval.
 This allows the derivation of a fitting function valid over the selected range.
 The following formula is a set of equations for the 2nd-order interpolation 
-function to find the value of the interval $[x_{0}, x_{1}]$.\\
+function to find the value of the interval $[x_{0}, x_{1}]$. 
 
-\noindent
 The $x [0.1, 144]$ interval is divided into 8 segments, {[}0.1, 0.2{]} ,
- {[}0.2, 0.4{]}  ,
- {[}0.4, 0.8{]}  , 
- {[}0.8, 1.6{]} , 
- {[}1.6, 3.2{]},
- {[}3.2, 6.4{]} ,
- {[}6.4, 16.0{]},
- {[}16, 144{]}  , of which the 
-first 7 segments, each segment is divided into 16 small segments, and the last 
+{[}0.2, 0.4{]}  ,
+{[}0.4, 0.8{]}  , 
+{[}0.8, 1.6{]} , 
+{[}1.6, 3.2{]},
+{[}3.2, 6.4{]} ,
+{[}6.4, 16.0{]},
+{[}16, 144{]}  , of which the first 7 segments, each segment is divided into 16 small segments, and the last 
 segment, divided into 128 small segments, a total of 240 interpolation functions.
 Each interpolation function requires 3 coefficients, expressed as single 
 precision floating point numbers.
@@ -1543,9 +1466,8 @@ The calculation of the range limted force also requires a table of coefficients
 for $A_{ab}$ and $B_{ab}$, which need to be combined two by two for the particle 
 types, so that $N$ particle types will leads to a table with length of $N^2$. 
 After analyzing the simulation dataset, there are $\leq$ 32 independent 
-particle types, and the depth of the coefficient table is $\leq$ 1024 items. \\
+particle types, and the depth of the coefficient table is $\leq$ 1024 items. 
 
-\noindent
 In the hardware floating point calculation, the root operation always consume a 
 lot of logic resources, so we use $r_{ij}^2$ to do multi-level multiplication to 
 calculate $r_{ij}^{14}$ and $r_{ij}^{8}$ in place of $r_{ij}^{13}$ and $r_{ij}^{7}$, which replaces 
@@ -1559,7 +1481,7 @@ Figure~\ref{3order}.
 Because parameters such as $A_{ab}$ and $B_{ab}$ are determined constants in the 
 simulation system, the constant particle pair lookup table can be 
 pre-established, which can reduce the calculation logic and calculation time in 
-FPGA.\\
+FPGA.
 
 \subsection*{The Make Table Module: Its Role in Calculating Process Control}
 
@@ -1593,20 +1515,23 @@ optimized matrix compression techniques and pipelined dataflow.\\
 	\centering
 	\includegraphics[width=0.7\textwidth]{./figures/Fig10_marktable.png}
 	\caption{The particle computing progress monitoring module is composed of 
-    several modules.}	
-    \label{mark}
+		several modules.The two-dimensional array records the memory block serial numbers of the 26 surrounding cells of each cell, 
+		which is convenient and rapid for positioning and reading the corresponding calculation parameters. 
+		The one-dimensional array records the calculation progress of the home cell. 
+		The comparison of these two data can determine whether the corresponding home cell can complete the calculation with 26 neighboring cells.}	
+	\label{mark}
 \end{figure}
 
 
-\subsection*{Three-dimensional Fast Fourier transform.}
+\subsection*{3D Fast Fourier transform}
 In this work, the computationally intensive three-dimensional(3D) Fast Fourier 
 Transform (FFT) module on an FPGA platform was implemented, while delegating 
 remaining computational tasks to CPUs.~\cite{Darden1993ParticleME,Duan2000AnES,9444063}
 Data exchange between the CPU and FPGA is facilitated through high speed PCIe 
-interfaces or optical fiber connections.~\cite{fpga23}
+interfaces or optical fiber connections.~\cite{fpga23}.
 In order to accelerate 3D FFT transform in Coulomb force calculations in MD, we 
 developed a parallelized approach leveraging proximity lookup tables for Ewald 
-summation, achieving parallelism comparable to vdW force computations.~\cite{Aatish2013ThreeDF}
+summation, achieving parallelism comparable to vdW force computations.~\cite{Aatish2013ThreeDF}.
 The simulation system undergoes cubic or rectangular grid partitioning 
 along X/Y/Z axes, with grid dimensions determined by system boundaries to 
 optimize hardware accelerated data alignment. 
@@ -1616,7 +1541,7 @@ Temporal spatial domain transformations employ optimized FFT algorithms for
 frequency domain computations, while B-spline interpolation 
 (order=3) maps particle charges to nearest grid points. 
 Hardware implementation leverages OpenMM's reference codebase for kernel 
-optimization, achieving 15~$\times$ speedup in Coulomb force calculations 
+optimization~\cite{OpenMM7}, achieving 15~$times$ speedup in Coulomb force calculations 
 compared to CPU only implementations when tested on the Inspur F37X platform. 
 Resource utilization analysis reveals 83\% DSP block efficiency and 72\% HBM2 
 bandwidth saturation during protein system simulations (100,000 atoms), 
@@ -1625,17 +1550,18 @@ demonstrating feasibility for large scale MD workloads.
 \begin{figure}[htp]
 	\centering
 	\includegraphics[width=0.5\textwidth]{./figures/3dfft_top_strcture.png}
-	\caption{The 3D Fourier transform.}
+	\caption{The 3D Fourier transform module, which includes the global memory between the cpu and the fpga, the fft transform module and the remaining auxiliary circuits.
+		Among them, some of the energy term calculation data need to be preprocessed and then stored in the memory of the fpga to improve the calculation efficiency.}
 	\label{3DF}
 \end{figure}
 
 
-\subsection*{Calculations of the bonded force and energy.}
+\subsection*{Calculations of  bonded forces}
 
 \noindent
 Figure~\ref{fig:bond} shows the cooperation mode between CPU and FPGA in 
 calculating the bonded force, and the data transmission between software and 
-hardware is realized through PCIe.~\cite{fpga3} 
+hardware is realized through PCIe.~\cite{fpga3}. 
 Each small box in the diagram represents a circuit processing unit. 
 Particle information is derived from user input files, and the structure of the 
 particle information storage table varies according to the different inputs. 
@@ -1667,12 +1593,13 @@ channels.\\
 	\centering
 	\includegraphics[width=0.7\textwidth]{./figures/Bond_force_calculation.png}
 	\caption{
-        The force of the covalent bond is calculated.
-        These include two-force, three-force, four-force calculations, during 
-        which a portion of the IP can be reused.}
+		The force of the covalent bond is calculated.
+		These include two-force, three-force, four-force calculations, during 
+		which a portion of the IP can be reused.Among them, in order to save computing logic resources,
+		some computing logic modules can be reused, 
+		which requires ensuring that no conflicts occur during the calculation process of each force.}
 	\label{fig:bond}
 \end{figure}
-
 % \subsection*{Key resources table}
 
 % \textit{To create the KRT, please use the \href{https://star-methods.com}{KRT webform} or the \href{http://www.cell.com/pb-assets/journals/research/cell/methods/table-template1.docx}{Word template} and upload this file separately.}

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.5.7)  19 APR 2025 09:14
+This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.5.7)  19 APR 2025 09:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -671,78 +671,165 @@ Package: ifthen 2022/04/13 v1.1d Standard LaTeX ifthen package (DPC)
 \rot@float@box=\box65
 \rot@mess@toks=\toks36
 )
+(d:/texlive/texlive/2024/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen277
+\lightrulewidth=\dimen278
+\cmidrulewidth=\dimen279
+\belowrulesep=\dimen280
+\belowbottomsep=\dimen281
+\aboverulesep=\dimen282
+\abovetopsep=\dimen283
+\cmidrulesep=\dimen284
+\cmidrulekern=\dimen285
+\defaultaddspace=\dimen286
+\@cmidla=\count321
+\@cmidlb=\count322
+\@aboverulesep=\dimen287
+\@belowrulesep=\dimen288
+\@thisruleclass=\count323
+\@lastruleclass=\count324
+\@thisrulewidth=\dimen289
+)
+(d:/texlive/texlive/2024/texmf-dist/tex/latex/algorithm2e/algorithm2e.sty
+Invalid UTF-8 byte or sequence at line 284 replaced by U+FFFD.
+Invalid UTF-8 byte or sequence at line 299 replaced by U+FFFD.
+Invalid UTF-8 byte or sequence at line 550 replaced by U+FFFD.
+Package: algorithm2e 2017/07/18 v5.2 algorithms environments
+\c@AlgoLine=\count325
+\algocf@hangindent=\skip67
+
+(d:/texlive/texlive/2024/texmf-dist/tex/latex/ifoddpage/ifoddpage.sty
+Package: ifoddpage 2022/10/18 v1.2 Conditionals for odd/even page detection
+\c@checkoddpage=\count326
+)
+(d:/texlive/texlive/2024/texmf-dist/tex/latex/tools/xspace.sty
+Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
+)
+(d:/texlive/texlive/2024/texmf-dist/tex/latex/relsize/relsize.sty
+Package: relsize 2013/03/29 ver 4.1
+)
+\skiptotal=\skip68
+\skiplinenumber=\skip69
+\skiprule=\skip70
+\skiphlne=\skip71
+\skiptext=\skip72
+\skiplength=\skip73
+\algomargin=\skip74
+\skipalgocfslide=\skip75
+\algowidth=\dimen290
+\inoutsize=\dimen291
+\inoutindent=\dimen292
+\interspacetitleruled=\dimen293
+\interspacealgoruled=\dimen294
+\interspacetitleboxruled=\dimen295
+\algocf@ruledwidth=\skip76
+\algocf@inoutbox=\box66
+\algocf@inputbox=\box67
+\AlCapSkip=\skip77
+\AlCapHSkip=\skip78
+\algoskipindent=\skip79
+\algocf@nlbox=\box68
+\algocf@hangingbox=\box69
+\algocf@untilbox=\box70
+\algocf@skipuntil=\skip80
+\algocf@capbox=\box71
+\algocf@lcaptionbox=\skip81
+\algoheightruledefault=\skip82
+\algoheightrule=\skip83
+\algotitleheightruledefault=\skip84
+\algotitleheightrule=\skip85
+\c@algocfline=\count327
+\c@algocfproc=\count328
+\c@algocf=\count329
+\algocf@algoframe=\box72
+\algocf@algobox=\box73
+)
+(d:/texlive/texlive/2024/texmf-dist/tex/latex/rotfloat/rotfloat.sty
+Package: rotfloat 2004/01/04 v1.2 Combining float+rotating package (AS)
+
+(d:/texlive/texlive/2024/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count330
+\float@exts=\toks37
+\float@box=\box74
+\@float@everytoks=\toks38
+\@floatcapt=\box75
+)
+Package rotfloat Info: float package v1.3 detected on input line 74.
+)
 (d:/texlive/texlive/2024/texmf-dist/tex/latex/natbib/natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
-\bibhang=\skip67
-\bibsep=\skip68
+\bibhang=\skip86
+\bibsep=\skip87
 LaTeX Info: Redefining \cite on input line 694.
-\c@NAT@ctr=\count321
+\c@NAT@ctr=\count331
 )
 (d:/texlive/texlive/2024/texmf-dist/tex/latex/lineno/lineno.sty
 Package: lineno 2023/05/20 line numbers on paragraphs v5.3
 Invalid UTF-8 byte or sequence at line 292 replaced by U+FFFD.
-\linenopenalty=\count322
-\output=\toks37
-\linenoprevgraf=\count323
-\linenumbersep=\dimen277
-\linenumberwidth=\dimen278
-\c@linenumber=\count324
-\c@pagewiselinenumber=\count325
-\c@LN@truepage=\count326
-\c@internallinenumber=\count327
-\c@internallinenumbers=\count328
-\quotelinenumbersep=\dimen279
-\bframerule=\dimen280
-\bframesep=\dimen281
-\bframebox=\box66
-\linenoamsmath@ams@eqpen=\count329
+\linenopenalty=\count332
+\output=\toks39
+\linenoprevgraf=\count333
+\linenumbersep=\dimen296
+\linenumberwidth=\dimen297
+\c@linenumber=\count334
+\c@pagewiselinenumber=\count335
+\c@LN@truepage=\count336
+\c@internallinenumber=\count337
+\c@internallinenumbers=\count338
+\quotelinenumbersep=\dimen298
+\bframerule=\dimen299
+\bframesep=\dimen300
+\bframebox=\box76
+\linenoamsmath@ams@eqpen=\count339
 LaTeX Info: Redefining \\ on input line 3180.
 )
 LaTeX Font Info:    Trying to load font information for TU+phv on input line 13
-5.
-LaTeX Font Info:    No file TUphv.fd. on input line 135.
+9.
+LaTeX Font Info:    No file TUphv.fd. on input line 139.
 
 
 LaTeX Font Warning: Font shape `TU/phv/m/n' undefined
-(Font)              using `TU/lmr/m/n' instead on input line 135.
+(Font)              using `TU/lmr/m/n' instead on input line 139.
 
 (d:/texlive/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
 File: l3backend-xetex.def 2024-02-20 L3 backend support: XeTeX
-\g__graphics_track_int=\count330
-\l__pdf_internal_box=\box67
-\g__pdf_backend_object_int=\count331
-\g__pdf_backend_annotation_int=\count332
-\g__pdf_backend_link_int=\count333
+\g__graphics_track_int=\count340
+\l__pdf_internal_box=\box77
+\g__pdf_backend_object_int=\count341
+\g__pdf_backend_annotation_int=\count342
+\g__pdf_backend_link_int=\count343
 )
 (./article-template.aux)
 \openout1 = `article-template.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 135.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 139.
+LaTeX Font Info:    ... okay on input line 139.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 139.
+LaTeX Font Info:    ... okay on input line 139.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 139.
+LaTeX Font Info:    ... okay on input line 139.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 139.
+LaTeX Font Info:    ... okay on input line 139.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 139.
 LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 1
-35.
+39.
 
 (d:/texlive/texlive/2024/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
+LaTeX Font Info:    ... okay on input line 139.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 139.
+LaTeX Font Info:    ... okay on input line 139.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 139.
+LaTeX Font Info:    ... okay on input line 139.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 139.
+LaTeX Font Info:    ... okay on input line 139.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 139.
+LaTeX Font Info:    ... okay on input line 139.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 139.
+LaTeX Font Info:    ... okay on input line 139.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -778,7 +865,7 @@ LaTeX Font Info:    ... okay on input line 135.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring OFF on input line 135.
+Package hyperref Info: Link coloring OFF on input line 139.
 (./article-template.out) (./article-template.out)
 \@outlinefile=\write4
 \openout4 = `article-template.out'.
@@ -786,33 +873,33 @@ Package hyperref Info: Link coloring OFF on input line 135.
 
 
 LaTeX Font Warning: Font shape `TU/phv/b/n' undefined
-(Font)              using `TU/phv/m/n' instead on input line 137.
+(Font)              using `TU/phv/m/n' instead on input line 141.
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 137
+LaTeX Font Info:    Trying to load font information for U+msa on input line 141
 .
 (d:/texlive/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 137
+LaTeX Font Info:    Trying to load font information for U+msb on input line 141
 .
 
 (d:/texlive/texlive/2024/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 10000) in paragraph at lines 177--206
+Underfull \hbox (badness 10000) in paragraph at lines 181--210
 
  []
 
 [1
 
 ]
-Overfull \hbox (13.27086pt too wide) in paragraph at lines 207--223
+Overfull \hbox (13.27086pt too wide) in paragraph at lines 211--227
 \TU/phv/m/n/12 Beyond conventional CPU/GPU-based solutions, heterogeneous compu
 ting architectures have emerged
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 207--223
+Underfull \hbox (badness 10000) in paragraph at lines 211--227
 
  []
 
@@ -826,7 +913,7 @@ Missing character: There is no ​ (U+200B) in font [lmroman12-regular]:mapping=
 ex-text;!
 
 Package natbib Warning: Citation `10217517' on page 2 undefined on input line 2
-47.
+51.
 
 Missing character: There is no ​ (U+200B) in font [lmroman12-regular]:mapping=t
 ex-text;!
@@ -853,26 +940,26 @@ ex-text;!
 Missing character: There is no ​ (U+200B) in font [lmroman12-regular]:mapping=t
 ex-text;!
 [2]
-Underfull \hbox (badness 10000) in paragraph at lines 466--471
+Underfull \hbox (badness 10000) in paragraph at lines 384--389
 
  []
 
 [3]
-Underfull \hbox (badness 10000) in paragraph at lines 472--481
+Underfull \hbox (badness 10000) in paragraph at lines 390--399
 
  []
 
 
 LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 499.
+               Default added (so using `tbp') on input line 417.
 
 [4]
-Underfull \hbox (badness 10000) in paragraph at lines 522--538
+Underfull \hbox (badness 10000) in paragraph at lines 440--456
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 539--552
+Underfull \hbox (badness 10000) in paragraph at lines 457--470
 
  []
 
@@ -881,17 +968,17 @@ File: figures/lj_energy_force.jpg Graphic file (type bmp)
 File: figures/zoom_lj_energy_force.jpg Graphic file (type bmp)
 <figures/zoom_lj_energy_force.jpg>
 
-Underfull \hbox (badness 10000) in paragraph at lines 567--582
+Underfull \hbox (badness 10000) in paragraph at lines 485--500
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 637--644
+Underfull \hbox (badness 10000) in paragraph at lines 555--562
 
  []
 
 [5]
-Underfull \hbox (badness 10000) in paragraph at lines 645--654
+Underfull \hbox (badness 10000) in paragraph at lines 563--572
 
  []
 
@@ -901,22 +988,22 @@ File: ./figures/fpga_fft_32.png Graphic file (type bmp)
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 [6]
-Underfull \hbox (badness 10000) in paragraph at lines 673--685
+Underfull \hbox (badness 10000) in paragraph at lines 591--603
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 686--704
+Underfull \hbox (badness 10000) in paragraph at lines 604--622
 
  []
 
 [7]
-Underfull \hbox (badness 10000) in paragraph at lines 705--720
+Underfull \hbox (badness 10000) in paragraph at lines 623--638
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 721--728
+Underfull \hbox (badness 10000) in paragraph at lines 639--646
 
  []
 
@@ -984,175 +1071,4 @@ Underfull \hbox (badness 1902) in paragraph at lines 146--161
 
 Underfull \hbox (badness 1939) in paragraph at lines 146--161
 \TU/phv/m/it/12 9, 3878–3888. URL: []$[][][][][] [] [] [] [][][] [] [][][] [] [
-][] [] [][][][] [] [][][][][][][][][]$[]. doi: []$[][] [] [][][][] [] [][][][][
-][][][][]$[].
- []
-
-[12] [13] [14] [15]) [16]
-
-Package natbib Warning: Citation `InspurF37X' on page 17 undefined on input lin
-e 1029.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1069--1074
-
- []
-
-[17]
-Underfull \hbox (badness 10000) in paragraph at lines 1144--1149
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1151--1170
-
- []
-
-[18]
-Underfull \hbox (badness 10000) in paragraph at lines 1193--1203
-
- []
-
-File: ./figures/Fig1_Neighboursegment.png Graphic file (type bmp)
-<./figures/Fig1_Neighboursegment.png>
-File: ./figures/Fig2_top_module_a_b.png Graphic file (type bmp)
-<./figures/Fig2_top_module_a_b.png>
-
-Underfull \hbox (badness 10000) in paragraph at lines 1228--1242
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1243--1277
-
- []
-
-[19]
-Underfull \hbox (badness 10000) in paragraph at lines 1282--1304
-
- []
-
-[20] [21]
-Underfull \hbox (badness 10000) in paragraph at lines 1329--1350
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1352--1364
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1365--1377
-
- []
-
-[22]
-Underfull \hbox (badness 10000) in paragraph at lines 1379--1401
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1403--1428
-
- []
-
-File: ./figures/Fig4_onecache.png Graphic file (type bmp)
-<./figures/Fig4_onecache.png>
-File: ./figures/Fig5_twocache.png Graphic file (type bmp)
-<./figures/Fig5_twocache.png>
-File: ./figures/Fig6_Upper_half_of_data_structures.png Graphic file (type bmp)
-<./figures/Fig6_Upper_half_of_data_structures.png>
-File: ./figures/Fig7_lower_half_of_data_structures.png Graphic file (type bmp)
-<./figures/Fig7_lower_half_of_data_structures.png>
-File: ./figures/Fig8_force_direct_calculation_unit_module.png Graphic file (typ
-e bmp)
-<./figures/Fig8_force_direct_calculation_unit_module.png>
-
-Underfull \hbox (badness 10000) in paragraph at lines 1472--1480
-
- []
-
-[23]
-File: ./figures/Fig9_Third_order_linear_interpolation.png Graphic file (type bm
-p)
-<./figures/Fig9_Third_order_linear_interpolation.png>
-
-Underfull \hbox (badness 10000) in paragraph at lines 1503--1505
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1507--1520
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1521--1527
-
- []
-
-[24] [25]
-Underfull \hbox (badness 10000) in paragraph at lines 1528--1547
-
- []
-
-[26]
-Underfull \hbox (badness 10000) in paragraph at lines 1548--1563
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1566--1577
-
- []
-
-[27]
-Underfull \hbox (badness 10000) in paragraph at lines 1578--1591
-
- []
-
-File: ./figures/Fig10_marktable.png Graphic file (type bmp)
-<./figures/Fig10_marktable.png>
-[28]
-File: ./figures/3dfft_top_strcture.png Graphic file (type bmp)
-<./figures/3dfft_top_strcture.png>
-
-Underfull \hbox (badness 10000) in paragraph at lines 1635--1651
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1652--1664
-
- []
-
-[29]
-File: ./figures/Bond_force_calculation.png Graphic file (type bmp)
-<./figures/Bond_force_calculation.png>
-
-
-Package natbib Warning: There were undefined citations.
-
-[30] (./article-template.aux)
- ***********
-LaTeX2e <2023-11-01> patch level 1
-L3 programming layer <2024-02-20>
- ***********
-
-
-LaTeX Font Warning: Some font shapes were not available, defaults substituted.
-
-Package rerunfilecheck Info: File `article-template.out' has not changed.
-(rerunfilecheck)             Checksum: A4830C4AF367626C70D0154C0FF85C25;1631.
- ) 
-Here is how much of TeX's memory you used:
- 22189 strings out of 474773
- 417206 string characters out of 5757730
- 1951842 words of memory out of 5000000
- 43931 multiletter control sequences out of 15000+600000
- 565899 words of font info for 71 fonts, out of 8000000 for 9000
- 1348 hyphenation exceptions out of 8191
- 99i,10n,107p,904b,779s stack positions out of 10000i,1000n,20000p,200000b,200000s
-
-Output written on article-template.pdf (30 pages).
+][] [] [][][][] [] [][][][][][][][][]$[]. doi: []$[][] [] [][][][] [] []
